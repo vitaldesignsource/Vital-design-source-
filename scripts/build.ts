@@ -45,7 +45,7 @@ const schema = JSON.stringify({
       url: siteUrl,
       logo: `${siteUrl}/assets/brand/vital-logo-original.webp`,
       description:
-        "Independent creative studio for web design, development, branding, SEO, and intelligent automation.",
+        "Independent creative studio for web design, development, branding, AI-assisted design and motion, SEO, and intelligent automation.",
       hasOfferCatalog: {
         "@type": "OfferCatalog",
         name: "Creative and digital services",
@@ -92,9 +92,9 @@ for (const page of [
   {
     path: "/",
     file: "dist/index.html",
-    title: "Vital Design Source — Design with a pulse.",
+    title: "Vital Design Source — Design, AI & Digital Experiences",
     description:
-      "An independent creative studio for distinctive websites, brands, SEO, and intelligent automation. Explore our work and start a conversation.",
+      "Independent creative studio for distinctive websites, branding, AI-assisted imagery, motion, SEO, and intelligent automation. Ideas beyond ordinary.",
   },
   {
     path: "/privacy",
@@ -122,14 +122,14 @@ for (const page of [
     `<meta property="og:title" content="${escape(page.title)}" />`,
     `<meta property="og:description" content="${escape(page.description)}" />`,
     `<meta property="og:url" content="${siteUrl}${page.path}" />`,
-    `<meta property="og:image" content="${siteUrl}/assets/og-editorial.jpg" />`,
+    `<meta property="og:image" content="${siteUrl}/assets/og-neural.jpg" />`,
     `<meta property="og:image:width" content="1200" />`,
     `<meta property="og:image:height" content="630" />`,
     `<meta property="og:image:alt" content="Vital Design Source — distinctive websites, brands, and intelligent systems" />`,
     `<meta name="twitter:card" content="summary_large_image" />`,
     `<meta name="twitter:title" content="${escape(page.title)}" />`,
     `<meta name="twitter:description" content="${escape(page.description)}" />`,
-    `<meta name="twitter:image" content="${siteUrl}/assets/og-editorial.jpg" />`,
+    `<meta name="twitter:image" content="${siteUrl}/assets/og-neural.jpg" />`,
     ...(page.path === "/"
       ? [`<script type="application/ld+json">${schema}</script>`]
       : []),

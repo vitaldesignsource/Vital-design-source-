@@ -6,6 +6,7 @@ import { InquiryForm } from "./components/InquiryForm";
 import { Portfolio } from "./components/Portfolio";
 import { Services } from "./components/Services";
 import { Studio } from "./components/Studio";
+import { DesignLab } from "./components/DesignLab";
 
 function Privacy() {
   return (
@@ -73,7 +74,7 @@ function NotFound() {
         The page you’re looking for isn’t here. There’s plenty to explore back
         at the studio.
       </p>
-      <a className="button button-coral" href="/">
+      <a className="button button-primary" href="/">
         Back to the studio <ArrowUpRight size={20} aria-hidden="true" />
       </a>
     </main>
@@ -95,18 +96,19 @@ export function App({ path = "/" }: { path?: string }) {
               <span>
                 <span className="signal-dot" /> Design with a pulse.
               </span>
-              <span>Web / Brand / Development / SEO / Automation</span>
+              <span>Design / Development / AI / Motion / Automation</span>
               <span aria-hidden="true">
                 <ArrowDownRight size={18} />
               </span>
             </div>
           </div>
           <Portfolio />
+          <DesignLab />
           <Services />
           <Studio />
           <div className="signal-strip" aria-hidden="true">
-            <span>Good things happen</span>
-            <em>when ideas connect.</em>
+            <span>Human imagination.</span>
+            <em>Extraordinary possibilities.</em>
             <span>
               <ArrowUpRight />
             </span>

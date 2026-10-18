@@ -36,6 +36,7 @@ export function Footer() {
         <span>© {new Date().getFullYear()} Vital Design Source LLC</span>
         <nav aria-label="Footer">
           <a href="/#work">Work</a>
+          <a href="/#ai-studio">AI Studio</a>
           <a href="/#services">Services</a>
           <a href="/#contact">Contact</a>
           <a href="/privacy">Privacy</a>

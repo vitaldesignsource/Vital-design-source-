@@ -92,7 +92,7 @@ export function InquiryForm() {
     >
       <div className="contact-intro">
         <p className="eyebrow section-label">
-          <span>04 /</span> Your next chapter
+          <span>05 /</span> Your next chapter
         </p>
         <h2 id="contact-title">
           A good idea.
@@ -105,8 +105,8 @@ export function InquiryForm() {
           </span>
         </h2>
         <p>
-          Tell us what’s on your mind. A new direction, a better website,
-          something that doesn’t have a name yet. We’re listening.
+          A new identity. An immersive website. A visual world you haven’t seen
+          before. Tell us what you have in mind.
         </p>
         <p className="eyebrow contact-detail">
           Thoughtful work starts with a conversation.
@@ -250,7 +250,7 @@ export function InquiryForm() {
                 </p>
               )}
               <button
-                className="button button-coral submit-button"
+                className="button button-primary submit-button"
                 type="submit"
                 disabled={status === "sending"}
               >

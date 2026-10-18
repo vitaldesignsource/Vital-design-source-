@@ -10,11 +10,20 @@ Do not replace the crest with a generated mark or redraw it. Retain the original
 
 ## Hero
 
-`source-assets/presence-master.png` is newly generated, text-free decorative artwork for the editorial redesign. It depicts a vermilion folded aluminum sculpture in a photographic composition against warm ivory plaster. It is not a replacement logo and contains no client logos, interface mockups, awards, locations, or performance claims. Responsive `presence-640` and `presence-1120` AVIF and WebP derivatives are served locally. CSS provides restrained motion and disables it for reduced-motion preferences. No large autoplay video is required.
+`source-assets/neural-master.png` is newly AI-generated, text-free concept artwork for the dark jade and liquid-chrome theme. It depicts intertwined liquid-chrome and jade-glass loops in a photorealistic composition. It is decorative artwork, not a replacement logo or a photograph of client work, and contains no client logos, interface mockups, awards, locations, or performance claims. Responsive `neural-640` and `neural-1280` AVIF and WebP derivatives are served locally in the hero and AI Design Lab. No large autoplay video is required.
 
-The active social sharing image, `public/assets/og-editorial.jpg`, combines that artwork, the supplied crest variant, and Vital Design Source copy. Run `npm run assets` to regenerate the active artwork derivatives, project previews, sharing image, and icons.
+The active social sharing image, `public/assets/og-neural.jpg`, combines that artwork, the supplied crest variant, and Vital Design Source copy. Run `npm run assets` to regenerate the active artwork derivatives, project previews, sharing image, and icons.
 
-The earlier `source-assets/ribbon-master.png`, silver-ribbon `hero-*` derivatives, and `public/assets/og-image.jpg` remain in the repository for provenance but are no longer used by the active design.
+Earlier artwork remains in the repository for provenance but is no longer used by the active design:
+
+- `source-assets/presence-master.png`: a generated vermilion folded aluminum sculpture against warm ivory plaster, with `presence-640` and `presence-1120` AVIF/WebP derivatives and `public/assets/og-editorial.jpg`.
+- `source-assets/ribbon-master.png`: generated abstract silver-ribbon artwork, with `hero-*` derivatives and `public/assets/og-image.jpg`.
+
+## AI Design Lab and motion
+
+`src/components/DesignLab.tsx` presents curated Liquid chrome, Prismatic, and Editorial visual directions. Typed presets in `src/lib/design-directions.ts` supply the direction names, briefs, and material labels. Selecting a preset changes the composed artwork treatment and supporting copy; it does not generate an image, contact an AI model, or represent completed client work. The section describes human-directed AI-assisted image creation, motion exploration, and intelligent experiences as offered capabilities, with no invented client results.
+
+`src/components/AmbientField.tsx` draws the decorative hero light field on a canvas. It targets 30 frames per second, caps device pixel ratio at 1.5, and suspends animation when offscreen, when the document is hidden, or when its motion setting is disabled. Hero and Design Lab motion controls initialize from the visitor’s reduced-motion preference and allow explicit pause or resume. The official crest remains separate from all generated concept imagery.
 
 ## Typography
 

@@ -13,17 +13,17 @@ export function Services() {
       <div className="page-width services-layout">
         <div className="services-intro">
           <p className="eyebrow section-label">
-            <span>02 /</span> Our capabilities
+            <span>03 /</span> Our capabilities
           </p>
           <h2 id="services-title">
-            From first idea.
+            Human vision.
             <br />
-            <em>To final detail.</em>
+            <em>New possibilities.</em>
           </h2>
           <p className="services-description">
-            A distinctive identity. A considered experience. The technology that
-            brings it all together. Start with one discipline, or connect the
-            whole picture.
+            Websites, identities, campaign imagery, and motion. We connect
+            considered design and engineering with AI-assisted exploration,
+            guided by a human creative point of view.
           </p>
           <a className="text-link" href="#contact">
             Let’s find your starting point{" "}

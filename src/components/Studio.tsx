@@ -31,7 +31,7 @@ export function Studio() {
       <div className="page-width">
         <div className="studio-heading">
           <p className="eyebrow section-label">
-            <span>03 /</span> The Vital perspective
+            <span>04 /</span> The Vital perspective
           </p>
           <h2 id="studio-title">
             Independent thinking.

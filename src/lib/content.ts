@@ -1,6 +1,7 @@
 export const projectTypes = [
   "Website & development",
   "Brand & identity",
+  "AI design & motion",
   "SEO & visibility",
   "Intelligent automation",
   "Something else",
@@ -132,6 +133,17 @@ export const services = [
       "Workflow design",
       "Connected business tools",
       "AI-assisted operations",
+    ],
+  },
+  {
+    title: "AI design & motion",
+    short: "Imagination, thoughtfully directed.",
+    description:
+      "AI-assisted art direction for campaign imagery, motion concepts, and visual exploration. Human creative direction, review, and refinement guide the work from the first brief to the selected visuals, with your brand and its intended use in focus.",
+    details: [
+      "AI-assisted art direction",
+      "Campaign imagery",
+      "Motion & visual exploration",
     ],
   },
 ];

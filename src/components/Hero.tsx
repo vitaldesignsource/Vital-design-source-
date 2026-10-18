@@ -1,73 +1,108 @@
-import { ArrowDown, ArrowUpRight } from "lucide-react";
+import { useEffect, useState } from "react";
+import { ArrowDown, ArrowUpRight, Pause, Play, Sparkles } from "lucide-react";
+import { AmbientField } from "./AmbientField";
 
 export function Hero() {
+  const [motion, setMotion] = useState(false);
+  useEffect(() => {
+    const preference = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const update = () => setMotion(!preference.matches);
+    const frame = requestAnimationFrame(update);
+    preference.addEventListener("change", update);
+    return () => {
+      cancelAnimationFrame(frame);
+      preference.removeEventListener("change", update);
+    };
+  }, []);
   return (
-    <section className="hero" aria-labelledby="hero-title">
-      <div className="hero-layout page-width">
-        <div className="hero-content">
-          <p className="eyebrow hero-eyebrow">
-            <span className="signal-dot" /> Independent by nature. Vital by
-            design.
-          </p>
-          <h1 id="hero-title">
-            <span>Make your </span>
-            <span>presence </span>
-            <em>felt.</em>
-          </h1>
-          <div className="hero-intro">
+    <section
+      className="hero"
+      aria-labelledby="hero-title"
+      data-motion={motion ? "running" : "paused"}
+    >
+      <div className="hero-scene page-width">
+        <AmbientField active={motion} />
+        <div className="hero-layout">
+          <div className="hero-content">
+            <p className="eyebrow hero-eyebrow">
+              <span className="signal-dot" /> Independent minds. New dimensions.
+            </p>
+            <h1 id="hero-title">
+              <span>Ideas beyond </span>
+              <em>ordinary.</em>
+            </h1>
             <p className="hero-description">
-              Distinctive websites, identities, and intelligent systems.
-              Thoughtfully connected. Unmistakably yours.
+              Human imagination. AI-enhanced creativity. We build distinctive
+              brands, immersive websites, and visual worlds that move you.
             </p>
             <div className="hero-actions">
-              <a className="button button-coral" href="#contact">
-                Start a conversation{" "}
-                <ArrowUpRight size={20} aria-hidden="true" />
+              <a className="button button-primary" href="#contact">
+                Let’s create something{" "}
+                <ArrowUpRight size={19} aria-hidden="true" />
               </a>
-              <a className="hero-work-link" href="#work">
-                Explore our work <ArrowDown size={17} aria-hidden="true" />
+              <a className="hero-work-link" href="#ai-studio">
+                <Sparkles size={16} aria-hidden="true" /> Explore the AI studio
               </a>
             </div>
+            <div className="hero-disciplines eyebrow">
+              <span>Design</span>
+              <span>Intelligence</span>
+              <span>Motion</span>
+            </div>
           </div>
-        </div>
-        <figure className="hero-artwork">
-          <div className="hero-art-frame">
+          <figure
+            className="hero-artwork"
+            aria-label="AI-assisted liquid chrome artwork"
+          >
             <picture className="hero-art">
               <source
                 type="image/avif"
-                srcSet="/assets/presence-640.avif 640w, /assets/presence-1120.avif 1120w"
-                sizes="(max-width: 799px) 90vw, 43vw"
+                srcSet="/assets/neural-640.avif 640w, /assets/neural-1280.avif 1280w"
+                sizes="(max-width: 799px) 100vw, 60vw"
               />
               <img
-                src="/assets/presence-1120.webp"
-                srcSet="/assets/presence-640.webp 640w, /assets/presence-1120.webp 1120w"
-                sizes="(max-width: 799px) 90vw, 43vw"
+                src="/assets/neural-1280.webp"
+                srcSet="/assets/neural-640.webp 640w, /assets/neural-1280.webp 1280w"
+                sizes="(max-width: 799px) 100vw, 60vw"
                 alt=""
-                width="1120"
-                height="1400"
+                width="1280"
+                height="1280"
                 fetchPriority="high"
               />
             </picture>
-            <span className="hero-art-seal eyebrow" aria-hidden="true">
-              A different
-              <br />
-              kind of presence.
-            </span>
-          </div>
-          <figcaption className="hero-art-caption eyebrow">
-            <span>Independent thinking.</span>
-            <span>Connected craft. ↗</span>
-          </figcaption>
-        </figure>
-      </div>
-      <div className="hero-bottom page-width">
-        <a className="scroll-link eyebrow" href="#work">
-          <ArrowDown size={17} aria-hidden="true" /> A little further. A lot to
-          discover.
-        </a>
-        <span className="eyebrow hero-coordinate">
-          Strategy / Design / Technology
-        </span>
+            <figcaption className="hero-art-caption">
+              <span className="hero-caption-mark" aria-hidden="true">
+                <Sparkles size={16} />
+              </span>
+              <span>
+                Artificial intelligence.
+                <br />
+                <strong>Distinctly human vision.</strong>
+              </span>
+            </figcaption>
+          </figure>
+        </div>
+        <div className="hero-bottom">
+          <a className="scroll-link eyebrow" href="#work">
+            <ArrowDown size={16} aria-hidden="true" /> Scroll to discover
+          </a>
+          <span className="hero-coordinate eyebrow">
+            Built at the intersection of art & technology
+          </span>
+          <button
+            className="hero-motion-toggle"
+            type="button"
+            onClick={() => setMotion(!motion)}
+            aria-label={motion ? "Pause hero motion" : "Resume hero motion"}
+          >
+            {motion ? (
+              <Pause size={14} aria-hidden="true" />
+            ) : (
+              <Play size={14} aria-hidden="true" />
+            )}
+            <span>{motion ? "Pause motion" : "Play motion"}</span>
+          </button>
+        </div>
       </div>
     </section>
   );

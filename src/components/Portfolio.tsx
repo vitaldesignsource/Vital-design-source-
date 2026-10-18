@@ -90,6 +90,15 @@ export function Portfolio() {
             >
               <div className="project-visual">
                 <div className="project-image-shell">
+                  <div className="project-window-bar" aria-hidden="true">
+                    <span className="window-dots">
+                      <i />
+                      <i />
+                      <i />
+                    </span>
+                    <span>{new URL(project.url).hostname}</span>
+                    <ArrowUpRight size={12} />
+                  </div>
                   <picture>
                     <source
                       type="image/avif"

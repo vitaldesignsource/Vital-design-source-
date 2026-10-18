@@ -23,6 +23,7 @@ export function Header() {
   const trigger = useRef<HTMLButtonElement>(null);
   const links = [
     ["Work", "work"],
+    ["AI Studio", "ai-studio"],
     ["Services", "services"],
     ["Studio", "studio"],
   ] as const;
@@ -61,7 +62,7 @@ export function Header() {
           ))}
         </nav>
         <a className="nav-contact" href="/#contact">
-          Let’s make it happen <ArrowUpRight size={18} aria-hidden="true" />
+          Let’s create <ArrowUpRight size={18} aria-hidden="true" />
         </a>
         <button
           ref={trigger}

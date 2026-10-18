@@ -1,8 +1,10 @@
 # Vital Design Source
 
-The official Vital Design Source LLC website: a fresh, independent React and TypeScript build with the original heraldic crest, cinematic artwork, six portfolio projects, and a private project inquiry service.
+The official Vital Design Source LLC website: an independent React and TypeScript build with the original heraldic crest, a dark jade and liquid-chrome theme, six portfolio projects, and a private project inquiry service.
 
-![Vital Design Source](public/assets/og-editorial.jpg)
+![Vital Design Source](public/assets/og-neural.jpg)
+
+The studio offers web design, development, branding, SEO, intelligent automation, and human-directed AI design and motion. The AI Design Lab lets visitors explore curated visual directions and pause motion. It is an interactive art-direction study, not a live AI generation service.
 
 ## Deploy on Hostinger
 
@@ -57,7 +59,10 @@ CI also runs `npm run test:deployment`: a disposable production-only install tha
 ## Maintain
 
 - `src/components/`: accessible page sections and interactions.
+- `src/components/DesignLab.tsx`: curated visual-direction explorer with selection controls, live brief updates, and a motion toggle.
+- `src/components/AmbientField.tsx`: decorative hero canvas targeting 30 frames per second, with device pixel ratio capped at 1.5; animation pauses offscreen, when the document is hidden, or when motion is disabled. Hero and Design Lab controls respect the initial reduced-motion preference.
 - `src/lib/content.ts`: project destinations, descriptions, service copy, and form options.
+- `src/lib/design-directions.ts`: typed art-direction presets, briefs, and material labels for the AI Design Lab.
 - `src/lib/inquiry.ts`: shared client/server validation contract.
 - `server/`: HTTP boundary, SQLite persistence, and optional email queue.
 - `server.js`: portable host entry; builds missing or outdated-domain artifacts before starting.

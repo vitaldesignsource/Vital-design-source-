@@ -8,7 +8,7 @@ test("renders all six projects with working views, filters, and secure links", a
   page.on("pageerror", (error) => errors.push(error.message));
   await page.goto("/");
   await expect(page.getByRole("heading", { level: 1 })).toContainText(
-    "Make your presence felt.",
+    "Ideas beyond ordinary.",
   );
   await expect(page.locator(".project")).toHaveCount(6);
   for (const link of await page.locator(".project a").all()) {
@@ -61,6 +61,72 @@ test("renders all six projects with working views, filters, and secure links", a
   expect(errors).toEqual([]);
 });
 
+test("explores curated art directions, controls motion, and reaches contact", async ({
+  page,
+}) => {
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  await page.goto("/#ai-studio");
+  const lab = page.locator("#ai-studio");
+  const stage = lab.locator(".lab-stage");
+  const brief = lab.getByRole("status");
+  const chrome = lab.getByRole("button", {
+    name: "Liquid chrome",
+    exact: true,
+  });
+  await expect(chrome).toHaveAttribute("aria-pressed", "true");
+  await expect(stage).toHaveAttribute("data-direction", "chrome");
+  await expect(stage).toHaveAttribute("data-motion", "running");
+  await expect
+    .poll(() =>
+      stage
+        .locator("img")
+        .evaluate((image: HTMLImageElement) => image.naturalWidth),
+    )
+    .toBeGreaterThan(0);
+
+  for (const direction of [
+    {
+      name: "Prismatic",
+      id: "prismatic",
+      title: "A different kind of energy.",
+      description: "Iridescent color, light in motion, and expressive depth.",
+    },
+    {
+      name: "Editorial",
+      id: "editorial",
+      title: "Clarity, with character.",
+      description:
+        "Graphic restraint, confident typography, and considered contrast.",
+    },
+  ]) {
+    const option = lab.getByRole("button", {
+      name: direction.name,
+      exact: true,
+    });
+    await option.click();
+    await expect(option).toHaveAttribute("aria-pressed", "true");
+    await expect(chrome).toHaveAttribute("aria-pressed", "false");
+    await expect(stage).toHaveAttribute("data-direction", direction.id);
+    await expect(brief.getByRole("heading")).toHaveText(direction.title);
+    await expect(brief).toContainText(direction.description);
+    const accessibility = await new AxeBuilder({ page })
+      .include("#ai-studio")
+      .withTags(["wcag2a", "wcag2aa", "wcag21aa"])
+      .analyze();
+    expect(accessibility.violations).toEqual([]);
+  }
+
+  await lab.getByRole("button", { name: "Pause motion", exact: true }).click();
+  await expect(stage).toHaveAttribute("data-motion", "paused");
+  await lab.getByRole("button", { name: "Resume motion", exact: true }).click();
+  await expect(stage).toHaveAttribute("data-motion", "running");
+  await lab
+    .getByRole("link", { name: "Explore this direction", exact: true })
+    .click();
+  await expect(page).toHaveURL(/#contact$/);
+  await expect(page.locator("#contact")).toBeInViewport();
+});
+
 test("has accessible service disclosure panels", async ({ page }) => {
   await page.goto("/");
   const seo = page.getByRole("button", { name: "04 SEO" });
@@ -79,6 +145,7 @@ test("validates, submits, and announces a real persisted inquiry", async ({
   await expect(page.getByLabel("Your name *")).toBeFocused();
   await page.getByLabel("Your name *").fill("Browser Test");
   await page.getByLabel("Email address *").fill("browser-test@example.com");
+  await page.getByLabel("What do you need?").selectOption("AI design & motion");
   await page
     .getByLabel("A little about your idea *")
     .fill("An automated local test of the project inquiry workflow.");
@@ -89,7 +156,9 @@ test("validates, submits, and announces a real persisted inquiry", async ({
       response.request().method() === "POST",
   );
   await page.getByRole("button", { name: "Send inquiry", exact: true }).click();
-  expect((await response).status()).toBe(201);
+  const submitted = await response;
+  expect(submitted.status()).toBe(201);
+  expect(submitted.request().postDataJSON().type).toBe("AI design & motion");
   await expect(
     page.getByRole("heading", { name: "Message received." }),
   ).toBeVisible();
@@ -178,6 +247,15 @@ test("honors reduced motion", async ({ page }) => {
       .locator(".hero-art img")
       .evaluate((element) => getComputedStyle(element).animationName),
   ).toBe("none");
+  await expect(page.locator(".lab-stage")).toHaveAttribute(
+    "data-motion",
+    "paused",
+  );
+  await expect(
+    page
+      .locator("#ai-studio")
+      .getByRole("button", { name: "Resume motion", exact: true }),
+  ).toBeVisible();
 });
 
 test("mobile navigation traps focus, closes on Escape, and follows anchors", async ({
