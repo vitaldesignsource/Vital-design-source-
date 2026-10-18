@@ -1,5 +1,6 @@
 import * as THREE from "three";
 import { SVGLoader } from "three/addons/loaders/SVGLoader.js";
+import { toCreasedNormals } from "three/addons/utils/BufferGeometryUtils.js";
 import geometry from "./crest-geometry.json";
 
 export interface CrestScene {
@@ -48,7 +49,6 @@ export function createCrestScene(
     antialias: true,
     powerPreference: "low-power",
   });
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
   renderer.setClearColor(0x000000, 0);
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
@@ -66,14 +66,14 @@ export function createCrestScene(
   const crest = new THREE.Group();
   const face = new THREE.MeshStandardMaterial({
     color: 0xe2e5dc,
-    metalness: 1,
-    roughness: 0.2,
+    metalness: 0.92,
+    roughness: 0.28,
     envMapIntensity: 1.4,
   });
   const edge = new THREE.MeshStandardMaterial({
     color: 0x8b9a8d,
     metalness: 0.9,
-    roughness: 0.21,
+    roughness: 0.24,
     envMapIntensity: 1.4,
   });
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${geometry.viewBox}">${geometry.paths
@@ -87,20 +87,49 @@ export function createCrestScene(
   for (const path of paths) {
     for (const shape of SVGLoader.createShapes(path)) {
       const meshGeometry = new THREE.ExtrudeGeometry(shape, {
-        depth: 35,
+        depth: 40,
         bevelEnabled: true,
-        bevelSegments: 3,
+        bevelSegments: 6,
         steps: 1,
-        bevelSize: 4,
-        bevelThickness: 5,
-        curveSegments: 5,
+        bevelSize: 2,
+        bevelThickness: 3.5,
+        curveSegments: 8,
       });
+      // Keep the caps planar. Bending sparse cap triangles creates visible
+      // specular seams; crease-aware normals soften bevels without rounding
+      // the intentional corners of the shield and feather tips.
+      const flatNormals = meshGeometry.getAttribute("normal").clone();
+      toCreasedNormals(meshGeometry, Math.PI / 3);
+      const normals = meshGeometry.getAttribute("normal");
       const positions = meshGeometry.getAttribute("position");
-      for (let vertex = 0; vertex < positions.count; vertex += 1) {
-        const x = positions.getX(vertex) - 708;
-        positions.setZ(vertex, positions.getZ(vertex) + (x * x) / 6500);
+      // Cap triangles must share one normal. Including their perimeter in the
+      // bevel smoothing would spread different edge normals across large faces.
+      for (const group of meshGeometry.groups) {
+        if (group.materialIndex !== 0) continue;
+        for (
+          let vertex = group.start;
+          vertex < group.start + group.count;
+          vertex++
+        ) {
+          normals.setXYZ(
+            vertex,
+            flatNormals.getX(vertex),
+            flatNormals.getY(vertex),
+            flatNormals.getZ(vertex),
+          );
+        }
       }
-      meshGeometry.computeVertexNormals();
+      // A continuous, shallow crown in the shading gives the silver broad
+      // reflections. Unlike a vertex displacement, it cannot crease the cap
+      // into the long triangles produced by a detailed heraldic outline.
+      const normal = new THREE.Vector3();
+      for (let vertex = 0; vertex < positions.count; vertex++) {
+        normal.fromBufferAttribute(normals, vertex);
+        normal.x -= ((positions.getX(vertex) - 708) / 2400) * normal.z;
+        normal.y += ((positions.getY(vertex) - 555) / 12000) * normal.z;
+        normal.normalize();
+        normals.setXYZ(vertex, normal.x, normal.y, normal.z);
+      }
       meshes.push(meshGeometry);
       crest.add(new THREE.Mesh(meshGeometry, [face, edge]));
     }
@@ -180,6 +209,15 @@ export function createCrestScene(
     width = bounds.width;
     height = bounds.height;
     if (!width || !height) return;
+    // Resolve fine heraldic details on Retina screens while bounding fill cost
+    // on large displays. Work is still rendered only while the pose changes.
+    renderer.setPixelRatio(
+      Math.min(
+        window.devicePixelRatio,
+        2.5,
+        Math.sqrt(2_400_000 / (width * height)),
+      ),
+    );
     renderer.setSize(width, height);
     camera.aspect = width / height;
     // Retain the full wing span at narrow aspect ratios.
