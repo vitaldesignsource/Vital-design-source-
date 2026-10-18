@@ -34,5 +34,19 @@
     "url": "https://pigeonshield.com",
     "title": "Robot Challenge Screen",
     "capturedAt": "2026-10-18T08:21:40.081Z"
+  },
+  {
+    "name": "OceanEmber",
+    "url": "https://oceanember.net/",
+    "title": "OceanEmber — Find your kind of glow",
+    "capturedAt": "2026-10-18T21:11:53.647Z"
+  },
+  {
+    "name": "7 Seas Trading",
+    "url": "https://7seastrading.net/",
+    "title": "403 Forbidden",
+    "capturedAt": "2026-10-18T21:11:49.436Z",
+    "status": 403,
+    "previewUnavailable": true
   }
 ]

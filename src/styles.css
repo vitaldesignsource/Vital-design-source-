@@ -537,6 +537,17 @@
     background:
       radial-gradient(ellipse at 80% 100%, #436d8c3b, transparent 80%), #12191b;
   }
+  .project-ocean-ember .project-visual {
+    background:
+      radial-gradient(ellipse at 20% 90%, #8b543236, transparent 80%), #1c1b15;
+  }
+  .project-7-seas-trading .project-visual {
+    background:
+      radial-gradient(ellipse at 80% 90%, #345e6836, transparent 80%), #111a1b;
+  }
+  .project[data-preview-kind="cover"] .project-window-bar {
+    display: none;
+  }
   .project-image-shell {
     width: 100%;
     box-shadow: 0 20px 45px #0006;

@@ -4,6 +4,7 @@ import {
   ArrowRight,
   ArrowUpRight,
   Expand,
+  Image as ImageIcon,
   Monitor,
   X,
 } from "lucide-react";
@@ -32,6 +33,7 @@ export function ProjectShowcase({
   const [preview, setPreview] = useState<"desktop" | "detail">("desktop");
   const project = projects[projectIndex];
   const study = projectStudies[project.id];
+  const isCover = study.previewKind === "cover";
   const previousProject =
     projects[(projectIndex - 1 + projects.length) % projects.length];
   const nextProject = projects[(projectIndex + 1) % projects.length];
@@ -127,16 +129,26 @@ export function ProjectShowcase({
             aria-pressed={preview === "desktop"}
             onClick={() => setPreview("desktop")}
           >
-            <Monitor size={15} aria-hidden="true" />
-            {study.previewKind === "artwork" ? "Artwork" : "Desktop"}
+            {isCover ? (
+              <ImageIcon size={15} aria-hidden="true" />
+            ) : (
+              <Monitor size={15} aria-hidden="true" />
+            )}
+            {isCover
+              ? "Project cover"
+              : study.previewKind === "artwork"
+                ? "Artwork"
+                : "Desktop"}
           </button>
-          <button
-            type="button"
-            aria-pressed={preview === "detail"}
-            onClick={() => setPreview("detail")}
-          >
-            <Expand size={14} aria-hidden="true" /> Detail
-          </button>
+          {!isCover && (
+            <button
+              type="button"
+              aria-pressed={preview === "detail"}
+              onClick={() => setPreview("detail")}
+            >
+              <Expand size={14} aria-hidden="true" /> Detail
+            </button>
+          )}
         </div>
         <p className="showcase-source-label eyebrow">
           {project.previewLabel || "Website preview"}
@@ -148,15 +160,17 @@ export function ProjectShowcase({
         data-preview={preview}
         data-project={project.id}
       >
-        <div className="showcase-browser-bar" aria-hidden="true">
-          <span className="showcase-window-dots">
-            <i />
-            <i />
-            <i />
-          </span>
-          <span>{new URL(project.url).hostname}</span>
-          <ArrowUpRight size={12} />
-        </div>
+        {!isCover && (
+          <div className="showcase-browser-bar" aria-hidden="true">
+            <span className="showcase-window-dots">
+              <i />
+              <i />
+              <i />
+            </span>
+            <span>{new URL(project.url).hostname}</span>
+            <ArrowUpRight size={12} />
+          </div>
+        )}
         <div className="showcase-image-viewport">
           <picture className="showcase-image">
             <source
@@ -177,36 +191,41 @@ export function ProjectShowcase({
         </div>
         <figcaption className="showcase-image-caption eyebrow">
           <span>
-            {study.previewKind === "artwork"
-              ? "Project artwork"
-              : "Digital composition"}
+            {isCover
+              ? "Project cover"
+              : study.previewKind === "artwork"
+                ? "Project artwork"
+                : "Digital composition"}
           </span>
           <span>
-            {preview === "detail"
-              ? "Detail crop · same source image"
-              : "Full composition"}
+            {isCover
+              ? "Website preview unavailable"
+              : preview === "detail"
+                ? "Detail crop · same source image"
+                : "Full composition"}
           </span>
         </figcaption>
       </figure>
 
-      <div className="showcase-story">
-        <div className="showcase-story-heading">
-          <p className="eyebrow">A closer look</p>
-          <h3>{study.headline}</h3>
+      {study.observations.length > 0 && (
+        <div className="showcase-story">
+          <div className="showcase-story-heading">
+            <p className="eyebrow">A closer look</p>
+            <h3>{study.headline}</h3>
+          </div>
+          <div className="showcase-observations">
+            {study.observations.map((observation, index) => (
+              <div className="showcase-observation" key={observation.title}>
+                <span className="eyebrow" aria-hidden="true">
+                  {String(index + 1).padStart(2, "0")}
+                </span>
+                <h4>{observation.title}</h4>
+                <p>{observation.description}</p>
+              </div>
+            ))}
+          </div>
         </div>
-        <div className="showcase-observations">
-          {study.observations.map((observation, index) => (
-            <div className="showcase-observation" key={observation.title}>
-              <span className="eyebrow" aria-hidden="true">
-                {String(index + 1).padStart(2, "0")}
-              </span>
-              <h4>{observation.title}</h4>
-              <p>{observation.description}</p>
-            </div>
-          ))}
-        </div>
-      </div>
-
+      )}
       <p className="sr-only" role="status" aria-live="polite">
         {project.name}. Project {projectIndex + 1} of {projects.length}.
       </p>

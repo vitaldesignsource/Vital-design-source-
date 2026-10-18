@@ -1,7 +1,21 @@
 import { test, expect } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
 
-test("renders all six projects with working views, filters, and secure links", async ({
+const expectedProjects = [
+  { name: "Aetherica Podcast", url: "https://aethericapodcast.com" },
+  {
+    name: "The Architecture of Hidden Forces",
+    url: "https://thearchitectureofhiddenforces.com",
+  },
+  { name: "Astera Roofing", url: "https://asteraroofing.com" },
+  { name: "Sky Mathis", url: "https://skymathis.com" },
+  { name: "3 Magi Press", url: "https://threemagipress.com" },
+  { name: "PigeonShield", url: "https://pigeonshield.net" },
+  { name: "OceanEmber", url: "https://oceanember.net" },
+  { name: "7 Seas Trading", url: "https://7seastrading.net" },
+];
+
+test("renders all eight projects with working views, filters, and secure links", async ({
   page,
 }) => {
   const errors: string[] = [];
@@ -10,12 +24,20 @@ test("renders all six projects with working views, filters, and secure links", a
   await expect(page.getByRole("heading", { level: 1 })).toContainText(
     "Ideas beyond ordinary.",
   );
-  await expect(page.locator(".project")).toHaveCount(6);
-  for (const link of await page.locator(".project a").all()) {
-    expect(await link.getAttribute("href")).toMatch(/^https:\/\//);
-    expect(await link.getAttribute("target")).toBe("_blank");
-    expect(await link.getAttribute("rel")).toContain("noopener");
-    expect(await link.getAttribute("rel")).toContain("noreferrer");
+  await expect(page.locator(".project")).toHaveCount(8);
+  await expect(
+    page.getByRole("button", { name: "All projects" }).locator("sup"),
+  ).toHaveText("08");
+  await expect(page.locator(".work-count")).toHaveText("08 projects");
+  for (const project of expectedProjects) {
+    const link = page.getByRole("link", {
+      name: `Visit ${project.name} (opens in a new tab)`,
+      exact: true,
+    });
+    await expect(link).toHaveAttribute("href", project.url);
+    await expect(link).toHaveAttribute("target", "_blank");
+    await expect(link).toHaveAttribute("rel", /\bnoopener\b/);
+    await expect(link).toHaveAttribute("rel", /\bnoreferrer\b/);
   }
   const galleryView = page.getByRole("button", { name: "Gallery view" });
   const listView = page.getByRole("button", { name: "List view" });
@@ -27,7 +49,7 @@ test("renders all six projects with working views, filters, and secure links", a
   await expect(listView).toHaveAttribute("aria-pressed", "true");
   await expect(galleryView).toHaveAttribute("aria-pressed", "false");
   await expect(projectPresentation).toHaveAttribute("data-view", "list");
-  await expect(page.locator(".project")).toHaveCount(6);
+  await expect(page.locator(".project")).toHaveCount(8);
   await expect(
     page.locator(".project-hidden-forces .project-preview-note"),
   ).toHaveText("Project artwork · private release");
@@ -39,6 +61,12 @@ test("renders all six projects with working views, filters, and secure links", a
   ).toHaveText("Website source preview");
   await expect(
     page.locator(".project-pigeonshield .project-preview-note"),
+  ).toBeVisible();
+  await expect(
+    page.locator(".project-7-seas-trading .project-preview-note"),
+  ).toHaveText("Project cover · website preview unavailable");
+  await expect(
+    page.locator(".project-7-seas-trading .project-preview-note"),
   ).toBeVisible();
   await page
     .getByRole("button", { name: "Culture & ideas", exact: true })
@@ -55,9 +83,13 @@ test("renders all six projects with working views, filters, and secure links", a
   await page
     .getByRole("button", { name: "Brands & business", exact: true })
     .click();
-  await expect(page.locator(".project")).toHaveCount(3);
+  await expect(page.locator(".project")).toHaveCount(5);
+  await expect(page.locator(".work-count")).toHaveText("05 projects");
+  await expect(page.locator(".project-ocean-ember")).toBeVisible();
+  await expect(page.locator(".project-7-seas-trading")).toBeVisible();
   await page.getByRole("button", { name: "All projects" }).click();
-  await expect(page.locator(".project")).toHaveCount(6);
+  await expect(page.locator(".project")).toHaveCount(8);
+  await expect(page.locator(".work-count")).toHaveText("08 projects");
   expect(errors).toEqual([]);
 });
 
@@ -282,6 +314,40 @@ test("serves metadata, a real 404, sitemap, robots, and responsive assets", asyn
   expect(html).toContain("application/ld+json");
   expect(html).toContain("og:image");
   expect(html).toContain('rel="canonical"');
+  const schemaScript = html.match(
+    /<script type="application\/ld\+json">([\s\S]*?)<\/script>/,
+  );
+  expect(schemaScript).not.toBeNull();
+  const schema = JSON.parse(schemaScript![1]) as {
+    "@graph": Array<{
+      "@type": string;
+      mainEntity?: {
+        "@type": string;
+        itemListElement: Array<{
+          "@type": string;
+          position: number;
+          item: { "@type": string; name: string; url: string };
+        }>;
+      };
+    }>;
+  };
+  const selectedWork = schema["@graph"].find(
+    (entry) => entry["@type"] === "CollectionPage",
+  )?.mainEntity;
+  expect(selectedWork?.["@type"]).toBe("ItemList");
+  const schemaProjects = selectedWork?.itemListElement || [];
+  expect(schemaProjects).toHaveLength(8);
+  expect(
+    schemaProjects.map((entry) => ({
+      name: entry.item.name,
+      url: entry.item.url,
+    })),
+  ).toEqual(expectedProjects);
+  for (const [index, entry] of schemaProjects.entries()) {
+    expect(entry["@type"]).toBe("ListItem");
+    expect(entry.position).toBe(index + 1);
+    expect(entry.item["@type"]).toBe("CreativeWork");
+  }
   expect((await request.get("/missing-page")).status()).toBe(404);
   expect((await request.get("/privacy")).status()).toBe(200);
   expect(
@@ -296,7 +362,9 @@ test("serves metadata, a real 404, sitemap, robots, and responsive assets", asyn
       () => document.documentElement.scrollWidth <= window.innerWidth,
     ),
   ).toBe(true);
-  for (const image of await page.locator(".project img").all()) {
+  const projectImages = page.locator(".project img");
+  await expect(projectImages).toHaveCount(8);
+  for (const image of await projectImages.all()) {
     await image.scrollIntoViewIfNeeded();
     await expect
       .poll(() => image.evaluate((img: HTMLImageElement) => img.naturalWidth))

@@ -1,7 +1,7 @@
 export interface ProjectStudy {
   headline: string;
   introduction: string;
-  previewKind: "website" | "artwork";
+  previewKind: "website" | "artwork" | "cover";
   observations: readonly {
     title: string;
     description: string;
@@ -116,5 +116,30 @@ export const projectStudies: Record<string, ProjectStudy> = {
           "Balcony netting, palms, and mountain views fill the background behind the inspection links.",
       },
     ],
+  },
+  "ocean-ember": {
+    headline: "A warmer way to discover light.",
+    introduction:
+      "A salt-lamp discovery website with product guides and direct links to retailers.",
+    previewKind: "website",
+    observations: [
+      {
+        title: "Warmth through contrast",
+        description:
+          "Cream backgrounds and forest-green typography frame a terracotta accent in the headline.",
+      },
+      {
+        title: "Light in its setting",
+        description:
+          "A glowing salt lamp fills the lifestyle image beside the introduction and product-discovery links.",
+      },
+    ],
+  },
+  "7-seas-trading": {
+    headline: "7 Seas Trading",
+    introduction:
+      "The public website preview is currently unavailable. A project cover is shown in its place.",
+    previewKind: "cover",
+    observations: [],
   },
 };

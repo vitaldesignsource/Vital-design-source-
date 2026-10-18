@@ -35,12 +35,23 @@ const catalog = [
     headline: "A clear, unmistakable service presence.",
     disclosure: "Website source preview",
   },
+  {
+    name: "OceanEmber",
+    url: "https://oceanember.net",
+    headline: "A warmer way to discover light.",
+  },
+  {
+    name: "7 Seas Trading",
+    url: "https://7seastrading.net",
+    disclosure: "Project cover · website preview unavailable",
+    cover: true,
+  },
 ];
 
-test("opens every project with its own study and an honest same-image detail view", async ({
+test("opens all eight projects with accurate previews and secure website links", async ({
   page,
 }) => {
-  // Six independent modal journeys, including image decode and scroll, share this test.
+  // Eight independent modal journeys, including image decode and scroll, share this test.
   test.setTimeout(60_000);
   await page.emulateMedia({ reducedMotion: "reduce" });
   const errors: string[] = [];
@@ -62,9 +73,11 @@ test("opens every project with its own study and an honest same-image detail vie
         exact: true,
       }),
     ).toBeVisible();
-    await expect(
-      dialog.getByRole("heading", { name: project.headline, exact: true }),
-    ).toBeVisible();
+    if (!project.cover) {
+      await expect(
+        dialog.getByRole("heading", { name: project.headline, exact: true }),
+      ).toBeVisible();
+    }
     const visit = dialog.getByRole("link", {
       name: `Visit ${project.name} website (opens in a new tab)`,
       exact: true,
@@ -85,44 +98,57 @@ test("opens every project with its own study and an honest same-image detail vie
 
     const preview = dialog.getByRole("group", { name: "Project preview" });
     const full = preview.getByRole("button", {
-      name: project.artwork ? "Artwork" : "Desktop",
+      name: project.cover
+        ? "Project cover"
+        : project.artwork
+          ? "Artwork"
+          : "Desktop",
       exact: true,
     });
     const detail = preview.getByRole("button", { name: "Detail", exact: true });
     await expect(full).toHaveAttribute("aria-pressed", "true");
-    await expect(detail).toHaveAttribute("aria-pressed", "false");
-    await expect(
-      dialog.getByText("Full composition", { exact: true }),
-    ).toBeVisible();
+    if (project.cover) {
+      await expect(detail).toHaveCount(0);
+    } else {
+      await expect(detail).toHaveAttribute("aria-pressed", "false");
+      await expect(
+        dialog.getByText("Full composition", { exact: true }),
+      ).toBeVisible();
+    }
     const image = dialog.getByRole("img");
     await expect
       .poll(() =>
         image.evaluate((element: HTMLImageElement) => element.naturalWidth),
       )
       .toBeGreaterThan(0);
-    const source = await image.evaluate((element: HTMLImageElement) => ({
-      src: element.getAttribute("src"),
-      srcset: element.getAttribute("srcset"),
-      selected: element.currentSrc,
-    }));
-    await detail.click();
-    await expect(detail).toHaveAttribute("aria-pressed", "true");
-    await expect(full).toHaveAttribute("aria-pressed", "false");
-    await expect(
-      dialog.getByText("Detail crop · same source image", { exact: true }),
-    ).toBeVisible();
-    await expect(image).toHaveAttribute("alt", /detail crop of the same image/);
-    expect(
-      await image.evaluate((element: HTMLImageElement) => ({
+    if (!project.cover) {
+      const source = await image.evaluate((element: HTMLImageElement) => ({
         src: element.getAttribute("src"),
         srcset: element.getAttribute("srcset"),
         selected: element.currentSrc,
-      })),
-    ).toEqual(source);
-    await full.click();
-    await expect(full).toHaveAttribute("aria-pressed", "true");
-    await expect(detail).toHaveAttribute("aria-pressed", "false");
-    await expect(image).not.toHaveAttribute("alt", /detail crop/);
+      }));
+      await detail.click();
+      await expect(detail).toHaveAttribute("aria-pressed", "true");
+      await expect(full).toHaveAttribute("aria-pressed", "false");
+      await expect(
+        dialog.getByText("Detail crop · same source image", { exact: true }),
+      ).toBeVisible();
+      await expect(image).toHaveAttribute(
+        "alt",
+        /detail crop of the same image/,
+      );
+      expect(
+        await image.evaluate((element: HTMLImageElement) => ({
+          src: element.getAttribute("src"),
+          srcset: element.getAttribute("srcset"),
+          selected: element.currentSrc,
+        })),
+      ).toEqual(source);
+      await full.click();
+      await expect(full).toHaveAttribute("aria-pressed", "true");
+      await expect(detail).toHaveAttribute("aria-pressed", "false");
+      await expect(image).not.toHaveAttribute("alt", /detail crop/);
+    }
     await dialog
       .getByRole("button", { name: "Close project showcase" })
       .click();
@@ -136,21 +162,34 @@ test("navigates in both directions, wraps the catalog, and resets the detail vie
 }) => {
   await page.goto("/#work");
   await page
-    .getByRole("button", { name: "Explore PigeonShield", exact: true })
+    .getByRole("button", { name: "Explore OceanEmber", exact: true })
     .click();
   const dialog = page.getByRole("dialog");
   await dialog.getByRole("button", { name: "Detail", exact: true }).click();
+  await dialog
+    .getByRole("button", { name: "Next project 7 Seas Trading", exact: true })
+    .click();
+  const heading = dialog.getByRole("heading", { level: 2 });
+  await expect(heading).toHaveText("7 Seas Trading");
+  await expect(dialog.getByRole("status")).toHaveText(
+    "7 Seas Trading. Project 8 of 8.",
+  );
+  await expect(
+    dialog.getByRole("button", { name: "Project cover", exact: true }),
+  ).toHaveAttribute("aria-pressed", "true");
+  await expect(
+    dialog.getByRole("button", { name: "Detail", exact: true }),
+  ).toHaveCount(0);
   await dialog
     .getByRole("button", {
       name: "Next project Aetherica Podcast",
       exact: true,
     })
     .click();
-  const heading = dialog.getByRole("heading", { level: 2 });
   await expect(heading).toHaveText("Aetherica Podcast");
   await expect(heading).toBeFocused();
   await expect(dialog.getByRole("status")).toHaveText(
-    "Aetherica Podcast. Project 1 of 6.",
+    "Aetherica Podcast. Project 1 of 8.",
   );
   await expect(
     dialog.getByRole("button", { name: "Desktop", exact: true }),
@@ -162,18 +201,21 @@ test("navigates in both directions, wraps the catalog, and resets the detail vie
     .poll(() => dialog.evaluate((element) => element.scrollTop))
     .toBe(0);
   await dialog
-    .getByRole("button", { name: "Previous project PigeonShield", exact: true })
+    .getByRole("button", {
+      name: "Previous project 7 Seas Trading",
+      exact: true,
+    })
     .click();
-  await expect(heading).toHaveText("PigeonShield");
+  await expect(heading).toHaveText("7 Seas Trading");
   await expect(dialog.getByRole("status")).toHaveText(
-    "PigeonShield. Project 6 of 6.",
+    "7 Seas Trading. Project 8 of 8.",
   );
   await dialog
-    .getByRole("button", { name: "Previous project 3 Magi Press", exact: true })
+    .getByRole("button", { name: "Previous project OceanEmber", exact: true })
     .click();
-  await expect(heading).toHaveText("3 Magi Press");
+  await expect(heading).toHaveText("OceanEmber");
   await expect(dialog.getByRole("status")).toHaveText(
-    "3 Magi Press. Project 5 of 6.",
+    "OceanEmber. Project 7 of 8.",
   );
 });
 

@@ -85,6 +85,26 @@ export const projects: Project[] = [
     image: "pigeonshield",
     previewLabel: "Website source preview",
   },
+  {
+    id: "ocean-ember",
+    name: "OceanEmber",
+    category: "Home & lifestyle",
+    group: "Brands & business",
+    url: "https://oceanember.net",
+    description:
+      "Salt-lamp discovery with product guides and direct links to retailers.",
+    image: "ocean-ember",
+  },
+  {
+    id: "7-seas-trading",
+    name: "7 Seas Trading",
+    category: "Website project",
+    group: "Brands & business",
+    url: "https://7seastrading.net",
+    description: "Explore the 7 Seas Trading project.",
+    image: "7-seas-trading",
+    previewLabel: "Project cover · website preview unavailable",
+  },
 ];
 
 export const services = [

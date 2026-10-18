@@ -1,6 +1,6 @@
 # Vital Design Source
 
-The official Vital Design Source LLC website: an independent React and TypeScript build with the preserved original heraldic crest, an animated SVG crest refinement, an obsidian, platinum, jade, and warm ivory design system, six portfolio projects, and a private project inquiry service.
+The official Vital Design Source LLC website: an independent React and TypeScript build with the preserved original heraldic crest, an animated SVG crest refinement, an obsidian, platinum, jade, and warm ivory design system, eight portfolio projects, and a private project inquiry service.
 
 ![Vital Design Source](public/assets/og-vital.jpg)
 
@@ -61,7 +61,7 @@ CI also runs `npm run test:deployment`: a disposable production-only install tha
 - `src/components/`: accessible page sections and interactions.
 - `src/components/DesignLab.tsx`: curated visual-direction explorer with selection controls, live brief updates, and a motion toggle.
 - `src/components/CrestSculpture.tsx` and `src/lib/crest-scene.ts`: optional, dynamically loaded Three.js crest with actual vector extrusion, local studio reflections, and pointer-responsive lighting. The SVG appears immediately and remains the fallback without WebGL. Rendering targets 30fps, caps pixel density at 1.5, and sleeps when the pointer settles, offscreen, when hidden, or when motion is disabled. Hero and Design Lab controls respect reduced motion.
-- `src/components/ProjectShowcase.tsx` and `src/lib/project-studies.ts`: accessible visual studies for the six projects, with full/detail views, factual image observations, and live-site links.
+- `src/components/ProjectShowcase.tsx` and `src/lib/project-studies.ts`: accessible showcases for eight projects, with factual visual studies, full/detail views where a preview is available, a disclosed cover for 7 Seas Trading, and external-site links.
 - `src/components/BrandCrest.tsx`: inline SVG navigation crest with unique IDs, a visible filled base, a brief reveal and highlight, hover interaction, and static reduced-motion styling.
 - `src/lib/content.ts`: project destinations, descriptions, service copy, and form options.
 - `src/lib/crest-geometry.json`: checked-in vector paths for the refined crest.

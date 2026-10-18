@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { ArrowRight, ArrowUpRight, LayoutGrid, Rows3 } from "lucide-react";
 import { projects } from "../lib/content";
+import { projectStudies } from "../lib/project-studies";
 import { ProjectShowcase } from "./ProjectShowcase";
 
 const filters = [
@@ -48,7 +49,9 @@ export function Portfolio() {
               onClick={() => setFilter(item)}
             >
               {item}
-              {item === "All projects" && <sup>06</sup>}
+              {item === "All projects" && (
+                <sup>{String(projects.length).padStart(2, "0")}</sup>
+              )}
             </button>
           ))}
         </div>
@@ -83,6 +86,7 @@ export function Portfolio() {
           <article
             key={project.id}
             className={`project project-${project.id}${index === 0 ? " project-featured" : ""}`}
+            data-preview-kind={projectStudies[project.id].previewKind}
           >
             <a
               href={project.url}
