@@ -1,10 +1,11 @@
-import express, { type ErrorRequestHandler } from "express";
+import express, { type ErrorRequestHandler, type Response } from "express";
 import compression from "compression";
 import helmet from "helmet";
 import { createHash } from "node:crypto";
 import { existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { inquirySchema } from "../src/lib/inquiry";
+import { OFFICIAL_SITE_URL } from "./config";
 import type { Store } from "./store";
 
 interface AppOptions {
@@ -26,6 +27,9 @@ export function createApp({
 }: AppOptions) {
   const app = express();
   const origin = new URL(siteUrl).origin;
+  const allowedOrigins = new Set([origin]);
+  if (origin === OFFICIAL_SITE_URL)
+    allowedOrigins.add("https://www.vitaldesignsource.com");
   app.disable("x-powered-by");
   // Enable only behind a reverse proxy that replaces forwarded headers.
   if (trustProxy) app.set("trust proxy", 1);
@@ -82,7 +86,7 @@ export function createApp({
     "/api/inquiry",
     (req, res, next) => {
       if (
-        req.get("origin") !== origin ||
+        !allowedOrigins.has(req.get("origin") || "") ||
         req.get("sec-fetch-site") === "cross-site"
       ) {
         res.status(403).json({
@@ -98,14 +102,12 @@ export function createApp({
         return;
       }
       const limit = store.consumeRateLimit(
-        req.ip || req.socket.remoteAddress || "unknown",
+        `network:${req.ip || req.socket.remoteAddress || "unknown"}`,
+        Date.now(),
+        60,
       );
       if (!limit.allowed) {
-        res.setHeader("Retry-After", limit.retryAfter);
-        res.status(429).json({
-          ok: false,
-          error: "Too many attempts. Please try again in an hour.",
-        });
+        sendRateLimit(res, limit.retryAfter);
         return;
       }
       next();
@@ -128,6 +130,13 @@ export function createApp({
           error:
             "Please check your name, email, project details, and privacy consent.",
         });
+        return;
+      }
+      const limit = store.consumeRateLimit(
+        `email:${result.data.email.trim().toLowerCase()}`,
+      );
+      if (!limit.allowed) {
+        sendRateLimit(res, limit.retryAfter);
         return;
       }
       store.save(result.data);
@@ -199,4 +208,12 @@ export function createApp({
   };
   app.use(errorHandler);
   return app;
+}
+
+function sendRateLimit(res: Response, retryAfter: number) {
+  res.setHeader("Retry-After", retryAfter);
+  res.status(429).json({
+    ok: false,
+    error: "Too many attempts. Please try again in an hour.",
+  });
 }

@@ -29,7 +29,9 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: "npm start",
+    // Exercise the production assets already built by validate. The portable
+    // entry's clean-install/automatic-build path has its own deployment check.
+    command: "node build/server/index.mjs",
     url: "http://localhost:3000/api/health",
     reuseExistingServer: false,
     env: {

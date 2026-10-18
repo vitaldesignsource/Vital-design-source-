@@ -7,18 +7,10 @@ import { resolve } from "node:path";
 import { renderToString } from "react-dom/server";
 import { createElement } from "react";
 import { projects, services } from "../src/lib/content";
+import { getSiteUrl } from "../server/config";
 
-const parsed = new URL(process.env.SITE_URL || "http://localhost:3000");
-if (
-  !["http:", "https:"].includes(parsed.protocol) ||
-  parsed.pathname !== "/" ||
-  parsed.search ||
-  parsed.hash ||
-  parsed.username ||
-  parsed.password
-)
-  throw new Error("SITE_URL must be a plain HTTP(S) origin.");
-const siteUrl = parsed.origin;
+const siteUrl = getSiteUrl();
+const parsed = new URL(siteUrl);
 const isPublic =
   parsed.protocol === "https:" &&
   !["localhost", "127.0.0.1"].includes(parsed.hostname);

@@ -1,5 +1,8 @@
-# Replace your-domain.example with your verified production domain.
-your-domain.example {
+www.vitaldesignsource.com {
+  redir https://vitaldesignsource.com{uri} permanent
+}
+
+vitaldesignsource.com {
   encode zstd gzip
   reverse_proxy 127.0.0.1:3000
 }

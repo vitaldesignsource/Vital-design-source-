@@ -1,29 +1,19 @@
 import "dotenv/config";
 import { createServer } from "node:http";
-import { randomBytes } from "node:crypto";
 import { existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { createApp } from "./app";
 import { createNotifier } from "./notifications";
 import { openStore } from "./store";
+import { getDatabasePath, getSiteUrl, isProduction } from "./config";
 
 process.umask(0o077);
-const production = process.env.NODE_ENV === "production";
-const port = Number(process.env.PORT || 3000);
-const siteUrl = process.env.SITE_URL || `http://localhost:${port}`;
-const secret =
-  process.env.RATE_LIMIT_SECRET ||
-  (production ? "" : randomBytes(32).toString("hex"));
-if (!secret || secret.length < 32)
-  throw new Error("Set RATE_LIMIT_SECRET to at least 32 random characters.");
+const production = isProduction();
+const port = Number(process.env.PORT?.trim() || 3000);
+if (!Number.isInteger(port) || port < 1 || port > 65535)
+  throw new Error("PORT must be an integer between 1 and 65535.");
+const siteUrl = getSiteUrl();
 const parsed = new URL(siteUrl);
-if (
-  production &&
-  (parsed.protocol !== "https:" ||
-    parsed.pathname !== "/" ||
-    ["localhost", "127.0.0.1"].includes(parsed.hostname))
-)
-  throw new Error("Production SITE_URL must be the public HTTPS origin.");
 const buildConfigPath = resolve("dist/build-config.json");
 if (!existsSync(buildConfigPath))
   throw new Error("Run npm run build before starting the server.");
@@ -34,10 +24,7 @@ if (production && buildConfig.siteUrl !== parsed.origin)
   throw new Error(
     "SITE_URL differs from the built metadata. Rebuild with the same SITE_URL.",
   );
-const store = openStore(
-  process.env.DATABASE_PATH || "./data/inquiries.sqlite",
-  secret,
-);
+const store = openStore(getDatabasePath(), process.env.RATE_LIMIT_SECRET);
 const notifier = createNotifier(store);
 if (!notifier.configured)
   console.info(
@@ -62,7 +49,7 @@ const maintenance = setInterval(() => {
 }, 60000);
 maintenance.unref();
 void notifier.flush();
-server.listen(port, process.env.HOST || "0.0.0.0", () => {
+server.listen(port, process.env.HOST?.trim() || "0.0.0.0", () => {
   console.info(`Vital Design Source listening on port ${port}.`);
 });
 function shutdown() {

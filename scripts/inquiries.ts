@@ -1,11 +1,9 @@
 import "dotenv/config";
 import { openStore } from "../server/store";
+import { getDatabasePath } from "../server/config";
 
 // Local operator command only. There is deliberately no public administration API.
-const store = openStore(
-  process.env.DATABASE_PATH || "./data/inquiries.sqlite",
-  process.env.RATE_LIMIT_SECRET || "local-operator-command",
-);
+const store = openStore(getDatabasePath(), process.env.RATE_LIMIT_SECRET);
 try {
   if (process.argv.includes("--prune")) {
     store.prune();

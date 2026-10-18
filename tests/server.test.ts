@@ -6,6 +6,7 @@ import { join } from "node:path";
 import { createApp } from "../server/app";
 import { openStore, type Store } from "../server/store";
 import { inquirySchema } from "../src/lib/inquiry";
+import { OFFICIAL_SITE_URL } from "../server/config";
 
 const valid = {
   name: "Test Person",
@@ -113,7 +114,7 @@ describe("inquiry boundary", () => {
       ).status,
     ).toBe(400);
   });
-  it("rate limits repeated requests despite spoofed forwarded addresses", async () => {
+  it("rate limits repeated email submissions despite spoofed forwarded addresses", async () => {
     for (let i = 0; i < 5; i++)
       expect(
         (await post(valid, { "X-Forwarded-For": `192.0.2.${i}` })).status,
@@ -122,6 +123,88 @@ describe("inquiry boundary", () => {
     expect(response.status).toBe(429);
     expect(Number(response.headers.get("retry-after"))).toBeGreaterThan(0);
     expect(store.pending()).toHaveLength(5);
+  });
+  it("accepts distinct visitors sharing one reverse-proxy address", async () => {
+    for (let visitor = 0; visitor < 6; visitor++)
+      expect(
+        (await post({ ...valid, email: `visitor${visitor}@example.com` }))
+          .status,
+      ).toBe(201);
+    expect(store.pending()).toHaveLength(6);
+  });
+  it("counts case and whitespace variants toward the same email limit", async () => {
+    for (const email of [
+      "test@example.com",
+      "TEST@example.com",
+      "Test@Example.Com",
+      " test@example.com ",
+      "test@EXAMPLE.com",
+    ])
+      expect((await post({ ...valid, email })).status).toBe(201);
+    expect((await post({ ...valid, email: "TEST@EXAMPLE.COM" })).status).toBe(
+      429,
+    );
+    expect(store.pending()).toHaveLength(5);
+  });
+  it("caps malformed submissions per network despite spoofed forwarding headers", async () => {
+    for (let attempt = 0; attempt < 60; attempt++)
+      expect(
+        (
+          await post(
+            { ...valid, details: "short" },
+            { "X-Forwarded-For": `192.0.2.${attempt}` },
+          )
+        ).status,
+      ).toBe(400);
+    const response = await post(valid, { "X-Forwarded-For": "198.51.100.1" });
+    expect(response.status).toBe(429);
+    expect(Number(response.headers.get("retry-after"))).toBeGreaterThan(0);
+    expect(store.pending()).toHaveLength(0);
+    expect(
+      store.db.prepare("SELECT count(*) AS count FROM rate_limits").get(),
+    ).toEqual({ count: 1 });
+  });
+  it("accepts only the official apex and www origins for the official deployment", async () => {
+    const officialServer = createServer(
+      createApp({ store, siteUrl: OFFICIAL_SITE_URL, production: true }),
+    );
+    await new Promise<void>((resolve) =>
+      officialServer.listen(0, "127.0.0.1", resolve),
+    );
+    try {
+      const address = officialServer.address();
+      if (!address || typeof address === "string")
+        throw new Error("Official-origin test server failed to bind.");
+      const officialPost = (origin: string) =>
+        fetch(`http://127.0.0.1:${address.port}/api/inquiry`, {
+          method: "POST",
+          headers: {
+            Origin: origin,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(valid),
+        });
+      expect((await officialPost(OFFICIAL_SITE_URL)).status).toBe(201);
+      expect(
+        (await officialPost("https://www.vitaldesignsource.com")).status,
+      ).toBe(201);
+      expect(
+        (await officialPost("https://vitaldesignsource.com.attacker.example"))
+          .status,
+      ).toBe(403);
+      expect(
+        (await officialPost("https://other.vitaldesignsource.com")).status,
+      ).toBe(403);
+      expect(
+        (await post(valid, { Origin: "https://www.vitaldesignsource.com" }))
+          .status,
+      ).toBe(403);
+      expect(store.pending()).toHaveLength(2);
+    } finally {
+      await new Promise<void>((resolve, reject) =>
+        officialServer.close((error) => (error ? reject(error) : resolve())),
+      );
+    }
   });
   it("applies production security headers without permissive script policy", async () => {
     const response = await fetch(`${base}/api/health`);
@@ -142,6 +225,110 @@ describe("inquiry boundary", () => {
 });
 
 describe("private storage", () => {
+  it.each([undefined, "", "   "])(
+    "keeps an automatic rate-limit secret across restarts for an unset or blank override",
+    (override) => {
+      const directory = mkdtempSync(join(tmpdir(), "vital-auto-secret-"));
+      const path = join(directory, "inquiries.sqlite");
+      const now = Date.now();
+      let persistent: Store | undefined;
+      try {
+        persistent = openStore(path, override);
+        for (let attempt = 0; attempt < 5; attempt++)
+          expect(persistent.consumeRateLimit("192.0.2.1", now).allowed).toBe(
+            true,
+          );
+        expect(statSync(path).mode & 0o777).toBe(0o600);
+        expect(
+          persistent.db
+            .prepare(
+              "SELECT count(*) AS count FROM app_settings WHERE key = 'rate_limit_secret' AND length(value) = 64",
+            )
+            .get(),
+        ).toEqual({ count: 1 });
+        persistent.close();
+        persistent = undefined;
+        persistent = openStore(path, override);
+        expect(persistent.consumeRateLimit("192.0.2.1", now).allowed).toBe(
+          false,
+        );
+      } finally {
+        persistent?.close();
+        rmSync(directory, { recursive: true, force: true });
+      }
+    },
+  );
+  it("shares its automatic secret between independent open database handles", () => {
+    const directory = mkdtempSync(join(tmpdir(), "vital-shared-secret-"));
+    const path = join(directory, "inquiries.sqlite");
+    const now = Date.now();
+    let first: Store | undefined;
+    let second: Store | undefined;
+    try {
+      first = openStore(path);
+      second = openStore(path);
+      for (let attempt = 0; attempt < 5; attempt++) {
+        const connection = attempt % 2 === 0 ? first : second;
+        expect(connection.consumeRateLimit("192.0.2.1", now).allowed).toBe(
+          true,
+        );
+      }
+      expect(second.consumeRateLimit("192.0.2.1", now).allowed).toBe(false);
+      expect(
+        first.db.prepare("SELECT count(*) AS count FROM rate_limits").get(),
+      ).toEqual({ count: 1 });
+    } finally {
+      second?.close();
+      first?.close();
+      rmSync(directory, { recursive: true, force: true });
+    }
+  });
+  it("honors an explicit rate-limit secret without storing the override", () => {
+    const directory = mkdtempSync(join(tmpdir(), "vital-secret-override-"));
+    const path = join(directory, "inquiries.sqlite");
+    const now = Date.now();
+    let persistent: Store | undefined;
+    try {
+      persistent = openStore(path, secret);
+      for (let attempt = 0; attempt < 5; attempt++)
+        expect(persistent.consumeRateLimit("192.0.2.1", now).allowed).toBe(
+          true,
+        );
+      expect(
+        persistent.db
+          .prepare("SELECT count(*) AS count FROM app_settings")
+          .get(),
+      ).toEqual({ count: 0 });
+      persistent.close();
+      persistent = undefined;
+      persistent = openStore(path, secret);
+      expect(persistent.consumeRateLimit("192.0.2.1", now).allowed).toBe(false);
+    } finally {
+      persistent?.close();
+      rmSync(directory, { recursive: true, force: true });
+    }
+  });
+  it("rejects a weak explicit rate-limit secret", () => {
+    expect(() => openStore(":memory:", "too-short")).toThrow(
+      "RATE_LIMIT_SECRET must contain at least 32 characters.",
+    );
+  });
+  it("fails closed when its stored automatic secret is corrupt", () => {
+    const directory = mkdtempSync(join(tmpdir(), "vital-corrupt-secret-"));
+    const path = join(directory, "inquiries.sqlite");
+    const persistent = openStore(path);
+    try {
+      persistent.db
+        .prepare("UPDATE app_settings SET value = ? WHERE key = ?")
+        .run("invalid", "rate_limit_secret");
+      persistent.close();
+      expect(() => openStore(path)).toThrow(
+        "The stored rate-limit secret is invalid.",
+      );
+    } finally {
+      rmSync(directory, { recursive: true, force: true });
+    }
+  });
   it("survives a restart with restricted file permissions", () => {
     const directory = mkdtempSync(join(tmpdir(), "vital-store-"));
     const path = join(directory, "inquiries.sqlite");

@@ -3,14 +3,15 @@ WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci
 COPY . .
-ARG SITE_URL
-RUN test -n "$SITE_URL" && SITE_URL="$SITE_URL" npm run build
+ARG SITE_URL=https://vitaldesignsource.com
+RUN SITE_URL="$SITE_URL" npm run build
 
 FROM node:24-bookworm-slim AS runtime
 ENV NODE_ENV=production PORT=3000 HOST=0.0.0.0 DATABASE_PATH=/app/data/inquiries.sqlite
 WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci --omit=dev && npm cache clean --force
+COPY server.js site.config.json ./
 COPY --from=build /app/dist ./dist
 COPY --from=build /app/build ./build
 RUN mkdir /app/data && chown node:node /app/data && chmod 700 /app/data

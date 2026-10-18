@@ -1,83 +1,73 @@
 # Deployment and operations
 
-## Supported architecture
+## Hostinger: deploy vitaldesignsource.com
 
-One Node.js 24 LTS process serves pre-rendered HTML, React hydration, local fonts/images, and a same-origin inquiry API. SQLite lives on a private persistent disk. No Higgsfield, Cloudflare, or other website builder runtime is used. The site has no tracking SDK, external font request, authentication dependency, or public database interface.
+Use **Node.js Web App**, import `vitaldesignsource/Vital-design-source-` from GitHub, and select:
 
-Use a VM, container host, or managed Node service with persistent local storage. A static-only host cannot process inquiries. Do not deploy this SQLite architecture to ephemeral serverless functions, a read-only filesystem, multiple independent replicas, or a network filesystem. For horizontal scaling, replace the storage adapter and shared rate limiter with a managed database.
+| Setting         | Value     |
+| --------------- | --------- |
+| Framework       | Express   |
+| Branch          | main      |
+| Node version    | 24.x      |
+| Root directory  | ./        |
+| Package manager | npm       |
+| Entry file      | server.js |
 
-## Build and start on a Node host
+Connect **vitaldesignsource.com** to this Node app and deploy. There are **no required environment variables**. Remove manual environment rows from earlier setup attempts, especially `SITE_URL=https://vita.pigeonshield.net`, `DATABASE_PATH=./data/inquiries.sqlite`, and an empty `PORT`. Hostinger supplies its own port; the application defaults to production mode and the official HTTPS domain.
 
-1. Point a verified domain to the host and configure HTTPS at the reverse proxy. An example Caddy configuration is included; replace its example hostname. Set the proxy to replace incoming forwarded headers and restrict direct access to the Node port.
-2. Install Node 24, clone this repository, and run `npm ci`.
-3. Create a protected `.env` file (mode `600`), starting from `.env.example`:
+The source includes a stable `server.js` entry. Hostinger's Express preset runs the package build, and the entry also builds missing artifacts before starting. It serves the compiled website and inquiry API together. Build tools are production dependencies, so installing with development dependencies omitted is supported. See [Hostinger's Express documentation](https://docs.hostinger.com/node.js/overview-1/express).
 
-```dotenv
-NODE_ENV=production
-SITE_URL=https://your-domain.example
-HOST=127.0.0.1
-PORT=3000
-DATABASE_PATH=/var/lib/vital-design-source/inquiries.sqlite
-RATE_LIMIT_SECRET=replace-with-a-random-secret
-TRUST_PROXY=1
-```
+Use the Node app deployment rather than a PHP/HTML Git deployment into `public_html`. Publishing the source files directly serves an unbuilt React template and produces a blank website.
 
-Generate the secret with `openssl rand -hex 32` and put the result into the deployment's secret manager or protected environment file. Never commit it. Set `TRUST_PROXY=1` only when exactly one trusted reverse proxy stands between the application and the public network; otherwise leave it `0`. The app ignores spoofed forwarding headers by default.
+If the domain is still attached to the earlier PHP/HTML deployment, reassign it to this Node app through Hostinger's domain settings. Keep other websites and databases unchanged.
 
-4. Create the database directory, owned by the application user with mode `700`. Keep it outside the public `dist` directory. Use a persistent volume and disk encryption supplied by your host.
-5. Run `npm run build`. The build reads `SITE_URL` from the environment or `.env`, pre-renders all public routes, and generates correct absolute canonical URLs, sharing metadata, JSON-LD, `sitemap.xml`, and `robots.txt`.
-6. Run `npm start` under your host's process supervisor. Restart on failure. The server checks that production uses HTTPS, a non-local origin, a sufficiently long secret, and metadata built for the same origin.
+### Check the deployed site
 
-Changing domains requires rebuilding and restarting with the same new `SITE_URL`. Local HTTP builds are intentionally `noindex` with `Disallow: /`; a public HTTPS build enables indexing. Set the final domain before submitting the sitemap to search engines.
+Open <https://vitaldesignsource.com> and <https://vitaldesignsource.com/api/health>. The first should show the complete site; the second should return `{"ok":true}`. Confirm `/privacy`, `/sitemap.xml`, and `/robots.txt` load too. A deployment-success thumbnail alone does not verify the application.
 
-## Hostinger Node.js web app
-
-Use **Node.js Web App**, not the PHP/HTML Git deployment into `public_html`. Publishing the repository as static files serves the unbuilt source template and cannot run the inquiry API.
-
-Import this GitHub repository with these settings:
-
-| Setting         | Value                  |
-| --------------- | ---------------------- |
-| Framework       | Express                |
-| Branch          | main                   |
-| Node version    | 24.x                   |
-| Root directory  | ./                     |
-| Package manager | npm                    |
-| Entry file      | build/server/index.mjs |
-
-[Hostinger's Express documentation](https://docs.hostinger.com/node.js/overview-1/express) confirms that the build-script and output-directory fields are hidden for Express: the package's build script still runs and the complete project root is deployed. The existing `build` script produces both `dist/` and `build/server/`; the entry file is relative to the project root. The four tools required by that build are production dependencies so an install that omits development dependencies still works. Do not set the root directory to `public_html` or the entry to the nonexistent default `server.js`.
-
-Set `NODE_ENV=production`, `SITE_URL` to the exact HTTPS origin connected to this app, `HOST=0.0.0.0`, and a random `RATE_LIMIT_SECRET` of at least 32 characters. Remove a manually entered `PORT` variable so Hostinger can supply its assigned port. Keep `TRUST_PROXY=0` until the host confirms the number and behavior of its trusted reverse proxies. Remove unused blank SMTP variables; add real notification settings later through Hostinger's protected environment settings.
-
-For a temporary preview, `DATABASE_PATH=./data/inquiries.sqlite` is sufficient for synthetic test inquiries only. Before accepting real inquiries, obtain a private, writable, persistent absolute storage path from Hostinger **outside both `public_html` and `hbuilds`**, set `DATABASE_PATH` there, and verify a test record survives redeployment. Hostinger replaces deployment-managed files; this project cannot guarantee persistence for a database inside those directories. If the plan does not offer suitable persistent storage, use a host with a persistent volume or replace the SQLite adapter with a durable database.
-
-After deployment, verify the actual website and `/api/health`, not only Hostinger's deployment-success thumbnail. If using a temporary domain first, update `SITE_URL` when moving to the official domain and redeploy so the build generates metadata for the new origin. Configure and verify SMTP or regularly use the private inquiry CLI before launch.
-
-## Docker
-
-The Dockerfile runs the application as an unprivileged user. Build with your verified public origin, then mount a named volume:
+Submit a test inquiry, then review it in an authorized server terminal:
 
 ```sh
-docker build --build-arg SITE_URL=https://your-domain.example -t vital-design-source .
-docker volume create vital-inquiries
-docker run -d --name vital-design-source \
-  --restart unless-stopped \
-  --env-file /secure/path/vital.env \
-  -e SITE_URL=https://your-domain.example \
-  -e DATABASE_PATH=/app/data/inquiries.sqlite \
-  -e HOST=0.0.0.0 \
-  -p 127.0.0.1:3000:3000 \
-  -v vital-inquiries:/app/data \
-  vital-design-source
+npm run inquiries
 ```
 
-`vital.env` must contain `RATE_LIMIT_SECRET` and any SMTP configuration; it must not be committed. Terminate TLS with Caddy or your host's HTTPS proxy. For bind mounts, grant the container's `node` user access to the private directory. Do not publish port 3000 directly to the Internet.
+Inquiries are saved privately even when email notifications are off. No email delivery is claimed until SMTP is configured. The default production database is `~/.local/share/vital-design-source/inquiries.sqlite`, outside the application release directory. The app creates its private directory and generates a persistent random rate-limit key automatically.
 
-## Inquiry delivery
+Hostinger manages deployment directories such as `public_html` and `hbuilds`. The home-directory default avoids those release directories, but persistence depends on the hosting account. Verify the test inquiry survives one redeployment, and back up private storage. If Hostinger provides a different persistent location, set the optional `DATABASE_PATH` override to that private absolute path.
 
-Every accepted inquiry is saved with a generated UUID before the client receives success. Website messages say “received”; they do not claim an email was delivered. Storage failures return an error and preserve input in the browser. A browser timeout after the server commits can lead to a duplicate on retry; inspect timestamps and email addresses when reviewing submissions.
+Delete the test inquiry after checking it:
 
-To receive notifications, configure all of:
+```sh
+npm run inquiries -- --delete <inquiry-uuid>
+```
+
+## Optional settings
+
+The official domain is configured once in `site.config.json`. The same default is used for metadata, canonical links, structured data, sitemap, and form-origin checks. Ordinary deployments to vitaldesignsource.com need no `.env` file.
+
+For another domain or a temporary preview, set `SITE_URL` to that app's exact HTTPS origin at build time and runtime. For example:
+
+```dotenv
+SITE_URL=https://vita.pigeonshield.net
+```
+
+Redeploy when changing this value. The `server.js` entry rebuilds when the existing metadata uses a different origin. Remove the override when moving to vitaldesignsource.com. The server rejects invalid production origins and mismatched compiled metadata.
+
+Other optional overrides:
+
+| Variable            | Purpose                                                                                                               |
+| ------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| `DATABASE_PATH`     | Private persistent database path; defaults to `~/.local/share/vital-design-source/inquiries.sqlite` in production.    |
+| `HOST`              | Bind address; defaults to `0.0.0.0`.                                                                                  |
+| `PORT`              | Listening port; normally supplied by the host, otherwise `3000`.                                                      |
+| `RATE_LIMIT_SECRET` | Override the automatically generated private key with at least 32 random characters.                                  |
+| `TRUST_PROXY`       | Set to `1` only after verifying exactly one trusted proxy replaces incoming forwarding headers; defaults to disabled. |
+
+The app ignores spoofed forwarding headers by default. No manual rate-limit secret is needed. Avoid leaving incomplete overrides from earlier setup attempts.
+
+### Email notifications
+
+To receive inquiry emails, configure all of the following using your mail provider's real settings:
 
 ```dotenv
 SMTP_HOST=smtp.your-provider.example
@@ -88,11 +78,11 @@ INQUIRY_FROM=Studio <verified-sender@your-domain.example>
 INQUIRY_TO=your-real-studio-inbox@your-domain.example
 ```
 
-These are illustrative values. Use a verified sender and real inbox supplied by the studio. Port 465 uses TLS; other ports require STARTTLS. TLS verification stays enabled. The sender and recipient come only from server configuration; the validated visitor email is used as Reply-To. Emails contain plain text and cannot load visitor-provided files or URLs.
+These are illustrative values. Keep credentials in the host's protected environment settings, never in Git. Port 465 uses TLS; other ports require STARTTLS. TLS verification remains enabled. The sender and recipient come only from server configuration; the validated visitor email is used as Reply-To. Messages contain plain text.
 
-Saved messages remain queued until successful SMTP delivery and retry at startup and every minute. SMTP outage does not lose inquiries. Delivery is at least once: a process failure after sending but before recording success can cause a repeat notification; each email includes the same reference UUID. Configure SPF/DKIM/DMARC with your mail provider and verify delivery in your real inbox after launch.
+Saved inquiries remain queued until SMTP delivery succeeds, with retries at startup and every minute. An SMTP outage does not discard saved inquiries. Delivery is at least once: a process failure after sending but before recording success can cause a repeat notification with the same reference UUID. Configure SPF/DKIM/DMARC with your provider and verify a test email reaches the real inbox.
 
-Without SMTP, use the operator CLI regularly:
+Without SMTP, review inquiries through the private CLI regularly:
 
 ```sh
 npm run inquiries
@@ -101,26 +91,60 @@ npm run inquiries -- --delete <inquiry-uuid>
 npm run inquiries -- --prune
 ```
 
-Commands use the same `.env` and `DATABASE_PATH`. Inside Docker, run `docker exec vital-design-source npm run inquiries`. Output contains personal data; do not copy it into public logs or support tickets. No remote admin API is exposed. The CLI defaults to 50 rows; `--all` caps output at 10,000 rows.
+The commands use the same production database path and optional overrides as the server. Run them as the application user from its project directory. The default output is the newest 50 records; `--all` caps output at 10,000 rows. Output contains personal information; keep it out of public logs and support tickets. There is no public administration endpoint.
 
-## Security and retention
+## Other Node hosts
 
-The server enforces exact configured origin, JSON content type, a 16 KiB request cap, strict field validation, consent, honeypot filtering, and a persistent five-attempts-per-hour network limit. Rate limit keys use HMAC; the application does not store raw IP addresses. Configure your host's edge request limits as appropriate for traffic. The SQLite rate table is suitable for a single instance, not a distributed bot defense.
+The application uses one Node.js 24 LTS process for pre-rendered HTML, React hydration, self-hosted images/fonts, and the same-origin inquiry API. No website builder account or runtime is required.
 
-Security headers include a strict same-origin CSP (no `unsafe-inline` or `unsafe-eval`), JSON-LD hashes, HSTS in production, framing restrictions, MIME sniffing protection, restrictive permissions, and a referrer policy. Avoid stripping these at the reverse proxy. Inquiry responses are not cacheable. The app does not log submitted information or SMTP errors that might contain it. Check the host's own access log and backup policies separately.
+On a Node host with a writable persistent home directory:
 
-The app removes inquiries older than 180 days and network rate records older than one hour at startup and every minute. Deletion affects application storage, not emails or external backups. Keep encrypted backups with a documented retention limit, restore-test them, and honor deletion requests across copies. Disk encryption and access control belong to the host; SQLite files are not application-encrypted.
+```sh
+npm ci
+npm run build
+npm start
+```
 
-Back up a running SQLite database using its online backup facility (e.g. `sqlite3 /path/inquiries.sqlite '.backup /secure/path/backup.sqlite'`), or stop the app and copy the database safely. Do not copy only the main file while WAL writes are active. Keep backups outside `dist` and out of Git.
+The default domain is vitaldesignsource.com. Configure its DNS and HTTPS at the host's reverse proxy, forward requests to the application's port, and supervise the process with restart on failure. `npm start` can also build a fresh source checkout directly. The included `Caddyfile` serves the official domain and redirects its `www` alias to the canonical domain.
 
-## Launch checks and rollback
+For a VM with storage outside the application user's home, set `DATABASE_PATH` to a private persistent absolute path such as `/var/lib/vital-design-source/inquiries.sqlite`. Give the application user ownership of its directory and mode `700`. If using a protected `.env` file, set its mode to `600`; `.env.example` contains commented optional settings.
 
-- Run `npm run validate` using a local preview build before release. Browser tests create synthetic records in `/tmp/vital-e2e-<random-id>.sqlite`, never in the production database.
-- Build again with the final HTTPS `SITE_URL`; start with matching settings.
-- Verify `/api/health` returns `{"ok":true}`, `/privacy` returns 200, and an unknown path returns a branded 404.
-- Check canonical/OG URLs, `/sitemap.xml`, `/robots.txt`, TLS, and CSP in the deployed response.
-- Submit one real test inquiry from the deployed origin. Confirm it through the private CLI and, if configured, in the real inbox. Delete the test record afterward.
-- Check all six destinations manually. Hidden Forces currently opens a private release gate. PigeonShield uses the verified canonical `pigeonshield.net` destination.
-- Confirm mobile navigation, project filters, keyboard focus, and reduced motion on a physical device.
+Use a single process with local persistent storage. Static hosting, ephemeral serverless filesystems, independent replicas, and network filesystems do not suit this SQLite implementation. Horizontal scaling requires a shared database and rate limiter.
 
-Rollback by redeploying the previous Git commit/image **with the same persistent database volume**. Do not reset or overwrite inquiries when replacing application code. The initial schema uses `CREATE TABLE IF NOT EXISTS`; future schema changes require explicit migrations and a backup before rollout.
+## Docker
+
+The Dockerfile builds for vitaldesignsource.com and runs as an unprivileged user. Mount a named volume for private inquiry storage:
+
+```sh
+docker build -t vital-design-source .
+docker volume create vital-inquiries
+docker run -d --name vital-design-source \
+  --restart unless-stopped \
+  -p 127.0.0.1:3000:3000 \
+  -v vital-inquiries:/app/data \
+  vital-design-source
+```
+
+Terminate HTTPS with Caddy or your host's proxy. For another domain, pass the same `SITE_URL` using `--build-arg` during the build and `-e` at runtime. Add optional SMTP settings using `--env-file /secure/path/vital.env`. Never commit that file. For bind mounts, grant the container's `node` user access to the private directory.
+
+Use `docker exec vital-design-source npm run inquiries` to review records. Keep the same volume when replacing containers.
+
+## Data protection and backups
+
+Every accepted inquiry is saved with a generated UUID before the client receives success. Website messages say “received”; they do not claim email delivery. Storage failures return an error and preserve browser input. A browser timeout after the server commits can produce a duplicate on retry; compare timestamps and email addresses when reviewing records.
+
+The application enforces exact-origin checks, JSON content type, a 16 KiB request cap, strict field validation, consent, honeypot filtering, and persistent rate limits of 60 attempts per hour per network address and five per normalized email address. Keys use HMAC; the database does not store raw IP addresses. Configure host edge limits as appropriate for traffic. This single-instance rate limiter is not a distributed bot-defense service.
+
+Security headers include a same-origin CSP without `unsafe-inline` or `unsafe-eval`, JSON-LD hashes, HSTS in production, framing restrictions, MIME sniffing protection, restrictive permissions, and a referrer policy. Preserve these at the reverse proxy. Inquiry responses are not cacheable. The application does not log inquiry content or SMTP errors that might contain it; review the host's own log and backup policies separately.
+
+Inquiries older than 180 days and expired rate-limit records are removed at startup and every minute. Deletion affects application storage, not emails or external backups. Keep encrypted backups with a retention limit, test restoration, and honor deletion requests across copies. Disk encryption and account access control belong to the host; SQLite files are not application-encrypted.
+
+Back up a running database with SQLite's online backup facility, such as `sqlite3 /private/path/inquiries.sqlite '.backup /secure/path/backup.sqlite'`, or stop the app before copying the database. Do not copy only the main file during WAL writes. Keep backups private and outside Git and `dist`.
+
+## Validation and rollback
+
+Run `npm run validate` before release. It covers TypeScript, lint, API/storage behavior, the production build, and browser/accessibility checks. Browser tests use synthetic records in temporary databases. Production defaults and local development are separate: use `NODE_ENV=development npm start` for a local build at `http://localhost:3000`, with test storage in `data/inquiries.sqlite` and search indexing disabled.
+
+After deployment, verify the site, API health, privacy page, branded 404 response, canonical/OG URLs, sitemap, robots, TLS, and CSP. Confirm the inquiry record and persistence as described above. Check the six project links, mobile navigation, portfolio filters, keyboard focus, and reduced motion. Hidden Forces currently opens a private release gate; PigeonShield uses its verified `pigeonshield.net` destination.
+
+Rollback by redeploying the previous Git commit or image while retaining the same private database or volume. Do not reset inquiries when replacing application code. The schema uses `CREATE TABLE IF NOT EXISTS`; future schema changes require explicit migrations and a backup.
