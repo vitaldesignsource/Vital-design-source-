@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { ArrowDown, ArrowUpRight, Pause, Play, Sparkles } from "lucide-react";
-import { AmbientField } from "./AmbientField";
+import { CrestSculpture } from "./CrestSculpture";
 
 export function Hero() {
   const [motion, setMotion] = useState(false);
@@ -21,7 +21,6 @@ export function Hero() {
       data-motion={motion ? "running" : "paused"}
     >
       <div className="hero-scene page-width">
-        <AmbientField active={motion} />
         <div className="hero-layout">
           <div className="hero-content">
             <p className="eyebrow hero-eyebrow">
@@ -52,33 +51,11 @@ export function Hero() {
           </div>
           <figure
             className="hero-artwork"
-            aria-label="AI-assisted liquid chrome artwork"
+            aria-label="Sculpted silver Vital Design Source heraldic crest"
           >
-            <picture className="hero-art">
-              <source
-                type="image/avif"
-                srcSet="/assets/neural-640.avif 640w, /assets/neural-1280.avif 1280w"
-                sizes="(max-width: 799px) 100vw, 60vw"
-              />
-              <img
-                src="/assets/neural-1280.webp"
-                srcSet="/assets/neural-640.webp 640w, /assets/neural-1280.webp 1280w"
-                sizes="(max-width: 799px) 100vw, 60vw"
-                alt=""
-                width="1280"
-                height="1280"
-                fetchPriority="high"
-              />
-            </picture>
-            <figcaption className="hero-art-caption">
-              <span className="hero-caption-mark" aria-hidden="true">
-                <Sparkles size={16} />
-              </span>
-              <span>
-                Artificial intelligence.
-                <br />
-                <strong>Distinctly human vision.</strong>
-              </span>
+            <CrestSculpture active={motion} />
+            <figcaption className="hero-crest-caption eyebrow">
+              Heritage, reimagined.
             </figcaption>
           </figure>
         </div>

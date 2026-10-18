@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { ArrowUpRight, LayoutGrid, Rows3 } from "lucide-react";
+import { ArrowRight, ArrowUpRight, LayoutGrid, Rows3 } from "lucide-react";
 import { projects } from "../lib/content";
+import { ProjectShowcase } from "./ProjectShowcase";
 
 const filters = [
   "All projects",
@@ -12,6 +13,7 @@ export function Portfolio() {
   const [filter, setFilter] =
     useState<(typeof filters)[number]>("All projects");
   const [view, setView] = useState<"gallery" | "list">("gallery");
+  const [showcaseProject, setShowcaseProject] = useState<string | null>(null);
   const selected = projects.filter(
     (project) => filter === "All projects" || project.group === filter,
   );
@@ -147,6 +149,18 @@ export function Portfolio() {
                 )}
               </div>
             </a>
+            <button
+              className="project-study-trigger"
+              type="button"
+              aria-label={`Explore ${project.name}`}
+              aria-haspopup="dialog"
+              onClick={(event) => {
+                event.currentTarget.focus({ preventScroll: true });
+                setShowcaseProject(project.id);
+              }}
+            >
+              A closer look <ArrowRight size={17} aria-hidden="true" />
+            </button>
           </article>
         ))}
       </div>
@@ -154,6 +168,12 @@ export function Portfolio() {
         Each project is its own world. Explore the live sites.
         <ArrowUpRight size={14} aria-hidden="true" />
       </p>
+      {showcaseProject && (
+        <ProjectShowcase
+          initialProjectId={showcaseProject}
+          onClose={() => setShowcaseProject(null)}
+        />
+      )}
     </section>
   );
 }

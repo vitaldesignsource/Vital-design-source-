@@ -2,6 +2,7 @@
 @import "./styles/hero.css";
 @import "./styles/design-lab.css";
 @import "./styles/brand.css";
+@import "./styles/project-showcase.css";
 
 @layer reset {
   *,

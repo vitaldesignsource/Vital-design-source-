@@ -29,9 +29,19 @@ The brand preview at `/assets/brand/preview.html` uses an external stylesheet, `
 
 Run `npm run assets:brand` to regenerate the exports from the checked-in crest and wordmark paths. `npm run assets` includes this step. Neither normal builds nor export generation requires Python. For future edits to the raster master or outlined lettering, the optional `scripts/trace-brand.py` helper uses Python with Pillow, VTracer 0.6.15, fontTools, and Brotli to recreate the source vector data before export generation.
 
-## Hero
+## Three-dimensional hero crest
 
-`source-assets/neural-master.png` is newly AI-generated, text-free concept artwork for the dark jade and liquid-chrome theme. It depicts intertwined liquid-chrome and jade-glass loops in a photorealistic composition. It is decorative artwork, not a replacement logo or a photograph of client work, and contains no client logos, interface mockups, awards, locations, or performance claims. Responsive `neural-640` and `neural-1280` AVIF and WebP derivatives are served locally in the hero and AI Design Lab. No large autoplay video is required.
+The hero uses `src/components/CrestSculpture.tsx` and the code-split `src/lib/crest-scene.ts` to turn the checked-in `crest-geometry.json` paths into actual Three.js extruded, beveled meshes. Silver faces and green-tinted edges preserve the refined shield and wings as a dimensional identity. The scene does not use the earlier concept artwork as a substitute for the crest.
+
+The reflective studio environment is generated locally from a canvas gradient and light panels, then filtered through Three.js’s PMREM environment generator. Key, rim, and hemisphere lights complete the scene. No external environment map, texture, model, or image request is required for this rendering.
+
+The static silver SVG remains visible on first paint and until the optional WebGL scene has rendered. The scene module is loaded dynamically; data-saving connections skip that enhancement. Failed loading or unavailable WebGL leaves the SVG in place, and context loss restores it. Normal builds use the committed vector geometry and require no tracing or Python step.
+
+When motion is enabled, pointer position gently changes the crest’s orientation and its key and rim lighting. Animation is limited to 30 frames per second, with device pixel ratio capped at 1.5. The hero’s pause control stops pointer-driven motion; the initial state respects the system reduced-motion preference and remains stationary until motion is enabled. The renderer sleeps once the pointer settles, suspends animation while offscreen or while the document is hidden, and releases its geometry, materials, environment, and renderer resources on unmount.
+
+## AI concept artwork
+
+`source-assets/neural-master.png` is newly AI-generated, text-free concept artwork for the dark jade and liquid-chrome theme. It depicts intertwined liquid-chrome and jade-glass loops in a photorealistic composition. It is decorative artwork, not a replacement logo or a photograph of client work, and contains no client logos, interface mockups, awards, locations, or performance claims. The artwork appears in the AI Design Lab, with local `neural-640` and `neural-1280` AVIF and WebP derivatives retained in the asset set. The hero now uses the vector-derived dimensional crest described above. No large autoplay video is required.
 
 The active social sharing image, `public/assets/og-neural.jpg`, combines that artwork, the supplied crest variant, and Vital Design Source copy. Run `npm run assets` to regenerate the active artwork derivatives, project previews, sharing image, and icons.
 
@@ -44,7 +54,7 @@ Earlier artwork remains in the repository for provenance but is no longer used b
 
 `src/components/DesignLab.tsx` presents curated Liquid chrome, Prismatic, and Editorial visual directions. Typed presets in `src/lib/design-directions.ts` supply the direction names, briefs, and material labels. Selecting a preset changes the composed artwork treatment and supporting copy; it does not generate an image, contact an AI model, or represent completed client work. The section describes human-directed AI-assisted image creation, motion exploration, and intelligent experiences as offered capabilities, with no invented client results.
 
-`src/components/AmbientField.tsx` draws the decorative hero light field on a canvas. It targets 30 frames per second, caps device pixel ratio at 1.5, and suspends animation when offscreen, when the document is hidden, or when its motion setting is disabled. Hero and Design Lab motion controls initialize from the visitor’s reduced-motion preference and allow explicit pause or resume. The hero and Lab concept artwork remain separate from the brand crest assets.
+The Design Lab motion controls initialize from the visitor’s reduced-motion preference and allow explicit pause or resume. `src/components/AmbientField.tsx`, the earlier decorative canvas light field, remains in the repository but is no longer mounted in the hero. The Lab concept artwork remains separate from the brand crest assets.
 
 ## Typography
 
@@ -64,6 +74,12 @@ Space Grotesk Variable and Instrument Serif italic replace the earlier Manrope t
 Captures were made October 18, 2026. Hidden Forces uses a private release gate; no password was submitted. The reference site's misspelling `thearchetectureofhiddenforces.com` was corrected to the verified working domain. The reference’s `pigeonshield.com` returned a bot challenge; the owner’s public repository identifies `pigeonshield.net` as canonical, which was verified to return the matching public site. Its preview uses public repository HTML/CSS/assets instead. Project previews describe appearance and subject matter only, with no invented scope, testimonials, performance statistics, or outcomes.
 
 `source-assets/projects/capture-log.json` retains the initial capture observations, including the private/challenge page titles; the two replacements above are deliberate. The capture script reads public pages only, blocks non-GET/HEAD requests, and uses the environment's trusted Node fetch transport. Review captures before replacing derivatives; gates and challenge screens should never silently overwrite final previews.
+
+### Project visual studies
+
+`src/components/ProjectShowcase.tsx` presents a closer look at each of the six existing portfolio previews. Its Desktop view uses the same locally stored website capture as the portfolio card. The Detail control crops that same source image; it is not a separate screen capture or an additional project deliverable. The Hidden Forces study labels its full view Artwork and identifies the private release. PigeonShield retains the website source preview disclosure.
+
+`src/lib/project-studies.ts` contains the studies’ introductions and visual observations. These describe visible typography, color, composition, and imagery only. They do not assert Vital Design Source’s project scope, process, performance, or client outcomes. External website links remain available alongside the studies. The native modal supports close and Escape behavior, returns focus to its trigger, and allows previous/next project navigation.
 
 ## Copy
 
