@@ -1,0 +1,37 @@
+{
+  "provider": "Higgsfield",
+  "model": "seedance_2_5",
+  "jobId": "0a684c37-9768-4679-a6d3-bf88e901526e",
+  "generatedOn": "2026-10-18",
+  "generationPrompt": "Create one exceptionally refined 8-second cinematic brand-ident film based on the supplied official Vital Design Source heraldic logo. Treat the image as the exact identity reference: preserve the two ascending feathered wings, central shield, crossing engraved nib-like elements and circular medallion, and the V D S lettering in their original positions. Preserve the supplied brand name if it appears; do not invent words or symbols. Reinterpret only the material and lighting as polished platinum and softly brushed silver. Cinematic 16:9 composition, the entire crest centered with generous dark negative space on a seamless near-black obsidian background with very subtle deep jade atmosphere. One continuous controlled shot. Begin with the complete emblem dimly visible, then a large soft studio light slowly sweeps across the feathers and shield, revealing smooth beveled edges, intricate detail and clean broad reflections. A very slow, small camera pullback reveals the full balanced emblem, almost frontal throughout, ending on a stable beautiful hero composition. Quiet luxury creative-studio title-sequence aesthetic, photorealistic precision metal, flawlessly smooth surfaces, crisp edges, clean high resolution, restrained lighting and motion. No grain, no rough triangular facets, no flickering, no smoky obstruction, no spark showers, no explosive transformation, no molten morphing, no warping of the logo, no extra logos, no watermarks, no added captions, no invented client content. Silent visual film; no audio.",
+  "generationSettings": {"mode": "omni_reference", "duration": 8, "aspect_ratio": "16:9", "resolution": "1080p", "bitrate_mode": "high", "generate_audio": false, "count": 1},
+  "approvedCredits": 128,
+  "reference": "public/assets/brand/vital-original.jpg",
+  "creativeBrief": "Eight-second silent cinematic light sweep and slow pullback around the official heraldic crest, with platinum metal on an obsidian/deep-jade background. Preserve the wings, shield, crossing nibs, medallion and V/D/S identity. No invented text, client content, watermarks or performance claims.",
+  "source": {
+    "path": "source-assets/brand/vital-brand-film-higgsfield-original.mp4",
+    "sha256": "d5a9a1fb1a965f4d536714258bb00f0d85abeb343bd3a1606115ee5b4876ac6f",
+    "codec": "HEVC",
+    "pixelFormat": "yuv420p10le",
+    "width": 1920,
+    "height": 1080,
+    "durationSeconds": 8.041667
+  },
+  "delivery": {
+    "path": "public/assets/brand/vital-brand-film.mp4",
+    "sha256": "1b5a7dad3e2b81674a0e8308268672b5901710d0c7740572c0d6fb88257af847",
+    "codec": "H.264",
+    "pixelFormat": "yuv420p",
+    "width": 1920,
+    "height": 1080,
+    "durationSeconds": 8,
+    "framesPerSecond": 24,
+    "audio": false,
+    "fastStart": true
+  },
+  "poster": {
+    "path": "public/assets/brand/vital-brand-film-poster.webp",
+    "timeSeconds": 5.5
+  },
+  "regenerate": "npm run assets:film (requires FFmpeg; not part of normal build)"
+}

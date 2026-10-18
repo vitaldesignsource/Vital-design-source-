@@ -7,6 +7,7 @@ import { Portfolio } from "./components/Portfolio";
 import { Services } from "./components/Services";
 import { Studio } from "./components/Studio";
 import { DesignLab } from "./components/DesignLab";
+import { BrandFilm } from "./components/BrandFilm";
 
 function Privacy() {
   return (
@@ -102,6 +103,7 @@ export function App({ path = "/" }: { path?: string }) {
               </span>
             </div>
           </div>
+          <BrandFilm />
           <Portfolio />
           <DesignLab />
           <Services />

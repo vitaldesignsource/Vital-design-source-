@@ -7,6 +7,7 @@ import { resolve } from "node:path";
 import { renderToString } from "react-dom/server";
 import { createElement } from "react";
 import { projects, services } from "../src/lib/content";
+import { brandFilm } from "../src/lib/brand-film";
 import { getSiteUrl } from "../server/config";
 
 const siteUrl = getSiteUrl();
@@ -38,6 +39,19 @@ const escape = (text: string) =>
 const schema = JSON.stringify({
   "@context": "https://schema.org",
   "@graph": [
+    {
+      "@type": "VideoObject",
+      "@id": `${siteUrl}/#brand-film`,
+      name: brandFilm.title,
+      description: brandFilm.description,
+      thumbnailUrl: `${siteUrl}${brandFilm.poster}`,
+      contentUrl: `${siteUrl}${brandFilm.source}`,
+      uploadDate: brandFilm.uploadDate,
+      duration: `PT${brandFilm.duration}S`,
+      width: brandFilm.width,
+      height: brandFilm.height,
+      publisher: { "@id": `${siteUrl}/#organization` },
+    },
     {
       "@type": "Organization",
       "@id": `${siteUrl}/#organization`,

@@ -18,7 +18,8 @@
     "assets:brand": "node --import tsx scripts/brand-assets.ts",
     "capture:projects": "node --import tsx scripts/capture-projects.ts",
     "format": "prettier --write src server scripts tests *.ts *.js *.json *.html *.md docs/*.md .github/workflows/*.yml",
-    "format:check": "prettier --check src server scripts tests *.ts *.js *.json *.html *.md docs/*.md .github/workflows/*.yml"
+    "format:check": "prettier --check src server scripts tests *.ts *.js *.json *.html *.md docs/*.md .github/workflows/*.yml",
+    "assets:film": "node --import tsx scripts/prepare-brand-film.ts"
   },
   "repository": {
     "type": "git",

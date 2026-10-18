@@ -1,6 +1,6 @@
 # Vital Design Source
 
-The official Vital Design Source LLC website: an independent React and TypeScript build with the preserved original heraldic crest, an animated SVG crest refinement, an obsidian, platinum, jade, and warm ivory design system, eight portfolio projects, and a private project inquiry service.
+The official Vital Design Source LLC website: an independent React and TypeScript build with the preserved original heraldic crest, an animated SVG crest refinement, an on-demand cinematic brand film, an obsidian, platinum, jade, and warm ivory design system, eight portfolio projects, and a private project inquiry service.
 
 ![Vital Design Source](public/assets/og-vital.jpg)
 
@@ -60,6 +60,7 @@ CI also runs `npm run test:deployment`: a disposable production-only install tha
 
 - `src/components/`: accessible page sections and interactions.
 - `src/components/DesignLab.tsx`: curated visual-direction explorer with selection controls, live brief updates, and a motion toggle.
+- `src/components/BrandFilm.tsx` and `src/lib/brand-film.ts`: poster-first, eight-second silent Higgsfield identity film, shown below the hero and discipline bar. Playback requires an explicit play request; the video source is absent initially, with `preload="none"` and no autoplay. Hidden or offscreen playback pauses, manual pause remains respected, and replay or retry requires visitor action. Shared metadata supplies the pre-rendered `VideoObject` structured data.
 - `src/components/CrestSculpture.tsx` and `src/lib/crest-scene.ts`: optional, dynamically loaded Three.js crest with actual vector extrusion, planar caps, smoothed bevels, local studio reflections, and pointer-responsive lighting. The SVG appears immediately and remains the fallback without WebGL. Rendering targets 30fps, adapts pixel density up to 2.5 within a 2.4-megapixel buffer budget, and sleeps when the pointer settles, offscreen, when hidden, or when motion is disabled. Hero and Design Lab controls respect reduced motion.
 - `src/components/ProjectShowcase.tsx` and `src/lib/project-studies.ts`: accessible showcases for eight projects, with factual visual studies, full/detail views where a preview is available, a disclosed cover for 7 Seas Trading, and external-site links.
 - `src/components/BrandCrest.tsx`: inline SVG navigation crest with unique IDs, a visible filled base, a brief reveal and highlight, hover interaction, and static reduced-motion styling.
@@ -77,6 +78,8 @@ CI also runs `npm run test:deployment`: a disposable production-only install tha
 - `tests/`: behavior, persistence, abuse boundary, and accessibility checks.
 
 Use `npm run assets` after changing image masters; it also regenerates the SVG brand exports. To regenerate only the brand exports, run `npm run assets:brand`. Normal builds and SVG export generation require no Python tooling.
+
+The film is an AI-assisted interpretation of Vital Design Source’s own identity, generated from the original supplied crest. Its retained source and provenance record are in `source-assets/brand/`. Optional `npm run assets:film` uses FFmpeg to prepare the local H.264 film and WebP poster; normal builds deploy the checked-in assets and require no FFmpeg or new generation.
 
 The standalone brand set includes ink, silver, and briefly animated crests plus an outlined wordmark. View it at `/assets/brand/preview.html` on the running site. Original brand files remain intact and continue to appear in the Studio section, footer, social image, and favicons. See [asset provenance](docs/assets.md) for the refinement workflow and optional tracing tools. The website includes no testimonials, client performance metrics, or invented project outcomes.
 

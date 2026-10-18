@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { ArrowDown, ArrowUpRight, Pause, Play, Sparkles } from "lucide-react";
+import { ArrowDown, ArrowUpRight, Pause, Play } from "lucide-react";
 import { CrestSculpture } from "./CrestSculpture";
 
 export function Hero() {
@@ -39,8 +39,8 @@ export function Hero() {
                 Let’s create something{" "}
                 <ArrowUpRight size={19} aria-hidden="true" />
               </a>
-              <a className="hero-work-link" href="#ai-studio">
-                <Sparkles size={16} aria-hidden="true" /> Explore the AI studio
+              <a className="hero-work-link" href="#brand-film">
+                <Play size={16} aria-hidden="true" /> Watch the brand film
               </a>
             </div>
             <div className="hero-disciplines eyebrow">

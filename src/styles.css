@@ -1,5 +1,6 @@
 @layer reset, base, layout, components, responsive;
 @import "./styles/hero.css";
+@import "./styles/brand-film.css";
 @import "./styles/design-lab.css";
 @import "./styles/brand.css";
 @import "./styles/project-showcase.css";
