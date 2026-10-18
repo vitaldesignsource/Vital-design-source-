@@ -1,0 +1,73 @@
+{
+  "name": "vital-design-source",
+  "version": "1.0.0",
+  "description": "Official independent Vital Design Source creative studio website",
+  "scripts": {
+    "dev": "vite",
+    "dev:server": "tsx watch server/index.ts",
+    "build": "node --import tsx scripts/build.ts",
+    "start": "node build/server/index.mjs",
+    "inquiries": "node build/server/inquiries.mjs",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint .",
+    "test": "vitest run",
+    "test:e2e": "playwright test",
+    "validate": "npm run typecheck && npm run lint && npm test && npm run build && npm run test:e2e",
+    "assets": "node --import tsx scripts/assets.ts",
+    "capture:projects": "node --import tsx scripts/capture-projects.ts",
+    "format": "prettier --write src server scripts tests *.ts *.js *.json *.html *.md docs/*.md .github/workflows/*.yml",
+    "format:check": "prettier --check src server scripts tests *.ts *.js *.json *.html *.md docs/*.md .github/workflows/*.yml"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vitaldesignsource/Vital-design-source-.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "UNLICENSED",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/vitaldesignsource/Vital-design-source-/issues"
+  },
+  "homepage": "https://github.com/vitaldesignsource/Vital-design-source-#readme",
+  "dependencies": {
+    "@fontsource-variable/manrope": "^5.3.0",
+    "@fontsource/ibm-plex-mono": "^5.3.0",
+    "compression": "^1.8.2",
+    "dotenv": "^18.0.8",
+    "express": "^5.3.0",
+    "helmet": "^8.3.0",
+    "lucide-react": "^1.59.0",
+    "nodemailer": "^10.1.2",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "^4.14.0",
+    "@eslint/js": "^9.39.5",
+    "@playwright/test": "^1.64.1",
+    "@types/compression": "^1.8.1",
+    "@types/express": "^5.0.6",
+    "@types/node": "^26.6.5",
+    "@types/nodemailer": "^8.0.2",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@vitejs/plugin-react": "^6.1.2",
+    "esbuild": "^0.28.2",
+    "eslint": "^9.39.5",
+    "eslint-plugin-jsx-a11y": "^6.10.2",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "prettier": "^3.9.10",
+    "sharp": "^0.35.5",
+    "tsx": "^4.23.15",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.71.2",
+    "vite": "^8.3.4",
+    "vitest": "^5.0.5"
+  },
+  "private": true,
+  "engines": {
+    "node": ">=24 <25"
+  }
+}
