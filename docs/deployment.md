@@ -17,6 +17,8 @@ Connect **vitaldesignsource.com** to this Node app and deploy. There are **no re
 
 The source includes a stable `server.js` entry. Hostinger's Express preset runs the package build, and the entry also builds missing artifacts before starting. It serves the compiled website and inquiry API together. Build tools are production dependencies, so installing with development dependencies omitted is supported. See [Hostinger's Express documentation](https://docs.hostinger.com/node.js/overview-1/express).
 
+The entry loads the compiled backend synchronously with `createRequire`. Hostinger starts the entry through `require()`, which Node 24 supports for ESM only when its static import graph contains no top-level `await`. Keep the entry and its static dependencies synchronous; `npm run test:deployment` checks the managed loader as well as direct Node startup.
+
 Use the Node app deployment rather than a PHP/HTML Git deployment into `public_html`. Publishing the source files directly serves an unbuilt React template and produces a blank website.
 
 If the domain is still attached to the earlier PHP/HTML deployment, reassign it to this Node app through Hostinger's domain settings. Keep other websites and databases unchanged.

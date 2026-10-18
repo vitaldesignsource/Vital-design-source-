@@ -84,9 +84,25 @@ const request = (path: string, init?: RequestInit) =>
     signal: AbortSignal.timeout(1000),
   });
 
-async function start(env: NodeJS.ProcessEnv) {
+const requireReturned = "Deployment entry returned synchronously from require.";
+
+async function start(
+  env: NodeJS.ProcessEnv,
+  mode: "require" | "direct" = "require",
+) {
   serverOutput = "";
-  server = spawn(process.execPath, [join(app, "server.js")], {
+  const entry = join(app, "server.js");
+  // Hostinger's managed loader calls require(), so top-level-await entry
+  // graphs must fail this check even when direct `node server.js` succeeds.
+  const args =
+    mode === "require"
+      ? [
+          "-e",
+          `require(process.argv[1]); console.info(${JSON.stringify(requireReturned)});`,
+          entry,
+        ]
+      : [entry];
+  server = spawn(process.execPath, args, {
     cwd: launch,
     env,
     stdio: ["ignore", "pipe", "pipe"],
@@ -103,7 +119,11 @@ async function start(env: NodeJS.ProcessEnv) {
       "Production entry exited before becoming healthy.",
     );
     try {
-      if ((await request("/api/health")).ok) return;
+      if (
+        (await request("/api/health")).ok &&
+        (mode === "direct" || serverOutput.includes(requireReturned))
+      )
+        return;
     } catch {
       // The build completes before the production server opens its port.
     }
@@ -335,6 +355,11 @@ try {
   assert(Number(limited.headers.get("retry-after")) > 0);
   assert.equal(inspectStore().count, 5);
   await stop();
+  // Keep the standalone Node entry covered alongside the managed require loader.
+  await start(blankEnvironment, "direct");
+  await verifySite();
+  assert.equal(inspectStore().count, 5);
+  await stop();
   const output = run(
     "Default inquiry operator CLI",
     process.execPath,
@@ -349,7 +374,7 @@ try {
     "The operator CLI uses the same default private database.",
   );
   console.info(
-    "Deployment verification passed: clean production install, automatic build, default domain, assets, secure inquiries, private storage, restart persistence, and operator access.",
+    "Deployment verification passed: clean production install, synchronous managed loader, standalone entry, automatic build, default domain, secure inquiries, restart persistence, and operator access.",
   );
 } finally {
   await stop();

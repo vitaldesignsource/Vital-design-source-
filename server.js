@@ -1,6 +1,7 @@
 import process from "node:process";
 import { existsSync, readFileSync } from "node:fs";
 import { execFileSync } from "node:child_process";
+import { createRequire } from "node:module";
 import { fileURLToPath, URL } from "node:url";
 import { config } from "dotenv";
 import site from "./site.config.json" with { type: "json" };
@@ -43,4 +44,7 @@ if (needsBuild)
     stdio: "inherit",
   });
 
-await import("./build/server/index.mjs");
+// Hostinger's launcher uses require() for this entry. Keep its entire module
+// graph synchronous: Node 24 can require ESM only without top-level await.
+const require = createRequire(import.meta.url);
+require("./build/server/index.mjs");
