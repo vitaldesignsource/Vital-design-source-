@@ -13,19 +13,20 @@ export function Services() {
       <div className="page-width services-layout">
         <div className="services-intro">
           <p className="eyebrow section-label">
-            <span>02</span> What we do
+            <span>02 /</span> Our capabilities
           </p>
           <h2 id="services-title">
-            One studio. <br />
-            <em>Every dimension.</em>
-          </h2>
-          <p>
-            From how it looks to how it works.
+            From first idea.
             <br />
-            Thoughtfully connected.
+            <em>To final detail.</em>
+          </h2>
+          <p className="services-description">
+            A distinctive identity. A considered experience. The technology that
+            brings it all together. Start with one discipline, or connect the
+            whole picture.
           </p>
           <a className="text-link" href="#contact">
-            Find your starting point{" "}
+            Let’s find your starting point{" "}
             <ArrowUpRight size={18} aria-hidden="true" />
           </a>
         </div>
@@ -44,23 +45,24 @@ export function Services() {
                   onClick={() => setActive(active === index ? null : index)}
                 >
                   <span className="service-index eyebrow">0{index + 1}</span>
-                  <span>{service.title}</span>
+                  <span className="service-title">{service.title}</span>
                   {active === index ? (
-                    <Minus aria-hidden="true" />
+                    <Minus className="service-toggle" aria-hidden="true" />
                   ) : (
-                    <Plus aria-hidden="true" />
+                    <Plus className="service-toggle" aria-hidden="true" />
                   )}
                 </button>
               </h3>
               <div
                 id={`service-panel-${index}`}
                 aria-labelledby={`service-button-${index}`}
+                className="service-panel"
                 role="region"
                 hidden={active !== index}
               >
                 <p className="service-short">{service.short}</p>
                 <p>{service.description}</p>
-                <ul>
+                <ul className="service-details">
                   {service.details.map((detail) => (
                     <li className="eyebrow" key={detail}>
                       {detail}

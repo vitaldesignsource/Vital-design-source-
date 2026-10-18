@@ -51,14 +51,17 @@ export function Header() {
       <header className="site-header page-width">
         <Brand />
         <nav className="desktop-nav" aria-label="Main navigation">
-          {links.map(([label, id]) => (
+          {links.map(([label, id], index) => (
             <a key={id} href={`/#${id}`}>
+              <span className="nav-index" aria-hidden="true">
+                0{index + 1}
+              </span>
               {label}
             </a>
           ))}
         </nav>
         <a className="nav-contact" href="/#contact">
-          Let’s talk <ArrowUpRight size={16} aria-hidden="true" />
+          Let’s make it happen <ArrowUpRight size={18} aria-hidden="true" />
         </a>
         <button
           ref={trigger}

@@ -1,25 +1,57 @@
 import { test, expect } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
 
-test("renders all six projects, working filters, and secure external links", async ({
+test("renders all six projects with working views, filters, and secure links", async ({
   page,
 }) => {
   const errors: string[] = [];
   page.on("pageerror", (error) => errors.push(error.message));
   await page.goto("/");
   await expect(page.getByRole("heading", { level: 1 })).toContainText(
-    "experiences",
+    "Make your presence felt.",
   );
   await expect(page.locator(".project")).toHaveCount(6);
   for (const link of await page.locator(".project a").all()) {
     expect(await link.getAttribute("href")).toMatch(/^https:\/\//);
+    expect(await link.getAttribute("target")).toBe("_blank");
     expect(await link.getAttribute("rel")).toContain("noopener");
+    expect(await link.getAttribute("rel")).toContain("noreferrer");
   }
+  const galleryView = page.getByRole("button", { name: "Gallery view" });
+  const listView = page.getByRole("button", { name: "List view" });
+  const projectPresentation = page.locator(".project-grid");
+  await expect(galleryView).toHaveAttribute("aria-pressed", "true");
+  await expect(listView).toHaveAttribute("aria-pressed", "false");
+  await expect(projectPresentation).toHaveAttribute("data-view", "gallery");
+  await listView.click();
+  await expect(listView).toHaveAttribute("aria-pressed", "true");
+  await expect(galleryView).toHaveAttribute("aria-pressed", "false");
+  await expect(projectPresentation).toHaveAttribute("data-view", "list");
+  await expect(page.locator(".project")).toHaveCount(6);
+  await expect(
+    page.locator(".project-hidden-forces .project-preview-note"),
+  ).toHaveText("Project artwork · private release");
+  await expect(
+    page.locator(".project-hidden-forces .project-preview-note"),
+  ).toBeVisible();
+  await expect(
+    page.locator(".project-pigeonshield .project-preview-note"),
+  ).toHaveText("Website source preview");
+  await expect(
+    page.locator(".project-pigeonshield .project-preview-note"),
+  ).toBeVisible();
   await page
     .getByRole("button", { name: "Culture & ideas", exact: true })
     .click();
   await expect(page.locator(".project")).toHaveCount(3);
   await expect(page.locator(".work-count")).toContainText("03 projects");
+  await expect(projectPresentation).toHaveAttribute("data-view", "list");
+  await expect(listView).toHaveAttribute("aria-pressed", "true");
+  await galleryView.click();
+  await expect(projectPresentation).toHaveAttribute("data-view", "gallery");
+  await expect(galleryView).toHaveAttribute("aria-pressed", "true");
+  await expect(listView).toHaveAttribute("aria-pressed", "false");
+  await expect(page.locator(".project")).toHaveCount(3);
   await page
     .getByRole("button", { name: "Brands & business", exact: true })
     .click();

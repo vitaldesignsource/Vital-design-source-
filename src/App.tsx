@@ -1,65 +1,11 @@
-import { ArrowRight, ArrowUpRight, Asterisk } from "lucide-react";
+import { ArrowDownRight, ArrowUpRight } from "lucide-react";
 import { Footer } from "./components/Footer";
 import { Header } from "./components/Header";
 import { Hero } from "./components/Hero";
 import { InquiryForm } from "./components/InquiryForm";
 import { Portfolio } from "./components/Portfolio";
 import { Services } from "./components/Services";
-
-function Studio() {
-  return (
-    <section
-      id="studio"
-      className="studio-section section-space page-width"
-      aria-labelledby="studio-title"
-    >
-      <p className="eyebrow section-label">
-        <span>03</span> The Vital perspective
-      </p>
-      <div className="studio-statement">
-        <h2 id="studio-title">
-          Good design <br />
-          moves <em>people.</em>
-        </h2>
-        <div className="studio-copy">
-          <span className="studio-asterisk" aria-hidden="true">
-            <Asterisk aria-hidden="true" strokeWidth={1.3} />
-          </span>
-          <p>
-            We’re an independent creative studio connecting design, development,
-            and digital intelligence.
-          </p>
-          <p>
-            We believe the strongest work comes from seeing the whole picture.
-            The brand. The experience. The systems behind it. Every part working
-            together, with a little something you can’t quite put your finger
-            on.
-          </p>
-          <a className="text-link" href="#contact">
-            Make your mark <ArrowUpRight size={18} aria-hidden="true" />
-          </a>
-        </div>
-      </div>
-      <div className="process-strip">
-        {[
-          ["Discover", "Find the right questions."],
-          ["Design", "Give the idea its character."],
-          ["Develop", "Bring every detail to life."],
-          ["Refine", "Make it ready for what’s next."],
-        ].map(([title, copy], index) => (
-          <article key={title}>
-            <p className="eyebrow">
-              0{index + 1}
-              <ArrowRight size={16} aria-hidden="true" />
-            </p>
-            <h3>{title}</h3>
-            <p>{copy}</p>
-          </article>
-        ))}
-      </div>
-    </section>
-  );
-}
+import { Studio } from "./components/Studio";
 
 function Privacy() {
   return (
@@ -146,19 +92,23 @@ export function App({ path = "/" }: { path?: string }) {
           <Hero />
           <div className="discipline-bar">
             <div className="page-width eyebrow">
-              <span>Design that connects.</span>
+              <span>
+                <span className="signal-dot" /> Design with a pulse.
+              </span>
               <span>Web / Brand / Development / SEO / Automation</span>
-              <span aria-hidden="true">↘</span>
+              <span aria-hidden="true">
+                <ArrowDownRight size={18} />
+              </span>
             </div>
           </div>
           <Portfolio />
           <Services />
           <Studio />
           <div className="signal-strip" aria-hidden="true">
-            <span>Built with intention.</span>
-            <span>Made to move you.</span>
+            <span>Good things happen</span>
+            <em>when ideas connect.</em>
             <span>
-              <Asterisk aria-hidden="true" strokeWidth={1.3} />
+              <ArrowUpRight />
             </span>
           </div>
           <InquiryForm />

@@ -92,21 +92,24 @@ export function InquiryForm() {
     >
       <div className="contact-intro">
         <p className="eyebrow section-label">
-          <span>04</span> Let’s make something matter
+          <span>04 /</span> Your next chapter
         </p>
         <h2 id="contact-title">
-          Your next <br />
-          big <em>idea.</em>
+          A good idea.
+          <br />
+          <em>A great place</em>
+          <br />
+          to start.
           <span className="contact-star" aria-hidden="true">
             <Asterisk aria-hidden="true" strokeWidth={1.3} />
           </span>
         </h2>
         <p>
-          Tell us what you’re imagining. <br />
-          We’ll start with a conversation.
+          Tell us what’s on your mind. A new direction, a better website,
+          something that doesn’t have a name yet. We’re listening.
         </p>
         <p className="eyebrow contact-detail">
-          Good things start with a connection.
+          Thoughtful work starts with a conversation.
         </p>
       </div>
       <div className="contact-form-wrap">

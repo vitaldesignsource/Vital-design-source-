@@ -154,7 +154,7 @@ async function verifySite() {
   for (const metadata of [
     `<link rel="canonical" href="${officialOrigin}/"`,
     `<meta property="og:url" content="${officialOrigin}/"`,
-    `<meta property="og:image" content="${officialOrigin}/assets/og-image.jpg"`,
+    `<meta property="og:image" content="${officialOrigin}/assets/og-editorial.jpg"`,
     '<meta name="robots" content="index,follow"',
     `${officialOrigin}/#organization`,
   ])

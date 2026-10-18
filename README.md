@@ -2,7 +2,7 @@
 
 The official Vital Design Source LLC website: a fresh, independent React and TypeScript build with the original heraldic crest, cinematic artwork, six portfolio projects, and a private project inquiry service.
 
-![Vital Design Source](public/assets/og-image.jpg)
+![Vital Design Source](public/assets/og-editorial.jpg)
 
 ## Deploy on Hostinger
 

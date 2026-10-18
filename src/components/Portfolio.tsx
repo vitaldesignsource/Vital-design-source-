@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ArrowUpRight } from "lucide-react";
+import { ArrowUpRight, LayoutGrid, Rows3 } from "lucide-react";
 import { projects } from "../lib/content";
 
 const filters = [
@@ -11,6 +11,7 @@ const filters = [
 export function Portfolio() {
   const [filter, setFilter] =
     useState<(typeof filters)[number]>("All projects");
+  const [view, setView] = useState<"gallery" | "list">("gallery");
   const selected = projects.filter(
     (project) => filter === "All projects" || project.group === filter,
   );
@@ -26,13 +27,13 @@ export function Portfolio() {
             <span>01</span> Selected work
           </p>
           <h2 id="work-title">
-            Ideas made <em>real.</em>
+            Work with a<br />
+            <em>point of view.</em>
           </h2>
         </div>
         <p>
-          A few different worlds.
-          <br />
-          The same attention to detail.
+          Different industries. Independent voices. Websites and identities
+          shaped around the people behind them.
         </p>
       </div>
       <div className="work-toolbar">
@@ -49,13 +50,38 @@ export function Portfolio() {
             </button>
           ))}
         </div>
-        <p className="eyebrow work-count" role="status" aria-live="polite">
-          {String(selected.length).padStart(2, "0")} projects
-        </p>
+        <div className="work-toolbar-end">
+          <p className="eyebrow work-count" role="status" aria-live="polite">
+            {String(selected.length).padStart(2, "0")} projects
+          </p>
+          <div className="view-switch" role="group" aria-label="Portfolio view">
+            <button
+              type="button"
+              aria-label="Gallery view"
+              aria-pressed={view === "gallery"}
+              onClick={() => setView("gallery")}
+            >
+              <LayoutGrid size={17} aria-hidden="true" />
+              <span>Gallery</span>
+            </button>
+            <button
+              type="button"
+              aria-label="List view"
+              aria-pressed={view === "list"}
+              onClick={() => setView("list")}
+            >
+              <Rows3 size={18} aria-hidden="true" />
+              <span>List</span>
+            </button>
+          </div>
+        </div>
       </div>
-      <div className="project-grid">
-        {selected.map((project) => (
-          <article key={project.id} className={`project project-${project.id}`}>
+      <div className="project-grid" data-view={view}>
+        {selected.map((project, index) => (
+          <article
+            key={project.id}
+            className={`project project-${project.id}${index === 0 ? " project-featured" : ""}`}
+          >
             <a
               href={project.url}
               target="_blank"
@@ -63,50 +89,61 @@ export function Portfolio() {
               aria-label={`Visit ${project.name} (opens in a new tab)`}
             >
               <div className="project-visual">
-                <picture>
-                  <source
-                    type="image/avif"
-                    srcSet={`/assets/projects/${project.image}-640.avif 640w, /assets/projects/${project.image}-1200.avif 1200w`}
-                    sizes="(max-width: 799px) 92vw, 44vw"
-                  />
-                  <img
-                    src={`/assets/projects/${project.image}-1200.webp`}
-                    srcSet={`/assets/projects/${project.image}-640.webp 640w, /assets/projects/${project.image}-1200.webp 1200w`}
-                    sizes="(max-width: 799px) 92vw, 44vw"
-                    alt={`${project.name} ${project.previewLabel || "website preview"}`}
-                    width="1200"
-                    height="850"
-                    loading="lazy"
-                    decoding="async"
-                  />
-                </picture>
+                <div className="project-image-shell">
+                  <picture>
+                    <source
+                      type="image/avif"
+                      srcSet={`/assets/projects/${project.image}-640.avif 640w, /assets/projects/${project.image}-1200.avif 1200w`}
+                      sizes="(max-width: 799px) 92vw, (min-width: 1440px) 800px, 60vw"
+                    />
+                    <img
+                      src={`/assets/projects/${project.image}-1200.webp`}
+                      srcSet={`/assets/projects/${project.image}-640.webp 640w, /assets/projects/${project.image}-1200.webp 1200w`}
+                      sizes="(max-width: 799px) 92vw, (min-width: 1440px) 800px, 60vw"
+                      alt={`${project.name} ${project.previewLabel || "website preview"}`}
+                      width="1200"
+                      height="850"
+                      loading="lazy"
+                      decoding="async"
+                    />
+                  </picture>
+                </div>
                 {project.previewLabel && (
                   <span className="project-preview-label eyebrow">
                     {project.previewLabel}
                   </span>
                 )}
-                <span className="project-index eyebrow">
-                  {String(projects.indexOf(project) + 1).padStart(2, "0")} / 06
-                </span>
-                <span className="project-open">
-                  <ArrowUpRight size={25} aria-hidden="true" />
-                  <span className="sr-only">Open website</span>
-                </span>
                 <span className="project-hover eyebrow">
-                  Explore project <ArrowUpRight size={17} aria-hidden="true" />
+                  View website <ArrowUpRight size={17} aria-hidden="true" />
                 </span>
               </div>
               <div className="project-info">
-                <p className="eyebrow">{project.category}</p>
-                <h3>{project.name}</h3>
+                <div className="project-heading-row eyebrow">
+                  <span className="project-index">
+                    {String(projects.indexOf(project) + 1).padStart(2, "0")}
+                  </span>
+                  <p>{project.category}</p>
+                </div>
+                <div className="project-title-row">
+                  <h3>{project.name}</h3>
+                  <span className="project-open" aria-hidden="true">
+                    <ArrowUpRight size={25} />
+                  </span>
+                </div>
                 <p className="project-description">{project.description}</p>
+                {project.previewLabel && (
+                  <p className="project-preview-note eyebrow">
+                    {project.previewLabel}
+                  </p>
+                )}
               </div>
             </a>
           </article>
         ))}
       </div>
       <p className="work-footnote eyebrow">
-        Explore the live projects <ArrowUpRight size={14} aria-hidden="true" />
+        Each project is its own world. Explore the live sites.
+        <ArrowUpRight size={14} aria-hidden="true" />
       </p>
     </section>
   );

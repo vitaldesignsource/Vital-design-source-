@@ -122,14 +122,14 @@ for (const page of [
     `<meta property="og:title" content="${escape(page.title)}" />`,
     `<meta property="og:description" content="${escape(page.description)}" />`,
     `<meta property="og:url" content="${siteUrl}${page.path}" />`,
-    `<meta property="og:image" content="${siteUrl}/assets/og-image.jpg" />`,
+    `<meta property="og:image" content="${siteUrl}/assets/og-editorial.jpg" />`,
     `<meta property="og:image:width" content="1200" />`,
     `<meta property="og:image:height" content="630" />`,
     `<meta property="og:image:alt" content="Vital Design Source — distinctive websites, brands, and intelligent systems" />`,
     `<meta name="twitter:card" content="summary_large_image" />`,
     `<meta name="twitter:title" content="${escape(page.title)}" />`,
     `<meta name="twitter:description" content="${escape(page.description)}" />`,
-    `<meta name="twitter:image" content="${siteUrl}/assets/og-image.jpg" />`,
+    `<meta name="twitter:image" content="${siteUrl}/assets/og-editorial.jpg" />`,
     ...(page.path === "/"
       ? [`<script type="application/ld+json">${schema}</script>`]
       : []),

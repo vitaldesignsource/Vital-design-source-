@@ -3,16 +3,20 @@ import { mkdir } from "node:fs/promises";
 import { projects } from "../src/lib/content";
 
 await mkdir("public/assets/projects", { recursive: true });
-for (const width of [960, 1600]) {
-  const image = sharp("source-assets/ribbon-master.png").resize({ width });
+for (const width of [640, 1120]) {
+  const image = sharp("source-assets/presence-master.png").resize({
+    width,
+    height: Math.round(width * 1.25),
+    fit: "cover",
+  });
   await image
     .clone()
     .avif({ quality: 60 })
-    .toFile(`public/assets/hero-${width}.avif`);
+    .toFile(`public/assets/presence-${width}.avif`);
   await image
     .clone()
     .webp({ quality: 83 })
-    .toFile(`public/assets/hero-${width}.webp`);
+    .toFile(`public/assets/presence-${width}.webp`);
 }
 for (const project of projects)
   for (const width of [640, 1200]) {
@@ -41,16 +45,24 @@ await sharp("public/assets/brand/vital-logo-original.webp")
   .toFile("public/apple-touch-icon.png");
 // Own brand sharing image; no fabricated client claims or performance figures.
 const typography = Buffer.from(
-  `<svg width="1200" height="630" xmlns="http://www.w3.org/2000/svg"><rect width="1200" height="630" fill="#101c4c" fill-opacity=".3"/><text x="62" y="155" font-family="sans-serif" font-size="19" letter-spacing="4" fill="#f0f3fa">VITAL DESIGN SOURCE</text><g fill="#f0f3fa" font-family="sans-serif" font-size="74" font-weight="600" letter-spacing="-3"><text x="58" y="285">Design with</text><text x="58" y="372" fill="#f07a8c">a pulse.</text></g><text x="62" y="550" font-family="sans-serif" font-size="16" fill="#b5c4e3">Web. Brand. Intelligent systems.</text></svg>`,
+  `<svg width="1200" height="630" xmlns="http://www.w3.org/2000/svg"><rect width="1200" height="630" fill="#171816"/><text x="62" y="105" font-family="sans-serif" font-size="17" letter-spacing="3" fill="#f3efe5">VITAL DESIGN SOURCE</text><g fill="#f3efe5" font-family="sans-serif" font-size="94" font-weight="500" letter-spacing="-5"><text x="57" y="260">Make your</text><text x="57" y="353">presence</text><text x="57" y="448" fill="#f47750">felt.</text></g><text x="62" y="562" font-family="sans-serif" font-size="16" fill="#b8b8aa">Distinctive design. Connected thinking.</text></svg>`,
 );
 const crest = await sharp("public/assets/brand/vital-logo-light.png")
   .resize({ width: 74 })
   .toBuffer();
-await sharp("source-assets/ribbon-master.png")
-  .resize(1200, 630, { fit: "cover" })
-  .composite([{ input: typography }, { input: crest, left: 1045, top: 55 }])
+const sculpture = await sharp("source-assets/presence-master.png")
+  .resize(420, 550, { fit: "cover" })
+  .toBuffer();
+await sharp({
+  create: { width: 1200, height: 630, channels: 3, background: "#171816" },
+})
+  .composite([
+    { input: typography },
+    { input: sculpture, left: 720, top: 40 },
+    { input: crest, left: 615, top: 60 },
+  ])
   .jpeg({ quality: 88 })
-  .toFile("public/assets/og-image.jpg");
+  .toFile("public/assets/og-editorial.jpg");
 console.info(
   "Generated responsive hero and portfolio assets, crest icons, and social preview.",
 );

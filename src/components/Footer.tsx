@@ -1,4 +1,4 @@
-import { ArrowUpRight, Asterisk } from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
 
 export function Footer() {
   return (
@@ -18,17 +18,18 @@ export function Footer() {
           />
         </a>
         <p>
-          Independent thinking. <br />
-          <em>Connected craft.</em>
+          A point of view.
+          <br />
+          <em>A world of possibility.</em>
         </p>
         <a className="back-top text-link" href="#top">
           Back to top <ArrowUpRight size={18} aria-hidden="true" />
         </a>
       </div>
       <div className="footer-wordmark" aria-hidden="true">
-        VITAL
+        Vital by design
         <span>
-          <Asterisk aria-hidden="true" strokeWidth={1.3} />
+          <ArrowUpRight strokeWidth={1.2} />
         </span>
       </div>
       <div className="footer-bottom">
