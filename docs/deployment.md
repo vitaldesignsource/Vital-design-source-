@@ -30,6 +30,29 @@ Generate the secret with `openssl rand -hex 32` and put the result into the depl
 
 Changing domains requires rebuilding and restarting with the same new `SITE_URL`. Local HTTP builds are intentionally `noindex` with `Disallow: /`; a public HTTPS build enables indexing. Set the final domain before submitting the sitemap to search engines.
 
+## Hostinger Node.js web app
+
+Use **Node.js Web App**, not the PHP/HTML Git deployment into `public_html`. Publishing the repository as static files serves the unbuilt source template and cannot run the inquiry API.
+
+Import this GitHub repository with these settings:
+
+| Setting         | Value                  |
+| --------------- | ---------------------- |
+| Framework       | Express                |
+| Branch          | main                   |
+| Node version    | 24.x                   |
+| Root directory  | ./                     |
+| Package manager | npm                    |
+| Entry file      | build/server/index.mjs |
+
+[Hostinger's Express documentation](https://docs.hostinger.com/node.js/overview-1/express) confirms that the build-script and output-directory fields are hidden for Express: the package's build script still runs and the complete project root is deployed. The existing `build` script produces both `dist/` and `build/server/`; the entry file is relative to the project root. The four tools required by that build are production dependencies so an install that omits development dependencies still works. Do not set the root directory to `public_html` or the entry to the nonexistent default `server.js`.
+
+Set `NODE_ENV=production`, `SITE_URL` to the exact HTTPS origin connected to this app, `HOST=0.0.0.0`, and a random `RATE_LIMIT_SECRET` of at least 32 characters. Remove a manually entered `PORT` variable so Hostinger can supply its assigned port. Keep `TRUST_PROXY=0` until the host confirms the number and behavior of its trusted reverse proxies. Remove unused blank SMTP variables; add real notification settings later through Hostinger's protected environment settings.
+
+For a temporary preview, `DATABASE_PATH=./data/inquiries.sqlite` is sufficient for synthetic test inquiries only. Before accepting real inquiries, obtain a private, writable, persistent absolute storage path from Hostinger **outside both `public_html` and `hbuilds`**, set `DATABASE_PATH` there, and verify a test record survives redeployment. Hostinger replaces deployment-managed files; this project cannot guarantee persistence for a database inside those directories. If the plan does not offer suitable persistent storage, use a host with a persistent volume or replace the SQLite adapter with a durable database.
+
+After deployment, verify the actual website and `/api/health`, not only Hostinger's deployment-success thumbnail. If using a temporary domain first, update `SITE_URL` when moving to the official domain and redeploy so the build generates metadata for the new origin. Configure and verify SMTP or regularly use the private inquiry CLI before launch.
+
 ## Docker
 
 The Dockerfile runs the application as an unprivileged user. Build with your verified public origin, then mount a named volume:
