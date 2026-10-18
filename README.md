@@ -1,6 +1,6 @@
 # Vital Design Source
 
-The official Vital Design Source LLC website: an independent React and TypeScript build with the original heraldic crest, a dark jade and liquid-chrome theme, six portfolio projects, and a private project inquiry service.
+The official Vital Design Source LLC website: an independent React and TypeScript build with the preserved original heraldic crest, an animated SVG crest refinement, a dark jade and liquid-chrome theme, six portfolio projects, and a private project inquiry service.
 
 ![Vital Design Source](public/assets/og-neural.jpg)
 
@@ -61,18 +61,23 @@ CI also runs `npm run test:deployment`: a disposable production-only install tha
 - `src/components/`: accessible page sections and interactions.
 - `src/components/DesignLab.tsx`: curated visual-direction explorer with selection controls, live brief updates, and a motion toggle.
 - `src/components/AmbientField.tsx`: decorative hero canvas targeting 30 frames per second, with device pixel ratio capped at 1.5; animation pauses offscreen, when the document is hidden, or when motion is disabled. Hero and Design Lab controls respect the initial reduced-motion preference.
+- `src/components/BrandCrest.tsx`: inline SVG navigation crest with unique IDs, a visible filled base, a brief reveal and highlight, hover interaction, and static reduced-motion styling.
 - `src/lib/content.ts`: project destinations, descriptions, service copy, and form options.
+- `src/lib/crest-geometry.json`: checked-in vector paths for the refined crest.
 - `src/lib/design-directions.ts`: typed art-direction presets, briefs, and material labels for the AI Design Lab.
 - `src/lib/inquiry.ts`: shared client/server validation contract.
 - `server/`: HTTP boundary, SQLite persistence, and optional email queue.
 - `server.js`: portable host entry; builds missing or outdated-domain artifacts before starting.
 - `site.config.json`: official domain used by the build and server.
 - `scripts/build.ts`: pre-rendered home, privacy and 404 pages; metadata, JSON-LD, sitemap, robots; bundled Node server.
+- `scripts/brand-assets.ts`: generates standalone SVG crest variants and an outlined wordmark from checked-in paths.
 - `public/assets/`: self-hosted, deployable brand and responsive image assets.
 - `source-assets/`: retained artwork and portfolio preview masters.
 - `tests/`: behavior, persistence, abuse boundary, and accessibility checks.
 
-Use `npm run assets` after changing image masters. See [asset provenance](docs/assets.md) before replacing the official logo or refreshing previews. The website includes no testimonials, client performance metrics, or invented project outcomes.
+Use `npm run assets` after changing image masters; it also regenerates the SVG brand exports. To regenerate only the brand exports, run `npm run assets:brand`. Normal builds and SVG export generation require no Python tooling.
+
+The standalone brand set includes ink, silver, and briefly animated crests plus an outlined wordmark. View it at `/assets/brand/preview.html` on the running site. Original brand files remain intact and continue to appear in the Studio section, footer, social image, and favicons. See [asset provenance](docs/assets.md) for the refinement workflow and optional tracing tools. The website includes no testimonials, client performance metrics, or invented project outcomes.
 
 ## Review inquiries
 

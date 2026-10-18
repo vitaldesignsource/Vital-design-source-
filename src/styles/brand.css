@@ -1,0 +1,82 @@
+@layer components {
+  .brand-wordmark {
+    border-left: 1px solid #d4ffe333;
+    padding-left: 15px;
+  }
+  .brand-crest {
+    display: block;
+    overflow: visible;
+  }
+  .crest-etch {
+    stroke-dashoffset: 0;
+    opacity: 0;
+    animation: crest-etch 1.45s 120ms both;
+  }
+  .crest-glint {
+    transform: translateX(1800px) skewX(-18deg);
+    animation: crest-glint 1.35s 220ms both;
+  }
+  .brand:hover .crest-glint,
+  .brand:focus-visible .crest-glint {
+    animation: crest-glint-hover 1.05s both;
+  }
+  .mobile-menu[open] .crest-glint {
+    animation: crest-glint-dialog 1.35s 120ms both;
+  }
+  @keyframes crest-etch {
+    0% {
+      stroke-dashoffset: 1;
+      opacity: 0;
+    }
+    12% {
+      opacity: 0.85;
+    }
+    78% {
+      stroke-dashoffset: 0;
+      opacity: 0.85;
+    }
+    100% {
+      stroke-dashoffset: 0;
+      opacity: 0;
+    }
+  }
+  @keyframes crest-glint {
+    from {
+      transform: translateX(-1300px) skewX(-18deg);
+    }
+    to {
+      transform: translateX(1800px) skewX(-18deg);
+    }
+  }
+  @keyframes crest-glint-hover {
+    from {
+      transform: translateX(-1300px) skewX(-18deg);
+    }
+    to {
+      transform: translateX(1800px) skewX(-18deg);
+    }
+  }
+  @keyframes crest-glint-dialog {
+    from {
+      transform: translateX(-1300px) skewX(-18deg);
+    }
+    to {
+      transform: translateX(1800px) skewX(-18deg);
+    }
+  }
+}
+@layer responsive {
+  @media (max-width: 799px) {
+    .brand {
+      gap: 11px;
+    }
+    .brand-wordmark {
+      padding-left: 11px;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .brand-crest * {
+      animation: none !important;
+    }
+  }
+}

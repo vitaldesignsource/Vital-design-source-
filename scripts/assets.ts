@@ -1,4 +1,5 @@
 import sharp from "sharp";
+import "./brand-assets";
 import { mkdir } from "node:fs/promises";
 import { projects } from "../src/lib/content";
 

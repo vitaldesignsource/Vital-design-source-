@@ -202,6 +202,76 @@ test("meets automated WCAG checks on home and privacy", async ({ page }) => {
   }
 });
 
+test("serves accessible vector branding with finite crest animation", async ({
+  page,
+  request,
+}) => {
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  await page.goto("/");
+  const home = page.locator(".site-header").getByRole("link", {
+    name: "Vital Design Source home",
+    exact: true,
+  });
+  await expect(home).toBeVisible();
+  await expect(home).toHaveAttribute("href", "/#top");
+  const crest = home.locator("svg.brand-crest");
+  await expect(crest).toBeVisible();
+  expect(await crest.locator("path").count()).toBeGreaterThan(0);
+  await expect(
+    page.locator(
+      "svg.brand-crest image, svg.brand-crest script, svg.brand-crest noscript, svg.brand-crest foreignObject",
+    ),
+  ).toHaveCount(0);
+  expect(await page.locator("svg.brand-crest").count()).toBeGreaterThanOrEqual(
+    2,
+  );
+  const svgIds = await page
+    .locator("svg.brand-crest[id], svg.brand-crest [id]")
+    .evaluateAll((elements) => elements.map((element) => element.id));
+  expect(new Set(svgIds).size).toBe(svgIds.length);
+
+  const animation = await page
+    .locator(".site-header .crest-glint")
+    .first()
+    .evaluate((element) => {
+      const style = getComputedStyle(element);
+      return {
+        name: style.animationName,
+        iterations: style.animationIterationCount.split(",").map(Number),
+      };
+    });
+  expect(animation.name).not.toBe("none");
+  expect(animation.iterations.every(Number.isFinite)).toBe(true);
+
+  for (const filename of [
+    "vital-crest.svg",
+    "vital-crest-animated.svg",
+    "vital-lockup.svg",
+  ]) {
+    const response = await request.get(`/assets/brand/${filename}`);
+    expect(response.status()).toBe(200);
+    expect(response.headers()["content-type"]).toContain("image/svg+xml");
+    const svg = await response.text();
+    expect(svg).toMatch(/<svg\b/);
+    expect(svg).toMatch(/<path\b/);
+    expect(svg).not.toMatch(/<(?:image|script|noscript|foreignObject)\b/i);
+    expect(svg).not.toMatch(
+      /\b(?:href|src)\s*=\s*["']\s*(?:https?:|data:|\/\/)/i,
+    );
+    expect(svg).not.toMatch(/url\(\s*["']?\s*(?:https?:|data:|\/\/)/i);
+    expect(svg).not.toMatch(/data:image\//i);
+    if (filename === "vital-crest-animated.svg") {
+      expect(svg).toMatch(/<animate(?:Transform|Motion)?\b/);
+      expect(svg).not.toMatch(
+        /\b(?:repeatCount|repeatDur|dur)\s*=\s*["']indefinite["']/i,
+      );
+    }
+    if (filename === "vital-lockup.svg") {
+      expect(svg).not.toMatch(/<text\b/);
+    }
+  }
+});
+
 test("serves metadata, a real 404, sitemap, robots, and responsive assets", async ({
   page,
   request,
@@ -256,6 +326,13 @@ test("honors reduced motion", async ({ page }) => {
       .locator("#ai-studio")
       .getByRole("button", { name: "Resume motion", exact: true }),
   ).toBeVisible();
+  await expect(page.locator(".site-header svg.brand-crest")).toBeVisible();
+  expect(
+    await page
+      .locator(".site-header .crest-glint")
+      .first()
+      .evaluate((element) => getComputedStyle(element).animationName),
+  ).toBe("none");
 });
 
 test("mobile navigation traps focus, closes on Escape, and follows anchors", async ({

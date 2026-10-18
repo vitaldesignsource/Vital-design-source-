@@ -1,16 +1,12 @@
 import { useEffect, useRef, useState } from "react";
 import { ArrowUpRight, Menu, X } from "lucide-react";
+import { BrandCrest } from "./BrandCrest";
 
 export function Brand() {
   return (
     <a href="/#top" className="brand" aria-label="Vital Design Source home">
-      <img
-        src="/assets/brand/vital-logo-light.png"
-        width="64"
-        height="62"
-        alt=""
-      />
-      <span>
+      <BrandCrest />
+      <span className="brand-wordmark">
         VITAL<span>DESIGN SOURCE</span>
       </span>
     </a>
