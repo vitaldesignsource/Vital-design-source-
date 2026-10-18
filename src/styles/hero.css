@@ -7,10 +7,20 @@
     position: relative;
     isolation: isolate;
     overflow: hidden;
-    border: 1px solid var(--line);
+    border: 1px solid var(--line-strong);
     border-radius: 30px;
     background:
-      radial-gradient(ellipse at 78% 55%, #12372b66, transparent 60%), #040b09;
+      radial-gradient(ellipse at 81% 44%, var(--jade-glow), transparent 57%),
+      linear-gradient(
+        135deg,
+        var(--panel) 0%,
+        var(--deep) 53%,
+        var(--jade-deep) 130%
+      );
+    box-shadow:
+      inset 0 1px 0 color-mix(in srgb, var(--platinum) 8%, transparent),
+      inset 0 -1px 0 color-mix(in srgb, var(--deep) 70%, transparent),
+      0 28px 80px #0003;
   }
   .ambient-field {
     position: absolute;
@@ -23,7 +33,7 @@
   .hero-layout {
     min-height: 690px;
     display: grid;
-    grid-template-columns: 1.1fr 0.9fr;
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
     align-items: center;
     position: relative;
     padding: 70px 54px 75px;
@@ -39,12 +49,12 @@
     gap: 10px;
     align-items: center;
     color: var(--accent);
-    font-size: 9px;
-    letter-spacing: 0.1em;
+    font-size: 10px;
+    letter-spacing: 0.085em;
     margin-bottom: 34px;
   }
   .hero h1 {
-    font-size: clamp(72px, 7.3vw, 116px);
+    font-size: clamp(68px, 7.3vw, 112px);
     line-height: 0.98;
     letter-spacing: -0.075em;
     font-weight: 400;
@@ -59,12 +69,12 @@
     font-size: 1.02em;
     font-style: normal;
     font-weight: 400;
-    color: var(--accent);
+    color: var(--platinum);
     letter-spacing: -0.075em;
   }
   .hero-description {
     max-width: 390px;
-    color: #bdcec5;
+    color: var(--muted);
     font-size: 15px;
     line-height: 1.8;
     margin-top: 28px;
@@ -80,7 +90,7 @@
     display: inline-flex;
     gap: 10px;
     align-items: center;
-    font-size: 12px;
+    font-size: 13px;
     min-height: 48px;
   }
   .hero-work-link svg {
@@ -95,18 +105,18 @@
     gap: 13px;
     margin-top: 54px;
     color: var(--muted);
-    font-size: 8px;
+    font-size: 10px;
   }
   .hero-disciplines span + span::before {
     content: "/";
     margin-right: 13px;
-    color: #789488;
+    color: var(--line-strong);
   }
   .hero-artwork {
     position: absolute;
-    width: 52%;
+    width: 51%;
     max-width: 880px;
-    right: -1%;
+    right: 0;
     top: 0;
     height: 100%;
     z-index: auto;
@@ -124,7 +134,7 @@
     width: 86%;
     height: 86%;
     object-fit: contain;
-    filter: drop-shadow(0 20px 34px #0008);
+    filter: drop-shadow(0 24px 38px #0006);
   }
   .crest-sculpture-canvas {
     position: absolute;
@@ -147,15 +157,15 @@
     width: 100%;
     text-align: center;
     color: var(--muted);
-    letter-spacing: 0.2em;
+    letter-spacing: 0.14em;
     font-size: 10px;
   }
   .hero-bottom {
     position: relative;
     z-index: 2;
-    margin-inline: 34px;
+    margin-inline: 40px;
     border-top: 1px solid var(--line);
-    padding: 16px 0;
+    padding: 17px 0;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -166,41 +176,38 @@
     align-items: center;
     gap: 10px;
     min-height: 44px;
-    font-size: 8px;
+    font-size: 10px;
   }
   .scroll-link svg {
     color: var(--accent);
   }
   .hero-coordinate {
     color: var(--muted);
-    font-size: 8px;
+    font-size: 10px;
   }
   .hero-motion-toggle {
     min-height: 44px;
-    border: 1px solid var(--line);
-    background: #0c1b15b3;
+    border: 1px solid var(--line-strong);
+    background: var(--panel-glass);
     color: var(--muted);
     border-radius: 50px;
     padding: 10px 15px;
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    font-size: 10px;
+    font-size: 11px;
+    transition:
+      background 180ms,
+      border-color 180ms,
+      color 180ms;
   }
   .hero-motion-toggle:hover {
     border-color: var(--accent);
     color: var(--ink);
+    background: var(--panel-raised);
   }
   .hero[data-motion="paused"] .hero-art img {
     animation-play-state: paused;
-  }
-  @keyframes chrome-drift {
-    from {
-      transform: translate3d(0, -7px, 0) rotate(-5deg) scale(0.96);
-    }
-    to {
-      transform: translate3d(-10px, 12px, 0) rotate(5deg) scale(1.02);
-    }
   }
 }
 @layer responsive {
@@ -215,11 +222,11 @@
       padding-inline: 35px;
     }
     .hero h1 {
-      font-size: clamp(64px, 7.5vw, 85px);
+      font-size: clamp(57px, 7.2vw, 80px);
     }
     .hero-artwork {
-      width: 56%;
-      right: -5%;
+      width: 51%;
+      right: 0;
     }
     .hero-description {
       max-width: 330px;
@@ -245,7 +252,7 @@
       padding: 35px 27px 0;
     }
     .hero-eyebrow {
-      font-size: 8px;
+      font-size: 9px;
       margin-bottom: 29px;
       letter-spacing: 0.03em;
     }
@@ -273,22 +280,24 @@
     }
     .hero-artwork {
       position: relative;
-      width: 125%;
+      width: calc(100% + 54px);
       height: auto;
       right: auto;
       top: auto;
       max-width: none;
-      margin: -8% -12.5% -5%;
+      margin: 4px -27px 0;
     }
     .hero-art {
       aspect-ratio: 1.13;
     }
     .hero-art img {
-      height: 100%;
+      width: 90%;
+      height: 90%;
       object-fit: contain;
     }
     .hero-crest-caption {
-      bottom: 7%;
+      bottom: 6%;
+      font-size: 9px;
     }
     .hero-bottom {
       margin-inline: 22px;
@@ -296,11 +305,11 @@
       gap: 10px;
     }
     .hero-motion-toggle {
-      padding: 10px;
-      font-size: 9px;
+      padding: 10px 12px;
+      font-size: 10px;
     }
     .scroll-link {
-      font-size: 8px;
+      font-size: 9px;
     }
   }
   @media (max-width: 430px) {
@@ -311,11 +320,11 @@
       padding-inline: 21px;
     }
     .hero-eyebrow {
-      font-size: 7px;
+      font-size: 8px;
       gap: 7px;
     }
     .hero h1 {
-      font-size: clamp(43px, 11.4vw, 49px);
+      font-size: clamp(38px, 11.4vw, 49px);
     }
     .hero-actions {
       display: flex;
@@ -327,10 +336,31 @@
     .hero-description {
       font-size: 13px;
     }
+    .hero-artwork {
+      width: calc(100% + 42px);
+      margin-inline: -21px;
+    }
+    .hero-bottom {
+      margin-inline: 18px;
+      gap: 8px;
+    }
+    .scroll-link {
+      font-size: 8px;
+      gap: 7px;
+    }
+    .hero-motion-toggle {
+      padding-inline: 10px;
+      gap: 6px;
+      font-size: 9px;
+    }
   }
   @media (prefers-reduced-motion: reduce) {
     .hero[data-motion="paused"] .hero-art img {
       animation: none !important;
+    }
+    .crest-sculpture-canvas,
+    .hero-motion-toggle {
+      transition: none;
     }
   }
 }

@@ -43,7 +43,7 @@ When motion is enabled, pointer position gently changes the crest’s orientatio
 
 `source-assets/neural-master.png` is newly AI-generated, text-free concept artwork for the dark jade and liquid-chrome theme. It depicts intertwined liquid-chrome and jade-glass loops in a photorealistic composition. It is decorative artwork, not a replacement logo or a photograph of client work, and contains no client logos, interface mockups, awards, locations, or performance claims. The artwork appears in the AI Design Lab, with local `neural-640` and `neural-1280` AVIF and WebP derivatives retained in the asset set. The hero now uses the vector-derived dimensional crest described above. No large autoplay video is required.
 
-The active social sharing image, `public/assets/og-neural.jpg`, combines that artwork, the supplied crest variant, and Vital Design Source copy. Run `npm run assets` to regenerate the active artwork derivatives, project previews, sharing image, and icons.
+The active social sharing image, `public/assets/og-vital.jpg`, pairs the silver vector crest with an obsidian background, restrained jade light, platinum typography, the supplied crest variant, and Vital Design Source copy. It is composed from local brand assets. Its typography uses checked-in glyph outlines in `source-assets/brand/social-lettering.json`, derived from the same bundled Space Grotesk and IBM Plex Mono fonts as the site, so rendering does not depend on system font availability. The optional `scripts/outline-social.py` helper regenerates those outlines with fontTools and Brotli; normal asset builds require no Python. The earlier `og-neural.jpg` preview remains in the repository for provenance. Run `npm run assets` to regenerate the active artwork derivatives, project previews, sharing image, and icons.
 
 Earlier artwork remains in the repository for provenance but is no longer used by the active design:
 
@@ -84,3 +84,7 @@ Captures were made October 18, 2026. Hidden Forces uses a private release gate; 
 ## Copy
 
 Service copy describes offered capabilities. Project names, categories, destinations, and subject descriptions follow the reference. No claims of awards, client results, office locations, headcount, or verified registration marks are made. Do not add endorsements or metrics without owner-supplied evidence.
+
+## Current color system
+
+The site uses shared roles in `src/styles.css`: obsidian `#090d0c` for the ground, platinum `#e0e6df` for primary actions and silver identity, deep jade `#142c21` for atmospheric depth, sage `#b8d9c3` for selected states, and warm ivory `#ecece3` for editorial contrast. Services and project-study stories use dark jade text on ivory. Project imagery keeps its authentic source colors inside restrained tonal frames. Form borders use a separate higher-contrast control token; text, focus, selected, and hover treatments remain consistent across the main site and project dialogs. The downloadable vector exports, 3D studio reflections, brand preview page, and social image follow the same palette.

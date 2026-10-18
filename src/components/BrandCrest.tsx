@@ -21,11 +21,11 @@ export function BrandCrest() {
           ))}
         </g>
         <linearGradient id={`${id}-silver`} x1="0" y1="0" x2="0.85" y2="1">
-          <stop stopColor="#f6fff9" />
-          <stop offset="0.32" stopColor="#cbded3" />
-          <stop offset="0.5" stopColor="#8da99b" />
-          <stop offset="0.7" stopColor="#ecfff6" />
-          <stop offset="1" stopColor="#adc5b7" />
+          <stop stopColor="#f4f3eb" />
+          <stop offset="0.32" stopColor="#d5dbd2" />
+          <stop offset="0.5" stopColor="#87968b" />
+          <stop offset="0.7" stopColor="#eef1e9" />
+          <stop offset="1" stopColor="#b4c1b5" />
         </linearGradient>
         <linearGradient id={`${id}-light`}>
           <stop stopColor="#ffffff" stopOpacity="0" />
@@ -42,7 +42,7 @@ export function BrandCrest() {
         d={shield.d}
         transform={shield.transform}
         fill="none"
-        stroke="#b5ffdc"
+        stroke="#b8d9c3"
         strokeWidth="9"
         pathLength="1"
         strokeDasharray="1"

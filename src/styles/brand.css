@@ -1,18 +1,27 @@
 @layer components {
   .brand-wordmark {
-    border-left: 1px solid #d4ffe333;
+    border-left: 1px solid var(--line-strong);
     padding-left: 15px;
+    color: var(--platinum);
+  }
+  .brand .brand-wordmark > span {
+    color: var(--muted);
+    font-size: 10px;
+    letter-spacing: 0.16em;
   }
   .brand-crest {
     display: block;
     overflow: visible;
+    filter: drop-shadow(0 2px 4px #0003);
   }
   .crest-etch {
     stroke-dashoffset: 0;
     opacity: 0;
+    stroke: var(--accent);
     animation: crest-etch 1.45s 120ms both;
   }
   .crest-glint {
+    opacity: 0.75;
     transform: translateX(1800px) skewX(-18deg);
     animation: crest-glint 1.35s 220ms both;
   }
@@ -72,6 +81,10 @@
     }
     .brand-wordmark {
       padding-left: 11px;
+    }
+    .brand .brand-wordmark > span {
+      font-size: 8px;
+      letter-spacing: 0.15em;
     }
   }
   @media (prefers-reduced-motion: reduce) {

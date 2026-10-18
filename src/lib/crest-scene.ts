@@ -14,17 +14,17 @@ function studioEnvironment(renderer: THREE.WebGLRenderer) {
   canvas.height = 512;
   const context = canvas.getContext("2d")!;
   const background = context.createLinearGradient(0, 0, 0, 512);
-  background.addColorStop(0, "#c6d4ce");
-  background.addColorStop(0.42, "#35473f");
-  background.addColorStop(0.52, "#101b15");
-  background.addColorStop(0.72, "#263e32");
-  background.addColorStop(1, "#65796e");
+  background.addColorStop(0, "#d2d6ce");
+  background.addColorStop(0.42, "#3a453d");
+  background.addColorStop(0.52, "#131b16");
+  background.addColorStop(0.72, "#2b3a2f");
+  background.addColorStop(1, "#657265");
   context.fillStyle = background;
   context.fillRect(0, 0, 1024, 512);
   for (const [x, width, color] of [
     [100, 125, "#ffffff"],
-    [480, 55, "#d7fff0"],
-    [800, 60, "#f6fffc"],
+    [480, 55, "#dce8da"],
+    [800, 60, "#f3f2e7"],
   ] as const) {
     context.fillStyle = color;
     context.fillRect(x, 40, width, 240);
@@ -65,13 +65,13 @@ export function createCrestScene(
   camera.position.set(0, 0, 7.8);
   const crest = new THREE.Group();
   const face = new THREE.MeshStandardMaterial({
-    color: 0xd9e4df,
+    color: 0xe2e5dc,
     metalness: 1,
     roughness: 0.2,
     envMapIntensity: 1.4,
   });
   const edge = new THREE.MeshStandardMaterial({
-    color: 0x7b9e8e,
+    color: 0x8b9a8d,
     metalness: 0.9,
     roughness: 0.21,
     envMapIntensity: 1.4,
@@ -114,11 +114,11 @@ export function createCrestScene(
   crest.scale.set(scale, -scale, scale);
   crest.rotation.set(0.08, -0.22, -0.035);
   scene.add(crest);
-  scene.add(new THREE.HemisphereLight(0xffffff, 0x315743, 0.8));
+  scene.add(new THREE.HemisphereLight(0xffffff, 0x304c39, 0.8));
   const key = new THREE.DirectionalLight(0xffffff, 2.5);
   key.position.set(-3, 4, 6);
   scene.add(key);
-  const rim = new THREE.PointLight(0x82ffc2, 18, 15, 2);
+  const rim = new THREE.PointLight(0xb6d9bb, 18, 15, 2);
   rim.position.set(3, -1, 3);
   scene.add(rim);
 

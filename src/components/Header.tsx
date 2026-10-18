@@ -30,7 +30,7 @@ export function Header() {
     modal?.showModal();
     const previous = document.body.style.overflow;
     document.body.style.overflow = "hidden";
-    const query = window.matchMedia("(min-width: 800px)");
+    const query = window.matchMedia("(min-width: 1024px)");
     const onResize = () => {
       if (query.matches) setOpen(false);
     };

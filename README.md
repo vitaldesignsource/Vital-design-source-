@@ -1,8 +1,8 @@
 # Vital Design Source
 
-The official Vital Design Source LLC website: an independent React and TypeScript build with the preserved original heraldic crest, an animated SVG crest refinement, a dark jade and liquid-chrome theme, six portfolio projects, and a private project inquiry service.
+The official Vital Design Source LLC website: an independent React and TypeScript build with the preserved original heraldic crest, an animated SVG crest refinement, an obsidian, platinum, jade, and warm ivory design system, six portfolio projects, and a private project inquiry service.
 
-![Vital Design Source](public/assets/og-neural.jpg)
+![Vital Design Source](public/assets/og-vital.jpg)
 
 The studio offers web design, development, branding, SEO, intelligent automation, and human-directed AI design and motion. The AI Design Lab lets visitors explore curated visual directions and pause motion. It is an interactive art-direction study, not a live AI generation service.
 

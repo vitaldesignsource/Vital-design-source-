@@ -12,8 +12,8 @@ export const designDirections = [
     name: "Liquid chrome",
     title: "Sculpted for the unexpected.",
     brief:
-      "Fluid forms, reflective surfaces, and an electric green accent. A cinematic direction for a brand with a sharper edge.",
-    materials: ["Liquid metal", "Emerald light", "Soft motion"],
+      "Fluid forms, reflective surfaces, and restrained jade light. A cinematic direction for a brand with a sharper edge.",
+    materials: ["Liquid metal", "Jade light", "Soft motion"],
   },
   {
     id: "prismatic",

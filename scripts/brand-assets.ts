@@ -8,13 +8,13 @@ const paths = geometry.paths
   .map((path) => `<path d="${path.d}" transform="${path.transform}"/>`)
   .join("");
 const shield = geometry.paths[geometry.shieldIndex];
-const silver = `<linearGradient id="silver" x1="0" y1="0" x2="0.85" y2="1"><stop stop-color="#f6fff9"/><stop offset="0.32" stop-color="#cbded3"/><stop offset="0.5" stop-color="#8da99b"/><stop offset="0.7" stop-color="#ecfff6"/><stop offset="1" stop-color="#adc5b7"/></linearGradient>`;
+const silver = `<linearGradient id="silver" x1="0" y1="0" x2="0.85" y2="1"><stop stop-color="#f4f3eb"/><stop offset="0.32" stop-color="#d5dbd2"/><stop offset="0.5" stop-color="#87968b"/><stop offset="0.7" stop-color="#eef1e9"/><stop offset="1" stop-color="#b4c1b5"/></linearGradient>`;
 const light = `<linearGradient id="light"><stop stop-color="#fff" stop-opacity="0"/><stop offset="0.5" stop-color="#fff" stop-opacity="0.85"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>`;
 const open = (viewBox: string, title: string, width: number, height: number) =>
   `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${viewBox}" width="${width}" height="${height}" role="img" aria-labelledby="title"><title id="title">${title}</title>`;
-const animation = `<path d="${shield.d}" transform="${shield.transform}" fill="none" stroke="#b5ffdc" stroke-width="9" pathLength="1" stroke-dasharray="1" stroke-dashoffset="1" opacity="0"><animate attributeName="stroke-dashoffset" from="1" to="0" begin="0.12s" dur="1.1s" fill="freeze"/><animate attributeName="opacity" values="0;0.85;0.85;0" keyTimes="0;0.12;0.78;1" begin="0.12s" dur="1.45s" fill="freeze"/></path><g clip-path="url(#clip)"><g transform="skewX(-18)"><rect x="-320" y="-220" width="320" height="1600" fill="url(#light)" transform="translate(-1300 0)"><animateTransform attributeName="transform" type="translate" from="-1300 0" to="1800 0" begin="0.22s" dur="1.35s" fill="freeze"/></rect></g></g>`;
+const animation = `<path d="${shield.d}" transform="${shield.transform}" fill="none" stroke="#b8d9c3" stroke-width="9" pathLength="1" stroke-dasharray="1" stroke-dashoffset="1" opacity="0"><animate attributeName="stroke-dashoffset" from="1" to="0" begin="0.12s" dur="1.1s" fill="freeze"/><animate attributeName="opacity" values="0;0.85;0.85;0" keyTimes="0;0.12;0.78;1" begin="0.12s" dur="1.45s" fill="freeze"/></path><g clip-path="url(#clip)"><g transform="skewX(-18)"><rect x="-320" y="-220" width="320" height="1600" fill="url(#light)" transform="translate(-1300 0)"><animateTransform attributeName="transform" type="translate" from="-1300 0" to="1800 0" begin="0.22s" dur="1.35s" fill="freeze"/></rect></g></g>`;
 for (const [filename, fill] of [
-  ["vital-crest.svg", "#122a23"],
+  ["vital-crest.svg", "#17271e"],
   ["vital-crest-silver.svg", "url(#silver)"],
 ] as const) {
   await writeFile(

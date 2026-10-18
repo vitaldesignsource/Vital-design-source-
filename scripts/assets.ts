@@ -2,6 +2,7 @@ import sharp from "sharp";
 import "./brand-assets";
 import { mkdir } from "node:fs/promises";
 import { projects } from "../src/lib/content";
+import socialLettering from "../source-assets/brand/social-lettering.json";
 
 await mkdir("public/assets/projects", { recursive: true });
 for (const width of [640, 1280]) {
@@ -45,25 +46,31 @@ await sharp("public/assets/brand/vital-logo-original.webp")
   .png()
   .toFile("public/apple-touch-icon.png");
 // Own brand sharing image; no fabricated client claims or performance figures.
+const lettering = socialLettering
+  .map(
+    ({ d, fill, transform }) =>
+      `<path d="${d}" fill="${fill}" transform="${transform}"/>`,
+  )
+  .join("");
 const typography = Buffer.from(
-  `<svg width="1200" height="630" xmlns="http://www.w3.org/2000/svg"><rect width="1200" height="630" fill="#060d0c"/><text x="140" y="94" font-family="sans-serif" font-size="17" letter-spacing="2" fill="#edf8f3">VITAL DESIGN SOURCE</text><g fill="#edf8f3" font-family="sans-serif" font-size="78" font-weight="400" letter-spacing="-4"><text x="52" y="288">Ideas beyond</text><text x="52" y="378" fill="#b5ffdc">ordinary.</text></g><text x="57" y="548" font-family="sans-serif" font-size="17" fill="#afbfb7">Design. Intelligence. Motion.</text></svg>`,
+  `<svg width="1200" height="630" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="glow"><stop stop-color="#2e5a45" stop-opacity=".55"/><stop offset="1" stop-color="#090d0c" stop-opacity="0"/></radialGradient></defs><rect width="1200" height="630" fill="#090d0c"/><ellipse cx="960" cy="315" rx="460" ry="390" fill="url(#glow)"/>${lettering}</svg>`,
 );
 const crest = await sharp("public/assets/brand/vital-logo-light.png")
   .resize({ width: 74 })
   .toBuffer();
-const sculpture = await sharp("source-assets/neural-master.png")
-  .resize(600, 600, { fit: "cover" })
+const sculpture = await sharp("public/assets/brand/vital-crest-silver.svg")
+  .resize({ width: 520 })
   .toBuffer();
 await sharp({
-  create: { width: 1200, height: 630, channels: 3, background: "#060d0c" },
+  create: { width: 1200, height: 630, channels: 3, background: "#090d0c" },
 })
   .composite([
     { input: typography },
-    { input: sculpture, left: 580, top: 15 },
+    { input: sculpture, left: 645, top: 110 },
     { input: crest, left: 55, top: 50 },
   ])
   .jpeg({ quality: 88 })
-  .toFile("public/assets/og-neural.jpg");
+  .toFile("public/assets/og-vital.jpg");
 console.info(
   "Generated responsive hero and portfolio assets, crest icons, and social preview.",
 );
