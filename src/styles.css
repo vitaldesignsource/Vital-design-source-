@@ -399,6 +399,14 @@
   .section-heading h2 em {
     font-size: 1.08em;
   }
+  #work-title {
+    font-size: clamp(40px, 5vw, 76px);
+  }
+  #work-title em {
+    display: inline-block;
+    max-width: 100%;
+    text-wrap: balance;
+  }
   .work-toolbar {
     display: flex;
     justify-content: space-between;
@@ -1503,6 +1511,9 @@
       gap: 20px;
     }
     h2 {
+      font-size: clamp(48px, 8.5vw, 76px);
+    }
+    #work-title {
       font-size: clamp(48px, 8.5vw, 76px);
     }
     .site-header {

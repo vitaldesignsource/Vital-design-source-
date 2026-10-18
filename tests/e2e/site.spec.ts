@@ -64,10 +64,15 @@ test("renders all eight projects with working views, filters, and secure links",
   ).toBeVisible();
   await expect(
     page.locator(".project-7-seas-trading .project-preview-note"),
-  ).toHaveText("Project cover · website preview unavailable");
-  await expect(
-    page.locator(".project-7-seas-trading .project-preview-note"),
-  ).toBeVisible();
+  ).toHaveCount(0);
+  await expect(page.locator(".project-7-seas-trading img")).toHaveAttribute(
+    "alt",
+    "7 Seas Trading website preview",
+  );
+  await expect(page.locator(".project-7-seas-trading img")).toHaveAttribute(
+    "src",
+    "/assets/projects/7-seas-trading-home-1200.webp",
+  );
   await page
     .getByRole("button", { name: "Culture & ideas", exact: true })
     .click();

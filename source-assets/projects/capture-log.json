@@ -48,5 +48,14 @@
     "capturedAt": "2026-10-18T21:11:49.436Z",
     "status": 403,
     "previewUnavailable": true
+  },
+  {
+    "name": "7 Seas Trading",
+    "url": "https://7seastrading.net/",
+    "title": "Seven Seas Trading — A collection for the curious",
+    "capturedAt": "2026-10-18T23:09:25.472Z",
+    "status": 200,
+    "source": "7-seas-trading-home.png",
+    "replacesPreviewUnavailable": true
   }
 ]

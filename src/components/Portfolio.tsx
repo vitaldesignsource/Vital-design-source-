@@ -30,8 +30,9 @@ export function Portfolio() {
             <span>01</span> Selected work
           </p>
           <h2 id="work-title">
-            Work with a<br />
-            <em>point of view.</em>
+            Built with purpose.
+            <br />
+            <em>Designed to stand apart.</em>
           </h2>
         </div>
         <p>

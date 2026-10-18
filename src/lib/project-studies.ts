@@ -136,10 +136,21 @@ export const projectStudies: Record<string, ProjectStudy> = {
     ],
   },
   "7-seas-trading": {
-    headline: "7 Seas Trading",
+    headline: "A world of discoveries, thoughtfully collected.",
     introduction:
-      "The public website preview is currently unavailable. A project cover is shown in its place.",
-    previewKind: "cover",
-    observations: [],
+      "An editorial discovery guide to regional foods and shoreline finds, with original product names, English descriptions, and direct links to sellers.",
+    previewKind: "website",
+    observations: [
+      {
+        title: "An editorial sense of place",
+        description:
+          "Forest-green serif lettering, teal italics, and fine gold rules sit on a warm ivory canvas.",
+      },
+      {
+        title: "From destination to discovery",
+        description:
+          "A framed Italian coastal photograph is paired with an overlaid pasta discovery card, connecting the place with a find from the collection.",
+      },
+    ],
   },
 };

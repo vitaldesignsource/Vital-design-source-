@@ -98,12 +98,12 @@ export const projects: Project[] = [
   {
     id: "7-seas-trading",
     name: "7 Seas Trading",
-    category: "Website project",
+    category: "Travel & discovery",
     group: "Brands & business",
     url: "https://7seastrading.net",
-    description: "Explore the 7 Seas Trading project.",
-    image: "7-seas-trading",
-    previewLabel: "Project cover · website preview unavailable",
+    description:
+      "A discovery guide to regional pantry goods, sea glass, and natural sands from around the world.",
+    image: "7-seas-trading-home",
   },
 ];
 

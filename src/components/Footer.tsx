@@ -18,9 +18,9 @@ export function Footer() {
           />
         </a>
         <p>
-          A point of view.
+          Creative instinct.
           <br />
-          <em>A world of possibility.</em>
+          <em>Technical precision.</em>
         </p>
         <a className="back-top text-link" href="#top">
           Back to top <ArrowUpRight size={18} aria-hidden="true" />
