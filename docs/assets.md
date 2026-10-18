@@ -66,7 +66,17 @@ Earlier artwork remains in the repository for provenance but is no longer used b
 
 `src/components/DesignLab.tsx` presents curated Liquid chrome, Prismatic, and Editorial visual directions. Typed presets in `src/lib/design-directions.ts` supply the direction names, briefs, and material labels. Selecting a preset changes the composed artwork treatment and supporting copy; it does not generate an image, contact an AI model, or represent completed client work. The section describes human-directed AI-assisted image creation, motion exploration, and intelligent experiences as offered capabilities, with no invented client results.
 
-The Design Lab motion controls initialize from the visitor’s reduced-motion preference and allow explicit pause or resume. `src/components/AmbientField.tsx`, the earlier decorative canvas light field, remains in the repository but is no longer mounted in the hero. The Lab concept artwork remains separate from the brand crest assets.
+The Design Lab motion controls initialize from reduced-motion and data-saving preferences and allow explicit pause or resume. Its `useVisibleMotion` hook suspends animation offscreen and in background tabs while retaining the visitor’s button intent. `src/components/AmbientField.tsx`, the earlier decorative canvas light field, remains in the repository but is no longer mounted in the hero. The Lab concept artwork remains separate from the brand crest assets.
+
+## Aurora Celadon atmosphere
+
+The Aurora Celadon refresh adds original inline SVG paths and CSS compositions, using existing dependencies and local resources. It adds no paid generation or new generated media. The original crest, refined vector geometry, and previously approved Higgsfield film keep their existing provenance.
+
+`src/components/AuroraBackdrop.tsx` adds flowing light, ribbons, and contours behind the hero without replacing or redrawing the crest. The hero’s existing pause/resume control governs this layer; intersection and document-visibility observers suspend it offscreen or in hidden tabs. Reduced-motion and data-saving preferences retain the complete static composition. `SectionContours.tsx` supplies static supporting contours for the work, services, and contact sections. These decorative SVGs use local paths, unique gradient/mask IDs, and no external resource requests.
+
+`SignalBanner.tsx` creates the pale platinum interlude between Studio and Contact, retaining “Human imagination.” and “Extraordinary possibilities.” Its first paint is a complete static composition. One optional 4.2-second contour and highlight pass starts on first viewport entry, pauses offscreen or while the document is hidden, and settles permanently after completion. Reduced-motion and data-saving visitors receive the static treatment.
+
+`ScrollChoreography.tsx` progressively enhances initially offscreen content with once-only entrances: 650ms opacity and 800ms position transitions with short staggered delays. Interactive containers fade without translation so pointer targets stay still. Content already visible on first paint remains visible, keyboard focus forces immediate reveal, and JavaScript-disabled, reduced-motion, and data-saving visits retain readable content throughout.
 
 ## Typography
 
@@ -99,6 +109,6 @@ Captures were made October 18, 2026. Hidden Forces uses a private release gate; 
 
 Service copy describes offered capabilities. Project names, categories, destinations, and subject descriptions follow the reference. No claims of awards, client results, office locations, headcount, or verified registration marks are made. Do not add endorsements or metrics without owner-supplied evidence.
 
-## Current color system
+## Aurora Celadon color system
 
-The site uses shared roles in `src/styles.css`: obsidian `#090d0c` for the ground, platinum `#e0e6df` for primary actions and silver identity, deep jade `#142c21` for atmospheric depth, sage `#b8d9c3` for selected states, and warm ivory `#ecece3` for editorial contrast. Services and project-study stories use dark jade text on ivory. Project imagery keeps its authentic source colors inside restrained tonal frames. Form borders use a separate higher-contrast control token; text, focus, selected, and hover treatments remain consistent across the main site and project dialogs. The downloadable vector exports, 3D studio reflections, brand preview page, and social image follow the same palette.
+Aurora Celadon uses shared roles in `src/styles.css`: obsidian `#070d0c` for the ground, platinum `#e7ece5` for primary actions, celadon `#c8e8d7` for selected states, jade `#1c594b` for depth, aurora teal `#78cfba` and decorative blue `#688fba` for atmospheric light, and warm ivory `#eeede5` for editorial contrast. Services and project-study stories use dark jade text on ivory. Project imagery keeps its authentic source colors inside restrained tonal frames. Form borders use a separate higher-contrast control token; text, focus, selected, and hover treatments remain consistent across the main site and project dialogs. Existing vector exports, social artwork, and the brand film retain their checked-in source artwork.

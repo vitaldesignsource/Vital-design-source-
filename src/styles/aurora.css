@@ -1,0 +1,135 @@
+@layer components {
+  .aurora-backdrop {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+    pointer-events: none;
+    user-select: none;
+  }
+  .aurora-backdrop svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+  .aurora-backdrop * {
+    animation-play-state: paused !important;
+  }
+  .aurora-backdrop[data-motion="running"] * {
+    animation-play-state: running !important;
+  }
+  .aurora-field {
+    opacity: 0.9;
+  }
+  .aurora-ribbons {
+    transform-box: fill-box;
+    transform-origin: 65% 50%;
+    animation: aurora-ribbon-drift 32s ease-in-out infinite alternate;
+  }
+  .aurora-contours {
+    transform-box: fill-box;
+    transform-origin: 65% 50%;
+    animation: aurora-contour-drift 40s ease-in-out infinite alternate;
+  }
+  .aurora-contour {
+    stroke-width: 0.9px;
+    opacity: 0.7;
+  }
+  .aurora-contour:nth-child(3n) {
+    stroke-width: 1.2px;
+    opacity: 0.9;
+  }
+  .aurora-highlight {
+    stroke-width: 1.6px;
+    stroke-linecap: round;
+    stroke-dasharray: 90 910;
+    stroke-dashoffset: 60;
+    animation: aurora-light-travel 26s linear infinite;
+  }
+  .aurora-highlight:nth-last-child(2) {
+    stroke-dasharray: 55 945;
+    stroke-dashoffset: -310;
+    animation-duration: 34s;
+    animation-direction: reverse;
+  }
+  .aurora-highlight:last-child {
+    stroke-dasharray: 75 925;
+    stroke-dashoffset: -590;
+    animation-duration: 42s;
+  }
+  .aurora-node {
+    opacity: 0.75;
+    animation: aurora-node-breathe 8s ease-in-out infinite alternate;
+  }
+  .aurora-node:nth-child(2) {
+    animation-duration: 11s;
+    animation-direction: alternate-reverse;
+  }
+  .aurora-node:nth-child(3) {
+    animation-duration: 13s;
+  }
+  .aurora-node-core {
+    fill: var(--aurora-soft, #b7e4cf);
+  }
+  @keyframes aurora-ribbon-drift {
+    from {
+      transform: translate(0, 0) rotate(0deg);
+    }
+    to {
+      transform: translate(-9px, 12px) rotate(1.8deg);
+    }
+  }
+  @keyframes aurora-contour-drift {
+    from {
+      transform: translate(0, 0) rotate(0deg);
+    }
+    to {
+      transform: translate(11px, -8px) rotate(-1.5deg);
+    }
+  }
+  @keyframes aurora-light-travel {
+    to {
+      stroke-dashoffset: -940;
+    }
+  }
+  @keyframes aurora-node-breathe {
+    from {
+      opacity: 0.6;
+    }
+    to {
+      opacity: 0.95;
+    }
+  }
+}
+
+@layer responsive {
+  @media (max-width: 799px) {
+    .aurora-backdrop {
+      inset: 55% -9% 66px -25%;
+    }
+    .aurora-field {
+      opacity: 0.7;
+    }
+    .aurora-ribbons {
+      opacity: 0.65;
+    }
+    .aurora-ribbons path + path,
+    .aurora-contour:nth-child(n + 6),
+    .aurora-highlight:nth-last-child(-n + 2),
+    .aurora-node:nth-child(2) {
+      display: none;
+    }
+    .aurora-contour {
+      opacity: 0.58;
+    }
+    .aurora-highlight {
+      stroke-width: 1.2px;
+      opacity: 0.7;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .aurora-backdrop[data-motion] * {
+      animation-play-state: paused !important;
+    }
+  }
+}

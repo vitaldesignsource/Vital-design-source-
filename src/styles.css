@@ -4,6 +4,9 @@
 @import "./styles/design-lab.css";
 @import "./styles/brand.css";
 @import "./styles/project-showcase.css";
+@import "./styles/aurora.css";
+@import "./styles/signal-banner.css";
+@import "./styles/atmosphere.css";
 
 @layer reset {
   *,
@@ -62,26 +65,29 @@
 
 @layer base {
   :root {
-    --ground: #090d0c;
-    --deep: #050908;
-    --panel: #101915;
-    --panel-raised: #18251e;
-    --panel-glass: #101915e6;
-    --ink: #f1f2eb;
-    --muted: #acb8ae;
-    --accent: #b8d9c3;
-    --accent-bright: #dcf2e3;
-    --platinum: #e0e6df;
-    --line: #dae9de24;
-    --line-strong: #dae9de42;
-    --control-line: #6f8274;
-    --paper: #ecece3;
-    --paper-ink: #17271e;
-    --paper-muted: #4c5f52;
-    --paper-line: #21382b2b;
-    --jade: #2e5a45;
-    --jade-deep: #142c21;
-    --jade-glow: #416e5145;
+    --ground: #070d0c;
+    --deep: #040a09;
+    --panel: #10201a;
+    --panel-raised: #182c23;
+    --panel-glass: #10201ae6;
+    --ink: #f1f3ed;
+    --muted: #b0beb5;
+    --accent: #c8e8d7;
+    --accent-bright: #e4f5eb;
+    --platinum: #e7ece5;
+    --line: #dbece424;
+    --line-strong: #dbece442;
+    --control-line: #74897b;
+    --paper: #eeede5;
+    --paper-ink: #172d24;
+    --paper-muted: #4b6257;
+    --paper-line: #183c2d2b;
+    --jade: #1c594b;
+    --jade-deep: #102c25;
+    --jade-glow: #2d7b6242;
+    --aurora: #78cfba;
+    --aurora-soft: #c8e8d7;
+    --aurora-blue: #688fba;
     --error: #ffc0ad;
     --sans: "Space Grotesk Variable", sans-serif;
     --serif: "Instrument Serif", Georgia, serif;
@@ -979,32 +985,6 @@
     line-height: 1.8;
     max-width: 26ch;
   }
-  .signal-strip {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-wrap: wrap;
-    gap: 16px;
-    padding: 42px 25px;
-    background: linear-gradient(115deg, #d5dfd2, #eef0e5 50%, #bbcebc);
-    color: var(--paper-ink);
-    border-block: 1px solid #ffffff38;
-  }
-  .signal-strip > span:first-child {
-    font-size: clamp(25px, 3vw, 46px);
-    line-height: 1.1;
-    letter-spacing: -0.05em;
-  }
-  .signal-strip > em {
-    font-size: clamp(32px, 3.8vw, 57px);
-    line-height: 1.1;
-  }
-  .signal-strip > span:last-child {
-    margin-left: 30px;
-    font-size: 55px;
-    line-height: 1;
-  }
-  .signal-strip > span:last-child svg,
   .footer-wordmark > span svg {
     display: block;
     width: 1em;
@@ -1052,6 +1032,7 @@
   }
   .contact-form-wrap {
     min-width: 0;
+    container-type: inline-size;
     padding: 34px;
     border: 1px solid var(--line-strong);
     border-radius: 24px;
@@ -1079,6 +1060,12 @@
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 22px;
+  }
+  @container (max-width: 460px) {
+    .form-pair {
+      grid-template-columns: 1fr;
+      gap: 0;
+    }
   }
   .field {
     display: flex;
@@ -1748,21 +1735,6 @@
     }
     .process-strip article > p:last-child {
       font-size: 12px;
-    }
-    .signal-strip {
-      padding: 32px 22px;
-      gap: 3px 12px;
-      justify-content: flex-start;
-    }
-    .signal-strip > span:first-child {
-      font-size: 27px;
-    }
-    .signal-strip > em {
-      font-size: 36px;
-    }
-    .signal-strip > span:last-child {
-      font-size: 40px;
-      margin-left: auto;
     }
     .contact-section {
       display: block;

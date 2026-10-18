@@ -8,6 +8,8 @@ import { Services } from "./components/Services";
 import { Studio } from "./components/Studio";
 import { DesignLab } from "./components/DesignLab";
 import { BrandFilm } from "./components/BrandFilm";
+import { SignalBanner } from "./components/SignalBanner";
+import { ScrollChoreography } from "./components/ScrollChoreography";
 
 function Privacy() {
   return (
@@ -91,6 +93,7 @@ export function App({ path = "/" }: { path?: string }) {
       <Header />
       {path === "/" ? (
         <main id="main">
+          <ScrollChoreography />
           <Hero />
           <div className="discipline-bar">
             <div className="page-width eyebrow">
@@ -108,13 +111,7 @@ export function App({ path = "/" }: { path?: string }) {
           <DesignLab />
           <Services />
           <Studio />
-          <div className="signal-strip" aria-hidden="true">
-            <span>Human imagination.</span>
-            <em>Extraordinary possibilities.</em>
-            <span>
-              <ArrowUpRight />
-            </span>
-          </div>
+          <SignalBanner />
           <InquiryForm />
         </main>
       ) : path === "/privacy" ? (

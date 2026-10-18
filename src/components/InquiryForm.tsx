@@ -2,6 +2,7 @@ import { useEffect, useId, useRef, useState, type FormEvent } from "react";
 import { ArrowUpRight, Check, LoaderCircle, Asterisk } from "lucide-react";
 import { budgets, projectTypes } from "../lib/content";
 import { inquirySchema } from "../lib/inquiry";
+import { SectionContours } from "./SectionContours";
 
 export function InquiryForm() {
   const formId = useId();
@@ -93,6 +94,7 @@ export function InquiryForm() {
       className="contact-section section-space page-width"
       aria-labelledby="contact-title"
     >
+      <SectionContours variant="contact" />
       <div className="contact-intro">
         <p className="eyebrow section-label">
           <span>05 /</span> Your next chapter

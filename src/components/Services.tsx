@@ -1,6 +1,7 @@
 import { ArrowUpRight, Minus, Plus } from "lucide-react";
 import { useState } from "react";
 import { services } from "../lib/content";
+import { SectionContours } from "./SectionContours";
 
 export function Services() {
   const [active, setActive] = useState<number | null>(0);
@@ -10,6 +11,7 @@ export function Services() {
       className="services-section section-space"
       aria-labelledby="services-title"
     >
+      <SectionContours variant="services" />
       <div className="page-width services-layout">
         <div className="services-intro">
           <p className="eyebrow section-label">

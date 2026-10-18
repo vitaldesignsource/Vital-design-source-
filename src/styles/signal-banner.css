@@ -1,0 +1,153 @@
+@layer components {
+  .signal-banner {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    color: var(--paper-ink);
+    background: linear-gradient(112deg, var(--paper), var(--platinum));
+    border-block: 1px solid var(--paper-line);
+    pointer-events: none;
+  }
+  .signal-banner-art {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    max-width: none;
+  }
+  .signal-banner-gradient-edge {
+    stop-color: var(--platinum);
+  }
+  .signal-banner-gradient-jade {
+    stop-color: var(--jade);
+  }
+  .signal-banner-gradient-light {
+    stop-color: var(--ink);
+  }
+  .signal-banner-contours {
+    opacity: 0.48;
+    stroke-width: 1;
+  }
+  .signal-banner-traces {
+    opacity: 0;
+    stroke-width: 1.5;
+    stroke-dasharray: 1;
+  }
+  .signal-banner-orbit {
+    stroke: var(--jade);
+    stroke-width: 0.7;
+    opacity: 0.18;
+  }
+  .signal-banner-orb {
+    opacity: 0.5;
+  }
+  .signal-banner-diamond {
+    fill: var(--jade-deep);
+    fill-opacity: 0.12;
+    stroke: var(--jade);
+    stroke-opacity: 0.3;
+    stroke-width: 0.75;
+  }
+  .signal-banner-sweep {
+    opacity: 0;
+    transform-box: fill-box;
+    transform-origin: center;
+  }
+  .signal-banner-inner {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    min-height: 240px;
+    padding-block: 32px;
+  }
+  .signal-banner-copy {
+    max-width: 1050px;
+    font-size: clamp(34px, 4.2vw, 62px);
+    line-height: 1.08;
+    letter-spacing: -0.055em;
+  }
+  .signal-banner-copy > span,
+  .signal-banner-copy > em {
+    display: block;
+    text-wrap: balance;
+  }
+  .signal-banner-copy > em {
+    margin-top: 2px;
+    color: var(--paper-ink);
+    font-family: var(--serif);
+    font-size: 1.14em;
+    font-weight: 400;
+    letter-spacing: -0.035em;
+  }
+  .signal-banner:is([data-motion="running"], [data-motion="paused"])
+    .signal-banner-traces {
+    animation: signal-banner-contour-pass 4.2s cubic-bezier(0.2, 0.6, 0.2, 1)
+      both;
+  }
+  .signal-banner:is([data-motion="running"], [data-motion="paused"])
+    .signal-banner-sweep {
+    animation: signal-banner-light-pass 4.2s ease-in-out both;
+  }
+  .signal-banner[data-motion="paused"] .signal-banner-traces,
+  .signal-banner[data-motion="paused"] .signal-banner-sweep {
+    animation-play-state: paused;
+  }
+  @keyframes signal-banner-contour-pass {
+    0% {
+      opacity: 0;
+      stroke-dashoffset: 1;
+    }
+    18% {
+      opacity: 0.7;
+    }
+    75% {
+      opacity: 0.5;
+      stroke-dashoffset: 0;
+    }
+    100% {
+      opacity: 0;
+      stroke-dashoffset: 0;
+    }
+  }
+  @keyframes signal-banner-light-pass {
+    0%,
+    24% {
+      opacity: 0;
+      transform: translateX(0) rotate(24deg);
+    }
+    44% {
+      opacity: 0.65;
+    }
+    80%,
+    100% {
+      opacity: 0;
+      transform: translateX(175px) rotate(24deg);
+    }
+  }
+}
+
+@layer responsive {
+  @media (max-width: 799px) {
+    .signal-banner-art {
+      inset: 35px -180px auto auto;
+      width: 1152px;
+      height: 240px;
+      opacity: 0.3;
+    }
+    .signal-banner-inner {
+      min-height: 240px;
+      padding-block: 34px;
+    }
+    .signal-banner-copy {
+      font-size: clamp(30px, 8vw, 40px);
+      max-width: 100%;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .signal-banner .signal-banner-traces,
+    .signal-banner .signal-banner-sweep {
+      animation: none !important;
+    }
+  }
+}

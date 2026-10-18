@@ -3,6 +3,7 @@ import { ArrowRight, ArrowUpRight, LayoutGrid, Rows3 } from "lucide-react";
 import { projects } from "../lib/content";
 import { projectStudies } from "../lib/project-studies";
 import { ProjectShowcase } from "./ProjectShowcase";
+import { SectionContours } from "./SectionContours";
 
 const filters = [
   "All projects",
@@ -24,6 +25,7 @@ export function Portfolio() {
       className="work-section section-space page-width"
       aria-labelledby="work-title"
     >
+      <SectionContours variant="work" />
       <div className="section-heading">
         <div>
           <p className="eyebrow section-label">

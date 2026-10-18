@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { ArrowDown, ArrowUpRight, Pause, Play } from "lucide-react";
 import { CrestSculpture } from "./CrestSculpture";
+import { AuroraBackdrop } from "./AuroraBackdrop";
 
 export function Hero() {
   const [motion, setMotion] = useState(false);
@@ -21,6 +22,7 @@ export function Hero() {
       data-motion={motion ? "running" : "paused"}
     >
       <div className="hero-scene page-width">
+        <AuroraBackdrop active={motion} />
         <div className="hero-layout">
           <div className="hero-content">
             <p className="eyebrow hero-eyebrow">

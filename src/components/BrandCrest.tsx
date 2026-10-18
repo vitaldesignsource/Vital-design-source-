@@ -42,7 +42,7 @@ export function BrandCrest() {
         d={shield.d}
         transform={shield.transform}
         fill="none"
-        stroke="#b8d9c3"
+        stroke="var(--accent)"
         strokeWidth="9"
         pathLength="1"
         strokeDasharray="1"

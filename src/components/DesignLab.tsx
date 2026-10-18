@@ -11,6 +11,7 @@ import {
   designDirections,
   type DesignDirection,
 } from "../lib/design-directions";
+import { useVisibleMotion } from "../lib/use-visible-motion";
 
 const capabilities = [
   {
@@ -37,6 +38,8 @@ export function DesignLab() {
   const [directionId, setDirectionId] =
     useState<DesignDirection["id"]>("chrome");
   const [motionEnabled, setMotionEnabled] = useState(false);
+  const { ref: stage, running: motionRunning } =
+    useVisibleMotion<HTMLDivElement>(motionEnabled);
   const direction =
     designDirections.find((item) => item.id === directionId) ??
     designDirections[0];
@@ -46,7 +49,11 @@ export function DesignLab() {
 
   useEffect(() => {
     const preference = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const applyPreference = () => setMotionEnabled(!preference.matches);
+    const connection = (
+      navigator as Navigator & { connection?: { saveData?: boolean } }
+    ).connection;
+    const applyPreference = () =>
+      setMotionEnabled(!preference.matches && !connection?.saveData);
     const frame = window.requestAnimationFrame(applyPreference);
     preference.addEventListener("change", applyPreference);
     return () => {
@@ -80,9 +87,10 @@ export function DesignLab() {
 
       <div className="lab-layout">
         <div
+          ref={stage}
           className="lab-stage"
           data-direction={direction.id}
-          data-motion={motionEnabled ? "running" : "paused"}
+          data-motion={motionRunning ? "running" : "paused"}
           aria-hidden="true"
         >
           <div className="lab-grid" />
