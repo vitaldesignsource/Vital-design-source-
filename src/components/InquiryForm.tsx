@@ -1,4 +1,4 @@
-import { useId, useRef, useState, type FormEvent } from "react";
+import { useEffect, useId, useRef, useState, type FormEvent } from "react";
 import { ArrowUpRight, Check, LoaderCircle, Asterisk } from "lucide-react";
 import { budgets, projectTypes } from "../lib/content";
 import { inquirySchema } from "../lib/inquiry";
@@ -12,6 +12,10 @@ export function InquiryForm() {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const statusRef = useRef<HTMLDivElement>(null);
   const submitting = useRef(false);
+
+  useEffect(() => {
+    if (status === "success") statusRef.current?.focus();
+  }, [status]);
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -58,7 +62,6 @@ export function InquiryForm() {
         );
       setStatus("success");
       form.reset();
-      requestAnimationFrame(() => statusRef.current?.focus());
     } catch (error) {
       setStatus("error");
       setMessage(
@@ -240,7 +243,9 @@ export function InquiryForm() {
                 <label htmlFor={`${formId}-consent`}>
                   I agree that my details may be used to respond to this
                   inquiry, as described in the{" "}
-                  <a href="/privacy">privacy notice</a>. *
+                  <span className="consent-privacy">
+                    <a href="/privacy">privacy notice</a>.{"\u00a0"}*
+                  </span>
                 </label>
               </div>
               {errorFor("consent")}
