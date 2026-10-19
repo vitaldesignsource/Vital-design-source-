@@ -1,10 +1,16 @@
 # Vital Design Source
 
-The official Vital Design Source LLC website: an independent React and TypeScript build with the preserved original heraldic crest, an animated SVG crest refinement, an on-demand cinematic brand film, the Aurora Celadon design system, eight portfolio projects, and a private project inquiry service.
+The official Vital Design Source LLC website: an independent React and TypeScript build with the preserved original heraldic crest, an animated SVG crest refinement, an on-demand cinematic brand film, the Aurora Celadon design system, eight portfolio projects with dedicated studies, an interactive workflow demonstration, and a private project inquiry service.
 
 ![Vital Design Source](public/assets/og-vital.jpg)
 
 The studio offers web design, development, branding, SEO, intelligent automation, and human-directed AI design and motion. The AI Design Lab presents three distinct local compositions: liquid chrome, translucent prismatic facets, and an ivory editorial specimen. Visitors can pause motion and carry a chosen direction into their inquiry. It is an interactive art-direction study, not a live AI generation service.
+
+The separate **Intelligence in practice** demonstration explores three example
+requests through Capture, Organize, Review, and Handoff. Its sample messages and
+outputs are checked-in illustrations; selecting stages sends no AI request and
+connects no external tools. Visitors can carry a selected workflow example into
+the existing inquiry form without losing their draft.
 
 ## Deploy on Hostinger
 
@@ -70,6 +76,9 @@ CI also runs `npm run test:deployment`: a disposable production-only install tha
 - `src/components/CrestSculpture.tsx` and `src/lib/crest-scene.ts`: optional Three.js crest loaded and initialized only when visible, with vector extrusion, planar caps, smoothed bevels, local reflections, and one 4.2-second diagonal silver light pass. The existing hero motion control pauses and resumes its remaining time; visibility also suspends it. After it settles, pointer-responsive lighting can sleep. Rendering targets 30fps and adapts pixel density up to 2.5 within a 2.4-megapixel buffer budget. The hero-only SVG fallback is static; reduced-motion and data-saving visits stay quiet.
 - `src/lib/crest-finish.ts`: shared hero-only finish roles for subtle feather and flourish translucency while the core identity stays opaque. The geometry, navigation crest, original brand files, and film remain unchanged.
 - `src/components/ProjectShowcase.tsx` and `src/lib/project-studies.ts`: accessible showcases for eight projects, with factual visual studies, full/detail views where a preview is available, the refreshed 7 Seas Trading website capture, and external-site links.
+- `src/components/ProjectPage.tsx` and `src/styles/project-page.css`: dedicated editorial studies at `/work/<project-id>`, using the existing previews, disclosed detail crops, visual observations, sampled palettes, and previous/next navigation. They describe documented visual material and do not invent project briefs, roles, or outcomes.
+- `src/lib/project-routes.ts`: the shared allowlist for project links, pre-rendering, sitemap entries, server routes, and client resolution. Project-specific structured data is permitted through hashes from only the known built pages.
+- `src/components/AIWorkflow.tsx` and `src/lib/workflow-examples.ts`: local illustrative workflow scenarios, accessible stage controls, and human-review checkpoints. Their optional inquiry handoff uses the existing strict message validation and API shape.
 - `src/lib/project-palettes.ts`: four labeled preview-derived color samples per project, with source checksums. See [color-study provenance](docs/palette-sources.md) for deterministic regeneration and interpretation.
 - `src/components/BrandCrest.tsx`: inline SVG navigation crest with unique IDs, a visible filled base, a brief reveal and highlight, hover interaction, and static reduced-motion styling.
 - `src/lib/content.ts`: project destinations, descriptions, service copy, and form options.

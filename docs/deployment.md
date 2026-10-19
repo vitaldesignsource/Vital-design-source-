@@ -25,7 +25,7 @@ If the domain is still attached to the earlier PHP/HTML deployment, reassign it 
 
 ### Check the deployed site
 
-Open <https://vitaldesignsource.com> and <https://vitaldesignsource.com/api/health>. The first should show the complete site; the second should return `{"ok":true}`. Confirm `/privacy`, `/sitemap.xml`, and `/robots.txt` load too. A deployment-success thumbnail alone does not verify the application.
+Open <https://vitaldesignsource.com> and <https://vitaldesignsource.com/api/health>. The first should show the complete site; the second should return `{"ok":true}`. Confirm `/privacy`, `/work/aetherica`, `/sitemap.xml`, and `/robots.txt` load too. The eight `/work/<project-id>` pages are pre-rendered, included in the sitemap, and served by the same Node app. A deployment-success thumbnail alone does not verify the application.
 
 Submit a test inquiry, then review it in an authorized server terminal:
 
@@ -147,6 +147,6 @@ Back up a running database with SQLite's online backup facility, such as `sqlite
 
 Run `npm run validate` before release. It covers TypeScript, lint, API/storage behavior, the production build, and browser/accessibility checks. Browser tests use synthetic records in temporary databases. Production defaults and local development are separate: use `NODE_ENV=development npm start` for a local build at `http://localhost:3000`, with test storage in `data/inquiries.sqlite` and search indexing disabled.
 
-After deployment, verify the site, API health, privacy page, branded 404 response, canonical/OG URLs, sitemap, robots, TLS, and CSP. Confirm the inquiry record and persistence as described above. Check the eight project links, mobile navigation, portfolio filters, keyboard focus, and reduced motion. 7 Seas Trading currently returns HTTP 403 and uses a disclosed project cover. Hidden Forces currently opens a private release gate; PigeonShield uses its verified `pigeonshield.net` destination.
+After deployment, verify the site, API health, privacy page, branded 404 response, canonical/OG URLs, sitemap, robots, TLS, and CSP. Confirm the inquiry record and persistence as described above. Check the eight external project links and internal study pages, mobile navigation, portfolio filters, keyboard focus, and reduced motion. 7 Seas Trading uses its refreshed homepage capture; see the retained asset provenance. Hidden Forces opens a private release gate; PigeonShield uses its verified `pigeonshield.net` destination. The workflow demonstration is local illustrative content and needs no AI credentials or additional host configuration.
 
 Rollback by redeploying the previous Git commit or image while retaining the same private database or volume. Do not reset inquiries when replacing application code. The schema uses `CREATE TABLE IF NOT EXISTS`; future schema changes require explicit migrations and a backup.

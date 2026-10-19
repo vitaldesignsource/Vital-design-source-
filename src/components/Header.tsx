@@ -13,7 +13,7 @@ export function Brand() {
   );
 }
 
-export function Header() {
+export function Header({ inFlow = false }: { inFlow?: boolean }) {
   const [open, setOpen] = useState(false);
   const dialog = useRef<HTMLDialogElement>(null);
   const trigger = useRef<HTMLButtonElement>(null);
@@ -45,7 +45,9 @@ export function Header() {
 
   return (
     <>
-      <header className="site-header page-width">
+      <header
+        className={`site-header page-width${inFlow ? " site-header-in-flow" : ""}`}
+      >
         <Brand />
         <nav className="desktop-nav" aria-label="Main navigation">
           {links.map(([label, id], index) => (

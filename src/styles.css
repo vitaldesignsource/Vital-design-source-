@@ -10,6 +10,8 @@
 @import "./styles/studio-process.css";
 @import "./styles/inquiry-context.css";
 @import "./styles/background-atmosphere.css";
+@import "./styles/project-page.css";
+@import "./styles/ai-workflow.css";
 
 @layer reset {
   *,

@@ -11,6 +11,7 @@ import {
 import { projects } from "../lib/content";
 import { projectPalettes } from "../lib/project-palettes";
 import { projectStudies } from "../lib/project-studies";
+import { projectPath } from "../lib/project-routes";
 
 interface ProjectShowcaseProps {
   initialProjectId: string;
@@ -109,15 +110,25 @@ export function ProjectShowcase({
         </h2>
         <div className="showcase-summary-row">
           <p id={descriptionId}>{study.introduction}</p>
-          <a
-            className="showcase-visit"
-            href={project.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label={`Visit ${project.name} website (opens in a new tab)`}
-          >
-            Visit website <ArrowUpRight size={18} aria-hidden="true" />
-          </a>
+          <div className="showcase-project-links">
+            <a
+              className="showcase-visit"
+              href={project.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label={`Visit ${project.name} website (opens in a new tab)`}
+            >
+              Visit website <ArrowUpRight size={18} aria-hidden="true" />
+            </a>
+            <a
+              className="showcase-story-link"
+              href={projectPath(project)}
+              aria-label={`Read ${project.name} project study`}
+            >
+              Read full project study{" "}
+              <ArrowRight size={16} aria-hidden="true" />
+            </a>
+          </div>
         </div>
       </div>
 

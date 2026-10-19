@@ -1,5 +1,50 @@
 # Validation record
 
+## Project studies and workflow demonstration — October 19, 2026
+
+Added eight dedicated `/work/<project-id>` pages with editorial previews,
+disclosed crops, documented visual observations, preview-derived palettes,
+previous/next links, and contextual project navigation. The homepage and dialogs
+now link to these studies. Content uses the existing project evidence; no client
+briefs, project roles, performance metrics, or outcomes were invented.
+
+The separate Intelligence in practice console presents three checked-in example
+requests through Capture, Organize, Review, and Handoff. It is visibly labeled as
+an interactive demonstration, sends no AI request, and connects no external tool.
+Its optional inquiry handoff preserves the visitor’s draft and selected project
+type while retaining the strict existing message and API contract.
+
+- Strict TypeScript, ESLint, all 59 configuration/API/route tests, and the
+  production build passed. Route tests cover the exact known path boundary,
+  trailing-slash aliases, private/encoded/nested path rejection, and bounded
+  JSON-LD hashes under the existing strict CSP.
+- Eleven new desktop/mobile browser journeys passed, with three intentional
+  duplicate-context skips. Coverage includes all eight project documents,
+  project-specific metadata, schema, sitemap, CSP, decoded responsive images,
+  color rendering with and without JavaScript, native navigation, 320px layouts,
+  private-artwork disclosures, all 12 workflow example/stage combinations,
+  keyboard access, zero generative/API requests on exploration, and inquiry draft
+  preservation. Automated WCAG checks reported no violations in the new views.
+- Combined feature and regression runs passed all 62 applicable desktop/mobile
+  browser cases, with 18 intentional duplicate-context skips. Existing crest,
+  film, atmosphere, portfolio, service, inquiry, metadata, and mobile-menu checks
+  remain passing alongside the new pages and workflow console.
+- Clean production installation, managed `require()` startup, standalone startup,
+  all eight direct project routes, official canonicals, sitemap coverage,
+  structured-data CSP permissions, protected inquiry persistence, and restart
+  behavior passed the deployment verifier.
+- Visual journeys at 1440, 800, 390, and 320px found no horizontal overflow,
+  header/breadcrumb overlap, or browser errors. The large previews, ivory detail
+  chapters, and workflow controls were reviewed on desktop and phone widths.
+  Retained previews are `docs/previews/project-story-*.webp` and
+  `docs/previews/workflow-demo-*.webp`.
+- Project swatches and crop positions use checked-in CSS selectors so server-
+  rendered and no-JavaScript pages retain their presentation under `style-src
+'self'`. Client path resolution preserves the server’s rejection of doubled
+  trailing slashes rather than hydrating a valid page over a 404 document.
+- Formatting and whitespace checks passed. The full regression suite and clean
+  deployment verification run in GitHub Actions for the published commit.
+
 ## Ambient background — October 19, 2026
 
 Added a homepage-wide decorative layer behind transparent dark sections: two

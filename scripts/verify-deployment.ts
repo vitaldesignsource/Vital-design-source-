@@ -17,6 +17,9 @@ import { tmpdir } from "node:os";
 import { basename, join } from "node:path";
 import { DatabaseSync } from "node:sqlite";
 import { fileURLToPath } from "node:url";
+import { createHash } from "node:crypto";
+import { projects } from "../src/lib/content";
+import { projectPath } from "../src/lib/project-routes";
 
 // Exercise a real production-only checkout without copying local configuration,
 // generated output, credentials, or inquiry data into the disposable fixture.
@@ -176,7 +179,52 @@ async function verifySite() {
   }
   const sitemap = await request("/sitemap.xml");
   assert.equal(sitemap.status, 200);
-  assert((await sitemap.text()).includes(`<loc>${officialOrigin}/</loc>`));
+  const sitemapXml = await sitemap.text();
+  assert(sitemapXml.includes(`<loc>${officialOrigin}/</loc>`));
+  for (const project of projects) {
+    const path = projectPath(project);
+    const page = await request(path);
+    assert.equal(
+      page.status,
+      200,
+      "A direct project route loads after installation.",
+    );
+    const projectHtml = await page.text();
+    assert(projectHtml.includes("<main"), "Project content is pre-rendered.");
+    assert(
+      projectHtml.includes(project.name),
+      "The requested project is present.",
+    );
+    assert(
+      projectHtml.includes(
+        `<link rel="canonical" href="${officialOrigin}${path}"`,
+      ),
+      "Project canonical metadata uses the official URL.",
+    );
+    assert(
+      sitemapXml.includes(`<loc>${officialOrigin}${path}</loc>`),
+      "Every project is discoverable in the sitemap.",
+    );
+    const policy = page.headers.get("content-security-policy") || "";
+    const structuredData = [
+      ...projectHtml.matchAll(
+        /<script type="application\/ld\+json">([\s\S]*?)<\/script>/g,
+      ),
+    ];
+    assert(structuredData.length > 0, "Each project includes structured data.");
+    for (const match of structuredData) {
+      JSON.parse(match[1]);
+      const hash = createHash("sha256").update(match[1]).digest("base64");
+      assert(
+        policy.includes(`'sha256-${hash}'`),
+        "Project structured data is permitted by its strict CSP.",
+      );
+    }
+    assert(
+      !policy.includes("'unsafe-inline'"),
+      "Project routes retain strict script policy.",
+    );
+  }
   const robots = await request("/robots.txt");
   assert.equal(robots.status, 200);
   assert(
@@ -202,6 +250,9 @@ async function verifySite() {
     "/.env",
     "/data/inquiries.sqlite",
     "/.local/share/vital-design-source/inquiries.sqlite",
+    "/work/unknown-project",
+    "/work/aetherica/private",
+    "/work/server.js",
   ])
     assert.equal(
       (await request(path)).status,

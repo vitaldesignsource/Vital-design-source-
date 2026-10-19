@@ -2,6 +2,7 @@ import { useState } from "react";
 import { ArrowRight, ArrowUpRight, LayoutGrid, Rows3 } from "lucide-react";
 import { projects } from "../lib/content";
 import { projectStudies } from "../lib/project-studies";
+import { projectPath } from "../lib/project-routes";
 import { ProjectShowcase } from "./ProjectShowcase";
 import { SectionContours } from "./SectionContours";
 
@@ -156,18 +157,27 @@ export function Portfolio() {
                 )}
               </div>
             </a>
-            <button
-              className="project-study-trigger"
-              type="button"
-              aria-label={`Explore ${project.name}`}
-              aria-haspopup="dialog"
-              onClick={(event) => {
-                event.currentTarget.focus({ preventScroll: true });
-                setShowcaseProject(project.id);
-              }}
-            >
-              A closer look <ArrowRight size={17} aria-hidden="true" />
-            </button>
+            <div className="project-study-actions">
+              <button
+                className="project-study-trigger"
+                type="button"
+                aria-label={`Explore ${project.name}`}
+                aria-haspopup="dialog"
+                onClick={(event) => {
+                  event.currentTarget.focus({ preventScroll: true });
+                  setShowcaseProject(project.id);
+                }}
+              >
+                A closer look <ArrowRight size={17} aria-hidden="true" />
+              </button>
+              <a
+                className="project-page-link"
+                href={projectPath(project)}
+                aria-label={`Read ${project.name} project study`}
+              >
+                View project study <ArrowUpRight size={15} aria-hidden="true" />
+              </a>
+            </div>
           </article>
         ))}
       </div>

@@ -6,6 +6,7 @@ import "./styles.css";
 import { App } from "./App";
 
 const root = document.getElementById("root")!;
-const app = <App path={window.location.pathname.replace(/\/$/, "") || "/"} />;
+// Resolve project paths exactly once, matching the server's route allowlist.
+const app = <App path={window.location.pathname} />;
 if (root.hasChildNodes()) hydrateRoot(root, app);
 else createRoot(root).render(app);

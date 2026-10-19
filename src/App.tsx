@@ -11,6 +11,9 @@ import { DesignLab } from "./components/DesignLab";
 import { BrandFilm } from "./components/BrandFilm";
 import { SignalBanner } from "./components/SignalBanner";
 import { ScrollChoreography } from "./components/ScrollChoreography";
+import { ProjectPage } from "./components/ProjectPage";
+import { AIWorkflow } from "./components/AIWorkflow";
+import { getProjectFromPath } from "./lib/project-routes";
 import {
   BackgroundAtmosphere,
   useBackgroundMotion,
@@ -18,6 +21,7 @@ import {
 import {
   startingPointFromDirection,
   startingPointFromService,
+  startingPointFromWorkflow,
 } from "./lib/creative-starting-point";
 
 function Privacy() {
@@ -95,6 +99,7 @@ function NotFound() {
 
 export function App({ path = "/" }: { path?: string }) {
   const inquiryRef = useRef<InquiryFormHandle>(null);
+  const project = getProjectFromPath(path);
   const backgroundMotion = useBackgroundMotion(path === "/");
   return (
     <div id="top">
@@ -104,7 +109,7 @@ export function App({ path = "/" }: { path?: string }) {
       <a className="skip-link" href="#main">
         Skip to content
       </a>
-      <Header />
+      <Header inFlow={Boolean(project)} />
       {path === "/" ? (
         <main id="main">
           <ScrollChoreography />
@@ -129,6 +134,13 @@ export function App({ path = "/" }: { path?: string }) {
               )
             }
           />
+          <AIWorkflow
+            onExploreWorkflow={(example) =>
+              inquiryRef.current?.chooseStartingPoint(
+                startingPointFromWorkflow(example),
+              )
+            }
+          />
           <Services
             onSelectService={(service) =>
               inquiryRef.current?.chooseStartingPoint(
@@ -140,7 +152,9 @@ export function App({ path = "/" }: { path?: string }) {
           <SignalBanner />
           <InquiryForm ref={inquiryRef} />
         </main>
-      ) : path === "/privacy" ? (
+      ) : project ? (
+        <ProjectPage project={project} />
+      ) : path === "/privacy" || path === "/privacy/" ? (
         <Privacy />
       ) : (
         <NotFound />

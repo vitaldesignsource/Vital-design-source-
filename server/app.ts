@@ -3,8 +3,13 @@ import compression from "compression";
 import helmet from "helmet";
 import { createHash } from "node:crypto";
 import { existsSync, readFileSync } from "node:fs";
-import { resolve } from "node:path";
+import { posix, resolve } from "node:path";
 import { inquirySchema } from "../src/lib/inquiry";
+import {
+  getProjectFromPath,
+  projectPath,
+  projectRoutes,
+} from "../src/lib/project-routes";
 import { OFFICIAL_SITE_URL } from "./config";
 import type { Store } from "./store";
 
@@ -34,13 +39,24 @@ export function createApp({
   // Enable only behind a reverse proxy that replaces forwarded headers.
   if (trustProxy) app.set("trust proxy", 1);
   const homeFile = resolve(distDir, "index.html");
-  const homeHtml = existsSync(homeFile) ? readFileSync(homeFile, "utf8") : "";
-  const inlineHashes = Array.from(
-    homeHtml.matchAll(
-      /<script type="application\/ld\+json">([\s\S]*?)<\/script>/g,
-    ),
-    (match) =>
-      `'sha256-${createHash("sha256").update(match[1]).digest("base64")}'`,
+  // Paths come only from the checked-in project list, never a request string.
+  const projectFiles = new Map(
+    projectRoutes.map(({ project, path }) => [
+      path,
+      resolve(distDir, "work", project.id, "index.html"),
+    ]),
+  );
+  const inlineHashes = new Set(
+    [homeFile, ...projectFiles.values()].flatMap((file) => {
+      const html = existsSync(file) ? readFileSync(file, "utf8") : "";
+      return Array.from(
+        html.matchAll(
+          /<script type="application\/ld\+json">([\s\S]*?)<\/script>/g,
+        ),
+        (match) =>
+          `'sha256-${createHash("sha256").update(match[1]).digest("base64")}'`,
+      );
+    }),
   );
   app.use(
     helmet({
@@ -160,6 +176,33 @@ export function createApp({
       redirect: false,
     }),
   );
+  // Keep the whole /work namespace behind the same explicit route allowlist.
+  // In particular, do not expose arbitrary files through the static fallback.
+  app.use((req, res, next) => {
+    let decodedPath: string;
+    try {
+      decodedPath = decodeURIComponent(req.path).replaceAll("\\", "/");
+    } catch {
+      next();
+      return;
+    }
+    const projectNamespace = /^\/work(?:\/|$)/i;
+    if (
+      !projectNamespace.test(decodedPath) &&
+      !projectNamespace.test(posix.normalize(decodedPath))
+    ) {
+      next();
+      return;
+    }
+    const project = getProjectFromPath(req.path);
+    const file = project && projectFiles.get(projectPath(project));
+    res.setHeader("Cache-Control", "no-cache");
+    if (!file || !["GET", "HEAD"].includes(req.method)) {
+      res.status(404).sendFile(resolve(distDir, "404.html"));
+      return;
+    }
+    res.sendFile(file);
+  });
   app.use(
     express.static(distDir, {
       index: false,
