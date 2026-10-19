@@ -1,9 +1,14 @@
 import { ArrowUpRight, Minus, Plus } from "lucide-react";
 import { useState } from "react";
 import { services } from "../lib/content";
+import type { Service } from "../lib/creative-starting-point";
 import { SectionContours } from "./SectionContours";
 
-export function Services() {
+export function Services({
+  onSelectService,
+}: {
+  onSelectService?: (service: Service) => void;
+}) {
   const [active, setActive] = useState<number | null>(0);
   return (
     <section
@@ -71,6 +76,14 @@ export function Services() {
                     </li>
                   ))}
                 </ul>
+                <a
+                  className="text-link service-inquiry-link"
+                  href="#contact"
+                  onClick={() => onSelectService?.(service)}
+                >
+                  Discuss this service
+                  <ArrowUpRight size={17} aria-hidden="true" />
+                </a>
               </div>
             </article>
           ))}

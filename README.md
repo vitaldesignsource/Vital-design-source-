@@ -4,7 +4,7 @@ The official Vital Design Source LLC website: an independent React and TypeScrip
 
 ![Vital Design Source](public/assets/og-vital.jpg)
 
-The studio offers web design, development, branding, SEO, intelligent automation, and human-directed AI design and motion. The AI Design Lab lets visitors explore curated visual directions and pause motion. It is an interactive art-direction study, not a live AI generation service.
+The studio offers web design, development, branding, SEO, intelligent automation, and human-directed AI design and motion. The AI Design Lab presents three distinct local compositions: liquid chrome, translucent prismatic facets, and an ivory editorial specimen. Visitors can pause motion and carry a chosen direction into their inquiry. It is an interactive art-direction study, not a live AI generation service.
 
 ## Deploy on Hostinger
 
@@ -60,12 +60,16 @@ CI also runs `npm run test:deployment`: a disposable production-only install tha
 
 - `src/components/`: accessible page sections and interactions.
 - `src/components/DesignLab.tsx`: curated visual-direction explorer with selection controls, live brief updates, and a motion toggle. Offscreen and background-tab suspension preserves the visitor’s motion preference.
+- `src/components/DesignLabArtwork.tsx`: responsive local image, SVG glass study, and typographic artwork for the three directions. Decorative motion uses the Lab’s existing visibility and preference controls.
+- `src/components/StudioProcess.tsx` and `src/lib/studio-process.ts`: four selectable process phases with practical focus points, collaboration notes, and original vector diagrams. Selection triggers one short line trace; reduced-motion visits remain static.
+- `src/lib/creative-starting-point.ts` and `src/components/InquiryForm.tsx`: removable direction/service context for inquiries. Visitor drafts and manually chosen project types stay intact; context is disclosed and appended to the message within the existing validation and length limits.
 - `src/components/AuroraBackdrop.tsx`, `SignalBanner.tsx`, and `SectionContours.tsx`: local inline SVG atmosphere in obsidian, platinum, jade, and celadon light. The hero’s existing motion control also governs its aurora; the decorative interlude runs one optional 4.2-second pass, and section contours stay static. Visibility, reduced-motion, and data-saving preferences govern motion.
 - `src/components/ScrollChoreography.tsx`: once-only 800ms position entrances for initially offscreen headings and supporting text. Text stays fully opaque throughout; interactive containers remain stationary so pointer targets stay stable. Keyboard focus reveals content immediately; content remains visible without JavaScript, with reduced motion, or with data saving enabled.
 - `src/components/BrandFilm.tsx` and `src/lib/brand-film.ts`: poster-first, eight-second silent Higgsfield identity film, shown below the hero and discipline bar. Playback requires an explicit play request; the video source is absent initially, with `preload="none"` and no autoplay. Hidden or offscreen playback pauses, manual pause remains respected, and replay or retry requires visitor action. Shared metadata supplies the pre-rendered `VideoObject` structured data.
 - `src/components/CrestSculpture.tsx` and `src/lib/crest-scene.ts`: optional Three.js crest loaded and initialized only when visible, with vector extrusion, planar caps, smoothed bevels, local reflections, and one 4.2-second diagonal silver light pass. The existing hero motion control pauses and resumes its remaining time; visibility also suspends it. After it settles, pointer-responsive lighting can sleep. Rendering targets 30fps and adapts pixel density up to 2.5 within a 2.4-megapixel buffer budget. The hero-only SVG fallback is static; reduced-motion and data-saving visits stay quiet.
 - `src/lib/crest-finish.ts`: shared hero-only finish roles for subtle feather and flourish translucency while the core identity stays opaque. The geometry, navigation crest, original brand files, and film remain unchanged.
 - `src/components/ProjectShowcase.tsx` and `src/lib/project-studies.ts`: accessible showcases for eight projects, with factual visual studies, full/detail views where a preview is available, the refreshed 7 Seas Trading website capture, and external-site links.
+- `src/lib/project-palettes.ts`: four labeled preview-derived color samples per project, with source checksums. See [color-study provenance](docs/palette-sources.md) for deterministic regeneration and interpretation.
 - `src/components/BrandCrest.tsx`: inline SVG navigation crest with unique IDs, a visible filled base, a brief reveal and highlight, hover interaction, and static reduced-motion styling.
 - `src/lib/content.ts`: project destinations, descriptions, service copy, and form options.
 - `src/lib/crest-geometry.json`: checked-in vector paths for the refined crest.

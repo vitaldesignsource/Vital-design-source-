@@ -1,0 +1,356 @@
+@layer components {
+  .process-strip.studio-process {
+    display: block;
+    padding-top: 22px;
+  }
+  .studio-process-selector {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    border: 1px solid var(--line-strong);
+    border-radius: 16px 16px 0 0;
+    overflow: hidden;
+    background: var(--deep);
+  }
+  .studio-process-button {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    text-align: left;
+    padding: 20px 25px 22px;
+    border: 0;
+    border-right: 1px solid var(--line);
+    background: transparent;
+    min-width: 0;
+    transition: background-color 180ms ease;
+  }
+  .studio-process-button:last-child {
+    border-right: 0;
+  }
+  .studio-process-button::after {
+    content: "";
+    position: absolute;
+    inset: auto 25px 0;
+    height: 2px;
+    background: var(--accent);
+    opacity: 0;
+  }
+  .studio-process-button[aria-pressed="true"] {
+    background: var(--panel-raised);
+  }
+  .studio-process-button[aria-pressed="true"]::after {
+    opacity: 1;
+  }
+  .studio-process-button:hover {
+    background-color: var(--panel);
+  }
+  .studio-process-button:focus-visible {
+    outline-offset: -5px;
+    z-index: 1;
+  }
+  .studio-process-button-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    color: var(--muted);
+    margin-bottom: 20px;
+  }
+  .studio-process-button[aria-pressed="true"] .studio-process-button-meta {
+    color: var(--accent);
+  }
+  .studio-process-button-name {
+    font-size: clamp(22px, 2.5vw, 34px);
+    line-height: 1.15;
+    letter-spacing: -0.045em;
+  }
+  .studio-process-button-cue {
+    margin-top: 9px;
+    color: var(--muted);
+    font-size: 11px;
+    line-height: 1.6;
+  }
+  .studio-process-panel {
+    display: grid;
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+    border: 1px solid var(--line-strong);
+    border-top: 0;
+    border-radius: 0 0 16px 16px;
+    background: linear-gradient(130deg, var(--deep), var(--panel));
+    overflow: hidden;
+    min-width: 0;
+  }
+  .studio-process-content {
+    padding: clamp(25px, 3.6vw, 55px);
+    min-width: 0;
+  }
+  .studio-process-section-label {
+    color: var(--accent);
+    margin-bottom: 20px;
+  }
+  .studio-process .studio-process-content h3 {
+    font-size: clamp(31px, 3.6vw, 54px);
+    line-height: 1.1;
+    letter-spacing: -0.055em;
+    margin-bottom: 21px;
+    max-width: 14ch;
+  }
+  .studio-process-objective {
+    font-size: 14px;
+    line-height: 1.85;
+    color: var(--muted);
+    max-width: 49ch;
+    min-height: 6.5em;
+  }
+  .studio-process-focus {
+    list-style: none;
+    margin: 24px 0 28px;
+    padding: 0;
+    display: grid;
+    gap: 10px;
+    min-height: 7em;
+  }
+  .studio-process-focus li {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    font-size: 12px;
+    line-height: 1.7;
+    color: var(--platinum);
+  }
+  .studio-process-focus li svg {
+    color: var(--aurora);
+    position: relative;
+    top: 3px;
+  }
+  .studio-process-collaboration {
+    border-top: 1px solid var(--line);
+    padding-top: 22px;
+  }
+  .studio-process-collaboration > .eyebrow {
+    color: var(--accent);
+    margin-bottom: 9px;
+  }
+  .studio-process-collaboration > p:last-child {
+    font-size: 12px;
+    line-height: 1.8;
+    color: var(--muted);
+    max-width: 52ch;
+    min-height: 5.5em;
+  }
+  .studio-process-visual {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    border-left: 1px solid var(--line);
+    min-width: 0;
+    background: radial-gradient(ellipse at 68% 40%, #1c594b36, transparent 65%);
+    padding: 27px 28px 30px;
+  }
+  .studio-process-visual-top {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    color: var(--muted);
+  }
+  .studio-process-drawing {
+    width: 100%;
+    max-width: 480px;
+    align-self: center;
+    margin: 20px 0;
+  }
+  .studio-process-diagram {
+    display: block;
+    width: 100%;
+    height: auto;
+    overflow: visible;
+    stroke-width: 1.5;
+    stroke-linejoin: round;
+    stroke-linecap: round;
+  }
+  .process-diagram-guide {
+    stroke: var(--line-strong);
+    stroke-width: 1;
+  }
+  .process-diagram-secondary {
+    stroke: var(--muted);
+    opacity: 0.6;
+    stroke-width: 1.25;
+  }
+  .process-diagram-line {
+    stroke-width: 1.7;
+  }
+  .process-diagram-point {
+    fill: var(--accent);
+  }
+  .process-diagram-swatch {
+    opacity: 0.65;
+  }
+  .process-diagram-caption {
+    fill: var(--muted);
+    font-family: var(--mono);
+    font-size: 8px;
+    letter-spacing: 1.3px;
+    stroke: none;
+  }
+  .studio-process-drawing[data-animate="true"] .process-diagram-line {
+    stroke-dasharray: 640;
+    animation: process-line-trace 900ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+  .studio-process-drawing[data-animate="true"] .process-diagram-point {
+    animation: process-point-reveal 700ms ease-out both;
+  }
+  .studio-process-visual-bottom {
+    border-top: 1px solid var(--line);
+    padding-top: 18px;
+  }
+  .studio-process-visual-bottom > .eyebrow {
+    color: var(--muted);
+    margin-bottom: 7px;
+  }
+  .studio-process-visual-bottom > p:last-child {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: clamp(24px, 2.6vw, 38px);
+    line-height: 1.1;
+    letter-spacing: -0.025em;
+    color: var(--platinum);
+  }
+  .studio-process-note {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    margin-top: 17px;
+    font-size: 11px;
+    line-height: 1.7;
+    color: var(--muted);
+  }
+  .studio-process-note-mark {
+    display: inline-block;
+    flex-shrink: 0;
+    width: 5px;
+    height: 5px;
+    border: 1px solid var(--aurora);
+    border-radius: 50%;
+  }
+  @keyframes process-line-trace {
+    from {
+      stroke-dashoffset: 640;
+    }
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+  @keyframes process-point-reveal {
+    from {
+      opacity: 0.25;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+}
+
+@layer responsive {
+  @media (max-width: 900px) {
+    .studio-process-button {
+      padding: 19px 18px;
+    }
+    .studio-process-button::after {
+      inset-inline: 18px;
+    }
+    .studio-process-button-cue {
+      max-width: 15ch;
+      min-height: 3.2em;
+    }
+    .studio-process-content {
+      padding: 30px 25px;
+    }
+    .studio-process-visual {
+      padding-inline: 18px;
+    }
+    .studio-process-objective {
+      min-height: 9em;
+    }
+    .studio-process-focus {
+      min-height: 10em;
+    }
+    .studio-process-collaboration > p:last-child {
+      min-height: 9em;
+    }
+  }
+  @media (max-width: 640px) {
+    .studio-process-selector {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .studio-process-button {
+      padding: 17px 17px 19px;
+    }
+    .studio-process-button:nth-child(2) {
+      border-right: 0;
+    }
+    .studio-process-button:nth-child(-n + 2) {
+      border-bottom: 1px solid var(--line);
+    }
+    .studio-process-button-meta {
+      margin-bottom: 12px;
+    }
+    .studio-process-button-name {
+      font-size: 25px;
+    }
+    .studio-process-button-cue {
+      font-size: 10px;
+      min-height: 3.2em;
+      max-width: 17ch;
+    }
+    .studio-process-panel {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .studio-process-content {
+      padding: 28px 22px 24px;
+    }
+    .studio-process .studio-process-content h3 {
+      font-size: clamp(33px, 7.5vw, 45px);
+      min-height: 2.2em;
+      margin-bottom: 17px;
+    }
+    .studio-process-objective {
+      font-size: 13px;
+      min-height: 8.5em;
+    }
+    .studio-process-focus {
+      margin-block: 21px 24px;
+      min-height: 10em;
+    }
+    .studio-process-focus li {
+      font-size: 12px;
+      gap: 10px;
+    }
+    .studio-process-collaboration > p:last-child {
+      min-height: 9em;
+    }
+    .studio-process-visual {
+      border-left: 0;
+      border-top: 1px solid var(--line);
+      padding: 22px;
+    }
+    .studio-process-drawing {
+      max-width: 380px;
+      margin: 8px 0;
+    }
+    .studio-process-visual-bottom > p:last-child {
+      font-size: 30px;
+    }
+    .studio-process-note {
+      font-size: 10px;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .studio-process-button {
+      transition: none;
+    }
+    .studio-process-drawing[data-animate="true"] .process-diagram-line,
+    .studio-process-drawing[data-animate="true"] .process-diagram-point {
+      animation: none;
+    }
+  }
+}

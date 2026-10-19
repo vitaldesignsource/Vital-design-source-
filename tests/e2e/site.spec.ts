@@ -113,6 +113,11 @@ test("explores curated art directions, controls motion, and reaches contact", as
   await expect(chrome).toHaveAttribute("aria-pressed", "true");
   await expect(stage).toHaveAttribute("data-direction", "chrome");
   await expect(stage).toHaveAttribute("data-motion", "running");
+  await expect(stage.locator(".lab-composition")).toHaveCount(1);
+  await expect(stage.locator(".lab-composition")).toHaveAttribute(
+    "data-composition",
+    "liquid-metal",
+  );
   await expect
     .poll(() =>
       stage
@@ -125,12 +130,14 @@ test("explores curated art directions, controls motion, and reaches contact", as
     {
       name: "Prismatic",
       id: "prismatic",
+      composition: "glass-facets",
       title: "A different kind of energy.",
       description: "Iridescent color, light in motion, and expressive depth.",
     },
     {
       name: "Editorial",
       id: "editorial",
+      composition: "type-specimen",
       title: "Clarity, with character.",
       description:
         "Graphic restraint, confident typography, and considered contrast.",
@@ -144,6 +151,12 @@ test("explores curated art directions, controls motion, and reaches contact", as
     await expect(option).toHaveAttribute("aria-pressed", "true");
     await expect(chrome).toHaveAttribute("aria-pressed", "false");
     await expect(stage).toHaveAttribute("data-direction", direction.id);
+    await expect(stage.locator(".lab-composition")).toHaveCount(1);
+    await expect(stage.locator(".lab-composition")).toHaveAttribute(
+      "data-composition",
+      direction.composition,
+    );
+    await expect(stage.locator("img")).toHaveCount(0);
     await expect(brief.getByRole("heading")).toHaveText(direction.title);
     await expect(brief).toContainText(direction.description);
     const accessibility = await new AxeBuilder({ page })
@@ -153,10 +166,44 @@ test("explores curated art directions, controls motion, and reaches contact", as
     expect(accessibility.violations).toEqual([]);
   }
 
-  await lab.getByRole("button", { name: "Pause motion", exact: true }).click();
-  await expect(stage).toHaveAttribute("data-motion", "paused");
-  await lab.getByRole("button", { name: "Resume motion", exact: true }).click();
+  await lab.getByRole("button", { name: "Prismatic", exact: true }).click();
+  await stage.scrollIntoViewIfNeeded();
   await expect(stage).toHaveAttribute("data-motion", "running");
+  const sculpture = stage.locator(".lab-prism-sculpture");
+  const animationTime = () =>
+    sculpture.evaluate((element) => {
+      const animation = element.getAnimations()[0];
+      return typeof animation?.currentTime === "number"
+        ? animation.currentTime
+        : 0;
+    });
+  await expect
+    .poll(() => sculpture.evaluate((element) => element.getAnimations().length))
+    .toBeGreaterThan(0);
+  const runningTime = await animationTime();
+  await expect.poll(animationTime).toBeGreaterThan(runningTime + 60);
+  await lab.getByRole("button", { name: "Pause motion", exact: true }).click();
+  await stage.scrollIntoViewIfNeeded();
+  await expect(stage).toHaveAttribute("data-motion", "paused");
+  await expect
+    .poll(() =>
+      sculpture.evaluate((element) =>
+        element
+          .getAnimations()
+          .every(
+            (animation) =>
+              animation.playState === "paused" && !animation.pending,
+          ),
+      ),
+    )
+    .toBe(true);
+  const pausedTime = await animationTime();
+  await page.waitForTimeout(250);
+  expect(await animationTime()).toBeCloseTo(pausedTime, 0);
+  await lab.getByRole("button", { name: "Resume motion", exact: true }).click();
+  await stage.scrollIntoViewIfNeeded();
+  await expect(stage).toHaveAttribute("data-motion", "running");
+  await expect.poll(animationTime).toBeGreaterThan(pausedTime + 60);
   await lab
     .getByRole("link", { name: "Explore this direction", exact: true })
     .click();
@@ -172,6 +219,69 @@ test("has accessible service disclosure panels", async ({ page }) => {
   await expect(page.getByText("Built to be discovered.")).toBeVisible();
   await seo.click();
   await expect(seo).toHaveAttribute("aria-expanded", "false");
+});
+
+test("explores all four process stages with keyboard controls and readable details", async ({
+  page,
+}) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto("/#studio");
+  const process = page.locator(".studio-process");
+  const choices = process.getByRole("group", { name: "Explore our process" });
+  const panel = process.locator("#studio-process-detail");
+  await expect(choices.getByRole("button")).toHaveCount(4);
+  for (const [index, stage] of [
+    { id: "discover", name: "Discover", title: "Start with what matters." },
+    { id: "design", name: "Design", title: "Find a visual language." },
+    { id: "develop", name: "Develop", title: "Make the experience real." },
+    { id: "refine", name: "Refine", title: "Consider the finer points." },
+  ].entries()) {
+    const choice = choices.getByRole("button", {
+      name: new RegExp(`^0${index + 1} ${stage.name}\\b`),
+    });
+    if (index > 0) {
+      await choice.focus();
+      await page.keyboard.press("Enter");
+      await expect(choice).toBeFocused();
+    }
+    await expect(choice).toHaveAttribute("aria-pressed", "true");
+    await expect(choice).toHaveAttribute(
+      "aria-controls",
+      "studio-process-detail",
+    );
+    await expect(choices.locator('[aria-pressed="true"]')).toHaveCount(1);
+    await expect(panel).toHaveAttribute("data-phase", stage.id);
+    await expect(
+      process.getByRole("region", { name: stage.title, exact: true }),
+    ).toBeVisible();
+    await expect(panel.getByRole("heading", { level: 3 })).toHaveText(
+      stage.title,
+    );
+    await expect(panel.getByRole("listitem")).toHaveCount(3);
+    await expect(panel).toContainText("Your part in the process");
+    const diagram = panel.locator(".studio-process-diagram");
+    await expect(diagram).toBeVisible();
+    await expect(diagram).toHaveAttribute("aria-hidden", "true");
+    await expect(diagram).toHaveAttribute("focusable", "false");
+    await expect(
+      diagram.locator("a, button, [tabindex]:not([tabindex='-1'])"),
+    ).toHaveCount(0);
+    expect(
+      await diagram.evaluate(
+        (element) => element.getAnimations({ subtree: true }).length,
+      ),
+    ).toBe(0);
+  }
+  const accessibility = await new AxeBuilder({ page })
+    .include(".studio-process")
+    .withTags(["wcag2a", "wcag2aa", "wcag21aa"])
+    .analyze();
+  expect(accessibility.violations).toEqual([]);
+  expect(
+    await page.evaluate(
+      () => document.documentElement.scrollWidth - window.innerWidth,
+    ),
+  ).toBeLessThanOrEqual(1);
 });
 
 test("validates, submits, and announces a real persisted inquiry", async ({

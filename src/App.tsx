@@ -1,8 +1,9 @@
 import { ArrowDownRight, ArrowUpRight } from "lucide-react";
+import { useRef } from "react";
 import { Footer } from "./components/Footer";
 import { Header } from "./components/Header";
 import { Hero } from "./components/Hero";
-import { InquiryForm } from "./components/InquiryForm";
+import { InquiryForm, type InquiryFormHandle } from "./components/InquiryForm";
 import { Portfolio } from "./components/Portfolio";
 import { Services } from "./components/Services";
 import { Studio } from "./components/Studio";
@@ -10,6 +11,10 @@ import { DesignLab } from "./components/DesignLab";
 import { BrandFilm } from "./components/BrandFilm";
 import { SignalBanner } from "./components/SignalBanner";
 import { ScrollChoreography } from "./components/ScrollChoreography";
+import {
+  startingPointFromDirection,
+  startingPointFromService,
+} from "./lib/creative-starting-point";
 
 function Privacy() {
   return (
@@ -85,6 +90,7 @@ function NotFound() {
 }
 
 export function App({ path = "/" }: { path?: string }) {
+  const inquiryRef = useRef<InquiryFormHandle>(null);
   return (
     <div id="top">
       <a className="skip-link" href="#main">
@@ -108,11 +114,23 @@ export function App({ path = "/" }: { path?: string }) {
           </div>
           <BrandFilm />
           <Portfolio />
-          <DesignLab />
-          <Services />
+          <DesignLab
+            onExploreDirection={(direction) =>
+              inquiryRef.current?.chooseStartingPoint(
+                startingPointFromDirection(direction),
+              )
+            }
+          />
+          <Services
+            onSelectService={(service) =>
+              inquiryRef.current?.chooseStartingPoint(
+                startingPointFromService(service),
+              )
+            }
+          />
           <Studio />
           <SignalBanner />
-          <InquiryForm />
+          <InquiryForm ref={inquiryRef} />
         </main>
       ) : path === "/privacy" ? (
         <Privacy />

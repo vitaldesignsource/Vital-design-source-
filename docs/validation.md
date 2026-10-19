@@ -1,5 +1,36 @@
 # Validation record
 
+## Studio detail release — October 19, 2026
+
+Added three distinct AI Lab compositions, the four-phase studio process console,
+preview-derived color studies for all eight projects, and a removable inquiry
+starting point from Lab/service selections. The official crest, film, project
+destinations, server contract, and deployment configuration are preserved.
+
+- Strict TypeScript, ESLint, all 40 API/configuration tests, and the production
+  build passed.
+- Full desktop/mobile browser suite: **49 passed, 13 intentional duplicate-context
+  skips**. New coverage exercises all Lab compositions and the real SVG animation
+  pause/resume clock; all four process stages, keyboard selection, reduced motion,
+  and accessibility; four visible color labels across all eight showcases and
+  catalog wrapping; and inquiry draft preservation, selection replacement,
+  clearing, manual type choices, retry, persisted success, and reset. Message
+  minimum/maximum checks cannot be bypassed by a selected starting point, and
+  overlong combined messages are rejected without truncation. Automated WCAG
+  checks reported no violations in the new process and selected-inquiry states.
+- Clean production deployment verification passed: production-only installation,
+  synchronous managed loader, automatic build, default official domain, secure
+  inquiry storage, restart persistence, and operator access.
+- Visual journeys at 1440, 800, 390, and 320px found no horizontal page or dialog
+  overflow, out-of-bounds Lab titles, or browser errors. Desktop/mobile reviews
+  confirmed crisp original vector art, readable typography, distinct compositions,
+  and balanced controls. Retained previews are `docs/previews/studio-polish-*.webp`.
+- Formatting and whitespace checks passed. No dependencies or paid generation
+  were added. Color-sample source checksums and regeneration instructions are
+  documented in [palette sources](palette-sources.md).
+
+## Earlier validation
+
 Validated October 18, 2026 in Node.js 24.19.0 with headless Chromium.
 
 - `npm run typecheck`: passed, strict TypeScript.

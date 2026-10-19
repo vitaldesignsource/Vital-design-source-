@@ -1,18 +1,53 @@
-import { useEffect, useId, useRef, useState, type FormEvent } from "react";
-import { ArrowUpRight, Check, LoaderCircle, Asterisk } from "lucide-react";
+import {
+  useEffect,
+  useId,
+  useImperativeHandle,
+  useRef,
+  useState,
+  type FormEvent,
+  type Ref,
+} from "react";
+import { ArrowUpRight, Check, LoaderCircle, Asterisk, X } from "lucide-react";
 import { budgets, projectTypes } from "../lib/content";
+import {
+  detailsWithStartingPoint,
+  type CreativeStartingPoint,
+  type ProjectType,
+} from "../lib/creative-starting-point";
 import { inquirySchema } from "../lib/inquiry";
 import { SectionContours } from "./SectionContours";
 
-export function InquiryForm() {
+export interface InquiryFormHandle {
+  chooseStartingPoint: (point: CreativeStartingPoint) => void;
+}
+
+export function InquiryForm({ ref }: { ref?: Ref<InquiryFormHandle> }) {
   const formId = useId();
   const [status, setStatus] = useState<
     "idle" | "sending" | "success" | "error"
   >("idle");
   const [message, setMessage] = useState("");
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [startingPoint, setStartingPoint] =
+    useState<CreativeStartingPoint | null>(null);
+  const [typeOverride, setTypeOverride] = useState<ProjectType | null>(null);
   const statusRef = useRef<HTMLDivElement>(null);
+  const typeRef = useRef<HTMLSelectElement>(null);
   const submitting = useRef(false);
+  const selectedType =
+    typeOverride ?? startingPoint?.projectType ?? projectTypes[0];
+
+  useImperativeHandle(
+    ref,
+    () => ({
+      chooseStartingPoint(point) {
+        if (submitting.current) return;
+        setStartingPoint(point);
+        setStatus((current) => (current === "success" ? "idle" : current));
+      },
+    }),
+    [],
+  );
 
   useEffect(() => {
     if (status === "success") statusRef.current?.focus();
@@ -42,6 +77,20 @@ export function InquiryForm() {
       )?.focus();
       return;
     }
+    // Validate the visitor's own message first, then the exact composed payload.
+    // A selected direction cannot satisfy the message minimum on their behalf.
+    const payloadResult = inquirySchema.safeParse({
+      ...result.data,
+      details: detailsWithStartingPoint(result.data.details, startingPoint),
+    });
+    if (!payloadResult.success) {
+      setErrors({
+        details:
+          "Your message and starting point together exceed 4,000 characters. Please shorten your message or clear the starting point.",
+      });
+      (form.elements.namedItem("details") as HTMLElement | null)?.focus();
+      return;
+    }
     submitting.current = true;
     setErrors({});
     setStatus("sending");
@@ -50,7 +99,7 @@ export function InquiryForm() {
       const response = await fetch("/api/inquiry", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(result.data),
+        body: JSON.stringify(payloadResult.data),
         signal: AbortSignal.timeout(20000),
       });
       const payload = (await response.json()) as {
@@ -62,6 +111,8 @@ export function InquiryForm() {
           payload.error || "Your inquiry could not be saved. Please try again.",
         );
       setStatus("success");
+      setStartingPoint(null);
+      setTypeOverride(null);
       form.reset();
     } catch (error) {
       setStatus("error");
@@ -116,6 +167,26 @@ export function InquiryForm() {
         <p className="eyebrow contact-detail">
           Thoughtful work starts with a conversation.
         </p>
+        <div className="inquiry-next-steps">
+          <h3>What happens next</h3>
+          <ol>
+            <li>
+              <span className="eyebrow" aria-hidden="true">
+                01
+              </span>
+              <p>We review your idea and the direction you have in mind.</p>
+            </li>
+            <li>
+              <span className="eyebrow" aria-hidden="true">
+                02
+              </span>
+              <p>
+                We connect to understand the scope and explore a useful next
+                step.
+              </p>
+            </li>
+          </ol>
+        </div>
       </div>
       <div className="contact-form-wrap">
         {status === "success" ? (
@@ -159,6 +230,54 @@ export function InquiryForm() {
             </p>
             <fieldset disabled={status === "sending"}>
               <legend className="sr-only">Your project details</legend>
+              {startingPoint && (
+                <div
+                  className="inquiry-starting-point"
+                  role="region"
+                  aria-labelledby={`${formId}-starting-point-title`}
+                >
+                  <div className="inquiry-starting-point-heading">
+                    <h3
+                      className="eyebrow"
+                      id={`${formId}-starting-point-title`}
+                    >
+                      Your starting point
+                    </h3>
+                    <button
+                      type="button"
+                      className="inquiry-clear-point"
+                      aria-label="Clear starting point"
+                      onClick={() => {
+                        setStartingPoint(null);
+                        typeRef.current?.focus();
+                      }}
+                    >
+                      Clear <X size={14} aria-hidden="true" />
+                    </button>
+                  </div>
+                  <p className="inquiry-starting-point-label">
+                    {startingPoint.label}
+                  </p>
+                  <p className="inquiry-starting-point-summary">
+                    {startingPoint.summary}
+                  </p>
+                  <ul
+                    className="inquiry-focus-tags"
+                    aria-label="Selected focus"
+                  >
+                    {startingPoint.focus.map((focus) => (
+                      <li key={focus}>{focus}</li>
+                    ))}
+                  </ul>
+                  <p className="inquiry-inclusion-note">
+                    This selection and its focus will be included with your
+                    inquiry. You can still choose any project type below.
+                  </p>
+                  <p className="sr-only" role="status">
+                    {startingPoint.label} selected as your starting point.
+                  </p>
+                </div>
+              )}
               <div className="form-pair">
                 <div className="field">
                   <label htmlFor={`${formId}-name`}>Your name *</label>
@@ -198,7 +317,14 @@ export function InquiryForm() {
               <div className="form-pair">
                 <div className="field">
                   <label htmlFor={`${formId}-type`}>What do you need?</label>
-                  <select {...fieldProps("type")}>
+                  <select
+                    {...fieldProps("type")}
+                    ref={typeRef}
+                    value={selectedType}
+                    onChange={(event) =>
+                      setTypeOverride(event.currentTarget.value as ProjectType)
+                    }
+                  >
                     {projectTypes.map((type) => (
                       <option key={type}>{type}</option>
                     ))}

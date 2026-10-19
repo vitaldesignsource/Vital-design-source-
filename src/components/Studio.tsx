@@ -1,25 +1,5 @@
-import { ArrowRight, ArrowUpRight } from "lucide-react";
-
-const process = [
-  {
-    title: "Discover",
-    description:
-      "Get to the heart of your idea. Ask the questions that matter.",
-  },
-  {
-    title: "Design",
-    description: "Explore the possibilities. Give the direction its character.",
-  },
-  {
-    title: "Develop",
-    description: "Connect the design and the technology, detail by detail.",
-  },
-  {
-    title: "Refine",
-    description:
-      "Test, consider, and polish. Make every part feel intentional.",
-  },
-];
+import { ArrowUpRight } from "lucide-react";
+import { StudioProcess } from "./StudioProcess";
 
 export function Studio() {
   return (
@@ -83,18 +63,7 @@ export function Studio() {
           <p className="eyebrow">Our approach</p>
           <p>A clear process. Room to explore.</p>
         </div>
-        <div className="process-strip">
-          {process.map((step, index) => (
-            <article key={step.title}>
-              <p className="eyebrow">
-                0{index + 1}
-                <ArrowRight size={18} aria-hidden="true" />
-              </p>
-              <h3>{step.title}</h3>
-              <p>{step.description}</p>
-            </article>
-          ))}
-        </div>
+        <StudioProcess />
       </div>
     </section>
   );

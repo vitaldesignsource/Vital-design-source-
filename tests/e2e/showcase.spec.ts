@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, test, type Locator } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
 
 const catalog = [
@@ -47,6 +47,45 @@ const catalog = [
   },
 ];
 
+async function previewColors(dialog: Locator) {
+  const study = dialog.getByRole("region", {
+    name: "Color study",
+    exact: true,
+  });
+  await expect(study).toContainText("Sampled from this preview");
+  const samples = study
+    .getByRole("list", { name: "Preview color samples", exact: true })
+    .getByRole("listitem");
+  await expect(samples).toHaveCount(4);
+  await expect(
+    study.locator(
+      "a, button, input, select, textarea, [tabindex]:not([tabindex='-1'])",
+    ),
+  ).toHaveCount(0);
+  const colors: string[] = [];
+  for (const [index, sample] of (await samples.all()).entries()) {
+    const label = sample.locator(".showcase-color-value");
+    await expect(label).toBeVisible();
+    await expect(label).toHaveText(
+      new RegExp(`^Color ${index + 1}, hexadecimal #[0-9A-F]{6}$`),
+    );
+    const color = (await label.textContent())!.trim().slice(-7);
+    const channels = [1, 3, 5].map((start) =>
+      parseInt(color.slice(start, start + 2), 16),
+    );
+    const swatch = sample.locator(".showcase-color-swatch");
+    await expect(swatch).toBeVisible();
+    await expect(swatch).toHaveAttribute("aria-hidden", "true");
+    await expect(swatch).toHaveCSS(
+      "background-color",
+      `rgb(${channels.join(", ")})`,
+    );
+    colors.push(color);
+  }
+  expect(new Set(colors).size).toBe(4);
+  return colors;
+}
+
 test("opens all eight projects with accurate previews and secure website links", async ({
   page,
 }) => {
@@ -92,6 +131,7 @@ test("opens all eight projects with accurate previews and secure website links",
       ).toBeVisible();
       await expect(dialog).toContainText("The project is a private release.");
     }
+    await previewColors(dialog);
 
     const preview = dialog.getByRole("group", { name: "Project preview" });
     const full = preview.getByRole("button", {
@@ -149,12 +189,15 @@ test("navigates in both directions, wraps the catalog, and resets the detail vie
     .getByRole("button", { name: "Explore OceanEmber", exact: true })
     .click();
   const dialog = page.getByRole("dialog");
+  const oceanColors = await previewColors(dialog);
   await dialog.getByRole("button", { name: "Detail", exact: true }).click();
   await dialog
     .getByRole("button", { name: "Next project 7 Seas Trading", exact: true })
     .click();
   const heading = dialog.getByRole("heading", { level: 2 });
   await expect(heading).toHaveText("7 Seas Trading");
+  const tradingColors = await previewColors(dialog);
+  expect(tradingColors).not.toEqual(oceanColors);
   await expect(dialog.getByRole("status")).toHaveText(
     "7 Seas Trading. Project 8 of 8.",
   );
@@ -172,6 +215,9 @@ test("navigates in both directions, wraps the catalog, and resets the detail vie
     })
     .click();
   await expect(heading).toHaveText("Aetherica Podcast");
+  const aethericaColors = await previewColors(dialog);
+  expect(aethericaColors).not.toEqual(tradingColors);
+  expect(aethericaColors).not.toEqual(oceanColors);
   await expect(heading).toBeFocused();
   await expect(dialog.getByRole("status")).toHaveText(
     "Aetherica Podcast. Project 1 of 8.",
@@ -192,6 +238,7 @@ test("navigates in both directions, wraps the catalog, and resets the detail vie
     })
     .click();
   await expect(heading).toHaveText("7 Seas Trading");
+  expect(await previewColors(dialog)).toEqual(tradingColors);
   await expect(dialog.getByRole("status")).toHaveText(
     "7 Seas Trading. Project 8 of 8.",
   );
@@ -199,6 +246,7 @@ test("navigates in both directions, wraps the catalog, and resets the detail vie
     .getByRole("button", { name: "Previous project OceanEmber", exact: true })
     .click();
   await expect(heading).toHaveText("OceanEmber");
+  expect(await previewColors(dialog)).toEqual(oceanColors);
   await expect(dialog.getByRole("status")).toHaveText(
     "OceanEmber. Project 7 of 8.",
   );

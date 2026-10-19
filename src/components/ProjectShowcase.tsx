@@ -9,6 +9,7 @@ import {
   X,
 } from "lucide-react";
 import { projects } from "../lib/content";
+import { projectPalettes } from "../lib/project-palettes";
 import { projectStudies } from "../lib/project-studies";
 
 interface ProjectShowcaseProps {
@@ -24,6 +25,7 @@ export function ProjectShowcase({
   const heading = useRef<HTMLHeadingElement>(null);
   const titleId = useId();
   const descriptionId = useId();
+  const paletteId = useId();
   const [projectIndex, setProjectIndex] = useState(() =>
     Math.max(
       0,
@@ -33,6 +35,7 @@ export function ProjectShowcase({
   const [preview, setPreview] = useState<"desktop" | "detail">("desktop");
   const project = projects[projectIndex];
   const study = projectStudies[project.id];
+  const palette = projectPalettes[project.id];
   const isCover = study.previewKind === "cover";
   const previousProject =
     projects[(projectIndex - 1 + projects.length) % projects.length];
@@ -206,6 +209,32 @@ export function ProjectShowcase({
           </span>
         </figcaption>
       </figure>
+
+      {palette && (
+        <section className="showcase-color-study" aria-labelledby={paletteId}>
+          <div className="showcase-color-heading">
+            <h3 id={paletteId}>Color study</h3>
+            <p>Sampled from this preview</p>
+          </div>
+          <ul className="showcase-colors" aria-label="Preview color samples">
+            {palette.colors.map((color, index) => (
+              <li key={color}>
+                <span
+                  className="showcase-color-swatch"
+                  style={{ backgroundColor: color }}
+                  aria-hidden="true"
+                />
+                <span className="showcase-color-value">
+                  <span className="sr-only">
+                    Color {index + 1}, hexadecimal{" "}
+                  </span>
+                  {color.toUpperCase()}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
 
       {study.observations.length > 0 && (
         <div className="showcase-story">

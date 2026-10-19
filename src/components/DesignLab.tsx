@@ -12,6 +12,7 @@ import {
   type DesignDirection,
 } from "../lib/design-directions";
 import { useVisibleMotion } from "../lib/use-visible-motion";
+import { DesignLabArtwork } from "./DesignLabArtwork";
 
 const capabilities = [
   {
@@ -34,7 +35,11 @@ const capabilities = [
   },
 ] as const;
 
-export function DesignLab() {
+export function DesignLab({
+  onExploreDirection,
+}: {
+  onExploreDirection?: (direction: DesignDirection) => void;
+}) {
   const [directionId, setDirectionId] =
     useState<DesignDirection["id"]>("chrome");
   const [motionEnabled, setMotionEnabled] = useState(false);
@@ -93,22 +98,7 @@ export function DesignLab() {
           data-motion={motionRunning ? "running" : "paused"}
           aria-hidden="true"
         >
-          <div className="lab-grid" />
-          <div className="lab-orbit lab-orbit-one" />
-          <div className="lab-orbit lab-orbit-two" />
-          <picture className="lab-artwork">
-            <source type="image/avif" srcSet="/assets/neural-1280.avif" />
-            <img
-              src="/assets/neural-1280.webp"
-              alt=""
-              width="1280"
-              height="1280"
-              loading="lazy"
-              decoding="async"
-            />
-          </picture>
-          <div className="lab-glass lab-glass-one" />
-          <div className="lab-glass lab-glass-two" />
+          <DesignLabArtwork direction={direction.id} />
           <div className="lab-stage-meta eyebrow">
             <span>Vital / Visual explorations</span>
             <span>{directionNumber} / 03</span>
@@ -177,7 +167,11 @@ export function DesignLab() {
             {motionEnabled ? "Pause motion" : "Resume motion"}
           </button>
 
-          <a className="button button-primary lab-cta" href="#contact">
+          <a
+            className="button button-primary lab-cta"
+            href="#contact"
+            onClick={() => onExploreDirection?.(direction)}
+          >
             Explore this direction
             <ArrowUpRight size={19} aria-hidden="true" />
           </a>
