@@ -119,6 +119,66 @@ test("respects reduced motion and supports optional 3D rendering and context los
   }
 });
 
+test("defers optional crest rendering on a service visit until the crest is visible", async ({
+  page,
+}, testInfo) => {
+  test.skip(
+    testInfo.project.name !== "desktop",
+    "The optional module-loading boundary only needs one browser journey.",
+  );
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  const sceneRequests: string[] = [];
+  const errors: string[] = [];
+  page.on("pageerror", (error) => errors.push(error.message));
+  await page.route("**/assets/crest-scene-*.js", (route) => {
+    sceneRequests.push(route.request().url());
+    return route.continue();
+  });
+  await page.goto("/#services");
+  const seo = page.getByRole("button", { name: "04 SEO", exact: true });
+  await seo.click();
+  await expect(seo).toHaveAttribute("aria-expanded", "true");
+  await expect(
+    page.getByText("Built to be discovered.", { exact: true }),
+  ).toBeVisible();
+  // Observe the hydrated page through its first intersection deliveries.
+  await page.evaluate(() => new Promise((resolve) => setTimeout(resolve, 250)));
+  const crest = page.locator(".crest-sculpture");
+  await expect(crest).not.toBeInViewport();
+  await expect(crest).toHaveAttribute("data-renderer", "vector");
+  await expect(crest.locator("canvas")).toHaveCount(0);
+  expect(sceneRequests).toEqual([]);
+  const fallback = crest.locator("img");
+  await expect(fallback).toHaveAttribute(
+    "src",
+    "/assets/brand/vital-crest-aurora.svg",
+  );
+  await expect
+    .poll(() =>
+      fallback.evaluate((image: HTMLImageElement) => image.naturalWidth),
+    )
+    .toBeGreaterThan(0);
+
+  const available = await page.evaluate(() =>
+    Boolean(document.createElement("canvas").getContext("webgl2")),
+  );
+  await crest.scrollIntoViewIfNeeded();
+  await expect.poll(() => sceneRequests.length).toBeGreaterThan(0);
+  if (available) {
+    await expect(crest).toHaveAttribute("data-renderer", "webgl");
+    await expect(crest).toHaveAttribute("data-motion", "paused");
+    await expect(crest.locator("canvas")).toHaveCount(1);
+  } else {
+    await expect(crest).toHaveAttribute("data-renderer", "vector");
+    await expect(fallback).toBeVisible();
+  }
+  await expect(fallback).toHaveAttribute(
+    "src",
+    "/assets/brand/vital-crest-aurora.svg",
+  );
+  expect(errors).toEqual([]);
+});
+
 test("resolves a Retina crest clearly and bounds its framebuffer after resize", async ({
   browser,
   baseURL,
