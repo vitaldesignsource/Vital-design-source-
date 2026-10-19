@@ -2,10 +2,45 @@ import * as THREE from "three";
 import { SVGLoader } from "three/addons/loaders/SVGLoader.js";
 import { toCreasedNormals } from "three/addons/utils/BufferGeometryUtils.js";
 import geometry from "./crest-geometry.json";
+import { getCrestFinish } from "./crest-finish";
 
 export interface CrestScene {
   setActive: (active: boolean) => void;
   dispose: () => void;
+}
+
+/** One smooth, local-space light pass; the vector geometry stays untouched. */
+function addSilverSweep(
+  material: THREE.MeshStandardMaterial,
+  sweep: { value: number },
+) {
+  material.onBeforeCompile = (shader) => {
+    shader.uniforms.uVitalSweep = sweep;
+    shader.vertexShader = shader.vertexShader
+      .replace(
+        "#include <common>",
+        "#include <common>\nvarying vec2 vVitalSourcePosition;",
+      )
+      .replace(
+        "#include <begin_vertex>",
+        "#include <begin_vertex>\nvVitalSourcePosition = position.xy;",
+      );
+    shader.fragmentShader = shader.fragmentShader
+      .replace(
+        "#include <common>",
+        "#include <common>\nvarying vec2 vVitalSourcePosition;\nuniform float uVitalSweep;",
+      )
+      .replace(
+        "#include <opaque_fragment>",
+        `
+        float vitalCoordinate = (vVitalSourcePosition.x + (1110.0 - vVitalSourcePosition.y) * 0.24) / 1683.4;
+        float vitalBand = 1.0 - smoothstep(0.018, 0.105, abs(vitalCoordinate - uVitalSweep));
+        outgoingLight += vec3(0.82, 0.96, 0.91) * pow(vitalBand, 2.0) * 0.36;
+        #include <opaque_fragment>
+      `,
+      );
+  };
+  material.customProgramCacheKey = () => "vital-silver-sweep-v1";
 }
 
 /** A local studio environment: no external textures or requests are needed. */
@@ -64,6 +99,7 @@ export function createCrestScene(
   const camera = new THREE.PerspectiveCamera(32, 1, 0.1, 50);
   camera.position.set(0, 0, 7.8);
   const crest = new THREE.Group();
+  const sweep = { value: -0.18 };
   const face = new THREE.MeshStandardMaterial({
     color: 0xe2e5dc,
     metalness: 0.92,
@@ -76,6 +112,31 @@ export function createCrestScene(
     roughness: 0.24,
     envMapIntensity: 1.4,
   });
+  addSilverSweep(face, sweep);
+  addSilverSweep(edge, sweep);
+  const finishes = new Map<
+    string,
+    [THREE.MeshStandardMaterial, THREE.MeshStandardMaterial]
+  >([["1:1", [face, edge]]]);
+  const materialsFor = (pathIndex: number) => {
+    const finish = getCrestFinish(pathIndex);
+    const key = `${finish.faceOpacity}:${finish.edgeOpacity}`;
+    let materials = finishes.get(key);
+    if (!materials) {
+      materials = [face.clone(), edge.clone()];
+      for (const [index, material] of materials.entries()) {
+        material.opacity =
+          index === 0 ? finish.faceOpacity : finish.edgeOpacity;
+        material.transparent = true;
+        material.depthWrite = false;
+        // A polished rim keeps the softened outer details sharply defined.
+        material.roughness = index === 0 ? 0.23 : 0.2;
+        addSilverSweep(material, sweep);
+      }
+      finishes.set(key, materials);
+    }
+    return materials;
+  };
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${geometry.viewBox}">${geometry.paths
     .map(
       (path) =>
@@ -84,7 +145,7 @@ export function createCrestScene(
     .join("")}</svg>`;
   const paths = new SVGLoader().parse(svg).paths;
   const meshes: THREE.ExtrudeGeometry[] = [];
-  for (const path of paths) {
+  for (const [pathIndex, path] of paths.entries()) {
     for (const shape of SVGLoader.createShapes(path)) {
       const meshGeometry = new THREE.ExtrudeGeometry(shape, {
         depth: 40,
@@ -131,7 +192,7 @@ export function createCrestScene(
         normals.setXYZ(vertex, normal.x, normal.y, normal.z);
       }
       meshes.push(meshGeometry);
-      crest.add(new THREE.Mesh(meshGeometry, [face, edge]));
+      crest.add(new THREE.Mesh(meshGeometry, materialsFor(pathIndex)));
     }
   }
   // The source is a Y-down vector. Center and normalize the complete identity.
@@ -161,6 +222,25 @@ export function createCrestScene(
   let width = 0;
   let height = 0;
   let ready = false;
+  let sweepElapsed = 0;
+  let sweepFrame: number | null = null;
+  const sweepDuration = 4200;
+  const updateSweepState = () => {
+    element.dataset.sheenProgress = Math.min(
+      sweepElapsed / sweepDuration,
+      1,
+    ).toFixed(4);
+    if (contextLost || disposed) {
+      element.dataset.sheen = "static";
+      return;
+    }
+    element.dataset.sheen =
+      sweepElapsed >= sweepDuration
+        ? "settled"
+        : active && visible && !document.hidden && !contextLost
+          ? "running"
+          : "paused";
+  };
   const pointer = new THREE.Vector2();
   const eased = new THREE.Vector2();
   const draw = () => {
@@ -185,20 +265,36 @@ export function createCrestScene(
       return;
     if (time - lastFrame >= 1000 / 30) {
       lastFrame = time;
+      if (sweepElapsed < sweepDuration) {
+        if (sweepFrame !== null)
+          sweepElapsed = Math.min(
+            sweepDuration,
+            sweepElapsed + time - sweepFrame,
+          );
+        sweepFrame = time;
+        sweep.value = -0.18 + (sweepElapsed / sweepDuration) * 1.4;
+        updateSweepState();
+      }
       eased.lerp(pointer, 0.065);
       crest.rotation.y = -0.22 + eased.x * 0.065;
       crest.rotation.x = 0.08 + eased.y * 0.035;
       key.position.x = -3 + eased.x * 2;
       rim.position.y = -1 + eased.y;
       draw();
-      // Lighting follows the pointer, then sleeps once the pose has settled.
-      if (eased.distanceToSquared(pointer) < 0.000001) return;
+      // Sleep after the finite light pass and pointer interpolation settle.
+      if (
+        eased.distanceToSquared(pointer) < 0.000001 &&
+        sweepElapsed >= sweepDuration
+      )
+        return;
     }
     frame = requestAnimationFrame(animate);
   };
   const schedule = () => {
     cancelAnimationFrame(frame);
     frame = 0;
+    sweepFrame = null;
+    updateSweepState();
     draw();
     if (active && visible && !document.hidden && !disposed) {
       frame = requestAnimationFrame(animate);
@@ -210,7 +306,7 @@ export function createCrestScene(
     height = bounds.height;
     if (!width || !height) return;
     // Resolve fine heraldic details on Retina screens while bounding fill cost
-    // on large displays. Work is still rendered only while the pose changes.
+    // on large displays. Only the light pass or pointer movement keeps drawing.
     renderer.setPixelRatio(
       Math.min(
         window.devicePixelRatio,
@@ -269,6 +365,7 @@ export function createCrestScene(
     active = false;
     contextLost = true;
     element.dataset.renderer = "vector";
+    element.dataset.sheen = "static";
   };
   canvas.addEventListener("webglcontextlost", onContextLost);
   resize();
@@ -289,12 +386,14 @@ export function createCrestScene(
       document.removeEventListener("visibilitychange", schedule);
       canvas.removeEventListener("webglcontextlost", onContextLost);
       for (const mesh of meshes) mesh.dispose();
-      face.dispose();
-      edge.dispose();
+      for (const materials of finishes.values()) {
+        for (const material of materials) material.dispose();
+      }
       environment.dispose();
       renderer.dispose();
       canvas.remove();
       element.dataset.renderer = "vector";
+      element.dataset.sheen = "static";
     },
   };
 }

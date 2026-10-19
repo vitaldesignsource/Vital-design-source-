@@ -16,14 +16,15 @@ The owner subsequently requested a more impressive animated SVG treatment. That 
 
 `scripts/brand-assets.ts` produces these transparent-background exports in `public/assets/brand`:
 
-| File                       | Treatment                                                        |
-| -------------------------- | ---------------------------------------------------------------- |
-| `vital-crest.svg`          | Static ink crest                                                 |
-| `vital-crest-silver.svg`   | Static metallic silver crest                                     |
-| `vital-crest-animated.svg` | Filled silver crest with a finite SMIL reveal and highlight      |
-| `vital-lockup.svg`         | Silver crest and outlined Space Grotesk / IBM Plex Mono wordmark |
+| File                       | Treatment                                                         |
+| -------------------------- | ----------------------------------------------------------------- |
+| `vital-crest.svg`          | Static ink crest                                                  |
+| `vital-crest-silver.svg`   | Static metallic silver crest                                      |
+| `vital-crest-animated.svg` | Filled silver crest with a finite SMIL reveal and highlight       |
+| `vital-lockup.svg`         | Silver crest and outlined Space Grotesk / IBM Plex Mono wordmark  |
+| `vital-crest-aurora.svg`   | Static hero-only silver/celadon crest with selective translucency |
 
-The standalone SVGs contain no external fonts, images, or scripts. `source-assets/brand/wordmark-paths.json` retains the glyph outlines used by the lockup, and the typefaces’ licenses remain in `public/licenses`. The animation completes once rather than looping indefinitely.
+The standalone SVGs contain no external fonts, images, or scripts. `source-assets/brand/wordmark-paths.json` retains the glyph outlines used by the lockup, and the typefaces’ licenses remain in `public/licenses`. The animated export completes once rather than looping indefinitely; the separate Aurora hero fallback contains no animation.
 
 The brand preview at `/assets/brand/preview.html` uses an external stylesheet, `preview.css`, and a `<picture>` source that selects the static silver crest for reduced-motion visitors. When embedding the standalone animated SVG elsewhere, provide the same static alternative; the live navigation component handles reduced motion through CSS.
 
@@ -33,13 +34,17 @@ Run `npm run assets:brand` to regenerate the exports from the checked-in crest a
 
 The hero uses `src/components/CrestSculpture.tsx` and the code-split `src/lib/crest-scene.ts` to turn the checked-in `crest-geometry.json` paths into actual Three.js extruded, beveled meshes. Silver faces and green-tinted edges preserve the refined shield and wings as a dimensional identity. The scene does not use the earlier concept artwork as a substitute for the crest.
 
+`src/lib/crest-finish.ts` supplies a hero-only finish shared by the WebGL materials and new static `public/assets/brand/vital-crest-aurora.svg` fallback. Feather paths 7–8 use face/edge opacity 0.89/0.96; flourish paths 18–23 use 0.95/0.98. All other paths, including the core shield, lettering, nibs, and main wings, remain opaque. The checked-in vector geometry is unchanged. This adds a separate export rather than modifying the 12 pre-existing brand assets, which remain byte-for-byte unchanged; navigation’s `BrandCrest.tsx`, Studio, footer, and the film keep their existing treatments. `npm run assets:brand` regenerates the new export through the same finish helper.
+
 Cap triangles stay geometrically planar to avoid visible triangulation seams in broad silver reflections. Crease-aware smoothing applies to the six-segment bevels, while cap normals are restored independently. A continuous, shallow crown in the surface normals gives the metal softer reflections without bending the cap triangles or changing the checked-in vector paths. Outline tessellation uses a modest `curveSegments: 8`.
 
 The reflective studio environment is generated locally from a canvas gradient and light panels, then filtered through Three.js’s PMREM environment generator. Key, rim, and hemisphere lights complete the scene. No external environment map, texture, model, or image request is required for this rendering.
 
-The static silver SVG remains visible on first paint and until the optional WebGL scene has rendered. The scene module is loaded dynamically; data-saving connections skip that enhancement. Failed loading or unavailable WebGL leaves the SVG in place, and context loss restores it. Normal builds use the committed vector geometry and require no tracing or Python step.
+The static Aurora SVG remains visible on first paint and until the optional WebGL scene has rendered. The scene module is loaded dynamically; data-saving connections skip that enhancement. Failed loading or unavailable WebGL leaves the SVG in place, and context loss restores it. Normal builds use the committed vector geometry and require no tracing or Python step.
 
-When motion is enabled, pointer position gently changes the crest’s orientation and its key and rim lighting. Animation is limited to 30 frames per second. On resize, rendering density is recomputed as `min(devicePixelRatio, 2.5, sqrt(2,400,000 / (width × height)))`, using the crest element’s CSS width and height. This resolves fine heraldic details on high-density screens while keeping the drawing buffer within a 2.4-megapixel budget on larger displays. The hero’s pause control stops pointer-driven motion; the initial state respects the system reduced-motion preference and remains stationary until motion is enabled. The renderer sleeps once the pointer settles, suspends animation while offscreen or while the document is hidden, and releases its geometry, materials, environment, and renderer resources on unmount.
+When motion is enabled, a shader produces one 4.2-second diagonal silver light pass. The existing hero pause/resume control suspends it, as do offscreen and hidden-document states; resuming continues the remaining time. The pass settles permanently, then pointer position can gently change the crest’s orientation and key/rim lighting. Reduced motion starts quietly; an explicit Resume motion action permits the pass when WebGL is available. Data-saving connections retain the static SVG. The treatment uses existing materials and local lighting, with no geometry redraw, grain filter, external texture, dependency, or paid generation.
+
+Rendering is limited to 30 frames per second. On resize, density is recomputed as `min(devicePixelRatio, 2.5, sqrt(2,400,000 / (width × height)))`, using the crest element’s CSS width and height. This resolves fine heraldic details on high-density screens while keeping the drawing buffer within a 2.4-megapixel budget on larger displays. The renderer sleeps once the light pass and pointer motion settle, suspends animation while offscreen or hidden, and releases its geometry, materials, environment, and renderer resources on unmount.
 
 ## Cinematic brand film
 

@@ -41,10 +41,13 @@ export function CrestSculpture({ active }: { active: boolean }) {
       className="hero-art crest-sculpture"
       ref={container}
       data-renderer="vector"
+      data-finish="silver-translucent"
+      data-sheen="static"
+      data-sheen-progress="0"
     >
       <img
         className="crest-sculpture-fallback"
-        src="/assets/brand/vital-crest-silver.svg"
+        src="/assets/brand/vital-crest-aurora.svg"
         alt=""
         width="1417"
         height="1110"

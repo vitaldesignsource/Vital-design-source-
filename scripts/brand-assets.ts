@@ -1,6 +1,7 @@
 import { mkdir, writeFile } from "node:fs/promises";
 import geometry from "../src/lib/crest-geometry.json";
 import wordmark from "../source-assets/brand/wordmark-paths.json";
+import { getCrestFinish } from "../src/lib/crest-finish";
 
 const folder = "public/assets/brand";
 await mkdir(folder, { recursive: true });
@@ -36,3 +37,17 @@ await writeFile(
 console.info(
   "Generated true vector crest, silver variant, finite animated SVG, and outlined wordmark.",
 );
+
+// A separate hero treatment leaves the official exports above unchanged.
+const auroraEdge = `<linearGradient id="aurora-edge" x1="0" y1="1" x2="1" y2="0"><stop stop-color="#b7e4cf" stop-opacity="0.04"/><stop offset="0.38" stop-color="#78cfba" stop-opacity="0.24"/><stop offset="0.65" stop-color="#e5f1e8" stop-opacity="0.3"/><stop offset="0.86" stop-color="#78cfba" stop-opacity="0.12"/><stop offset="1" stop-color="#b7e4cf" stop-opacity="0"/></linearGradient>`;
+const auroraPaths = geometry.paths
+  .map((path, index) => {
+    const finish = getCrestFinish(index);
+    return `<path d="${path.d}" transform="${path.transform}" fill="url(#silver)" fill-opacity="${finish.faceOpacity}" stroke="url(#aurora-edge)" stroke-width="1.6" stroke-opacity="${finish.edgeOpacity}" stroke-linejoin="round"/>`;
+  })
+  .join("");
+await writeFile(
+  `${folder}/vital-crest-aurora.svg`,
+  `${open(geometry.viewBox, "Vital Design Source silver and celadon heraldic crest", 512, 401)}<defs>${silver}${auroraEdge}</defs>${auroraPaths}</svg>\n`,
+);
+console.info("Generated the separate silver and celadon hero crest.");
