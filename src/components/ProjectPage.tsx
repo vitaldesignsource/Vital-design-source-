@@ -8,6 +8,7 @@ import { projects, type Project } from "../lib/content";
 import { projectPalettes } from "../lib/project-palettes";
 import { projectPath } from "../lib/project-routes";
 import { projectStudies } from "../lib/project-studies";
+import "../styles/portfolio-discovery.css";
 
 function ProjectPreview({
   project,
@@ -235,9 +236,16 @@ export function ProjectPage({ project }: { project: Project }) {
           </h2>
         </div>
         <div>
-          <p>Have a project of your own? Tell us what you’re imagining.</p>
-          <a className="button button-primary" href="/#contact">
-            Start a project <ArrowUpRight size={19} aria-hidden="true" />
+          <p>
+            Something here speaks to your idea? Bring this project into your
+            inquiry as a visual reference, and tell us what you’re imagining.
+          </p>
+          <a
+            className="button button-primary project-reference-link"
+            href={`/?reference=${project.id}#contact`}
+          >
+            Use this project as a reference
+            <ArrowUpRight size={19} aria-hidden="true" />
           </a>
         </div>
       </section>

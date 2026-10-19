@@ -12,6 +12,15 @@ outputs are checked-in illustrations; selecting stages sends no AI request and
 connects no external tools. Visitors can carry a selected workflow example into
 the existing inquiry form without losing their draft.
 
+Portfolio cards lead into the dedicated project studies, with separate links to
+the live websites and quick previews. Each study can be carried into an inquiry
+as a removable **Project reference**. The handoff uses only a known public
+project ID, consumes it from the URL, and stores no personal draft in browser
+storage. Service rows expose their scope before opening; expanded panels explain
+useful starting points and concrete offerings. The inquiry form includes compact
+FAQs, separate-tab privacy notices, and a character allowance that includes any
+selected context without truncating the visitor's message.
+
 ## Deploy on Hostinger
 
 Import this repository as a **Node.js Web App** with these settings:
@@ -70,7 +79,9 @@ CI also runs `npm run test:deployment`: a disposable production-only install tha
 - `src/components/DesignLab.tsx`: curated visual-direction explorer with selection controls, live brief updates, and a motion toggle. Offscreen and background-tab suspension preserves the visitor’s motion preference.
 - `src/components/DesignLabArtwork.tsx`: responsive local image, SVG glass study, and typographic artwork for the three directions. Decorative motion uses the Lab’s existing visibility and preference controls.
 - `src/components/StudioProcess.tsx` and `src/lib/studio-process.ts`: four selectable process phases with practical focus points, collaboration notes, and original vector diagrams. Selection triggers one short line trace; reduced-motion visits remain static.
-- `src/lib/creative-starting-point.ts` and `src/components/InquiryForm.tsx`: removable direction/service context for inquiries. Visitor drafts and manually chosen project types stay intact; context is disclosed and appended to the message within the existing validation and length limits.
+- `src/lib/creative-starting-point.ts` and `src/components/InquiryForm.tsx`: removable direction/service/workflow/project context for inquiries. Visitor drafts and manually chosen project types stay intact; context is disclosed and appended to the message within the existing validation and length limits. The visible counter follows the composed payload, and corrected fields are rechecked on blur after a failed validation attempt.
+- `src/lib/project-reference.ts`: resolves only one known public project ID for a study-to-inquiry handoff. The homepage consumes the parameter while preserving other query parameters and the fragment. No visitor details are placed in URLs or browser storage.
+- `src/lib/service-scopes.ts` and `src/styles/service-scopes.css`: factual service scope, useful starting points, and concrete offering descriptions within the existing capabilities section. Example links for AI and automation remain explicitly illustrative.
 - `src/components/AuroraBackdrop.tsx`, `SignalBanner.tsx`, and `SectionContours.tsx`: local inline SVG atmosphere in obsidian, platinum, jade, and celadon light. The hero’s existing motion control also governs its aurora; the decorative interlude runs one optional 4.2-second pass, and section contours stay static. Visibility, reduced-motion, and data-saving preferences govern motion.
 - `src/components/BackgroundAtmosphere.tsx` and `src/styles/background-atmosphere.css`: a separate viewport-sized ambient layer behind the homepage’s transparent dark sections. Two soft gradient fields and faint SVG contours drift slowly using CSS transforms. Synchronized controls in the hero and footer pause the background without changing hero or Lab motion; hidden tabs suspend the animation clock, and reduced-motion/data-saving/no-JavaScript visits retain the static artwork. No canvas, filters, media downloads, or animation-frame loop are added.
 - `src/components/ScrollChoreography.tsx`: once-only 800ms position entrances for initially offscreen headings and supporting text. Text stays fully opaque throughout; interactive containers remain stationary so pointer targets stay stable. Keyboard focus reveals content immediately; content remains visible without JavaScript, with reduced motion, or with data saving enabled.

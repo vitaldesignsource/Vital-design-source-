@@ -4,6 +4,7 @@ import {
   useImperativeHandle,
   useRef,
   useState,
+  type FocusEvent,
   type FormEvent,
   type Ref,
 } from "react";
@@ -14,8 +15,12 @@ import {
   type CreativeStartingPoint,
   type ProjectType,
 } from "../lib/creative-starting-point";
-import { inquirySchema } from "../lib/inquiry";
+import { inquirySchema, type Inquiry } from "../lib/inquiry";
 import { SectionContours } from "./SectionContours";
+import "../styles/inquiry-guidance.css";
+
+const combinedMessageError =
+  "Your message and starting point together exceed 4,000 characters. Please shorten your message or clear the starting point.";
 
 export interface InquiryFormHandle {
   chooseStartingPoint: (point: CreativeStartingPoint) => void;
@@ -27,7 +32,11 @@ export function InquiryForm({ ref }: { ref?: Ref<InquiryFormHandle> }) {
     "idle" | "sending" | "success" | "error"
   >("idle");
   const [message, setMessage] = useState("");
+  const [detailsDraft, setDetailsDraft] = useState("");
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [reservedErrors, setReservedErrors] = useState<Record<string, string>>(
+    {},
+  );
   const [startingPoint, setStartingPoint] =
     useState<CreativeStartingPoint | null>(null);
   const [typeOverride, setTypeOverride] = useState<ProjectType | null>(null);
@@ -36,6 +45,10 @@ export function InquiryForm({ ref }: { ref?: Ref<InquiryFormHandle> }) {
   const submitting = useRef(false);
   const selectedType =
     typeOverride ?? startingPoint?.projectType ?? projectTypes[0];
+  const composedLength = detailsWithStartingPoint(
+    detailsDraft.trim(),
+    startingPoint,
+  ).trim().length;
 
   useImperativeHandle(
     ref,
@@ -70,6 +83,7 @@ export function InquiryForm({ ref }: { ref?: Ref<InquiryFormHandle> }) {
         ]),
       );
       setErrors(nextErrors);
+      setReservedErrors((current) => ({ ...current, ...nextErrors }));
       (
         form.elements.namedItem(
           Object.keys(nextErrors)[0],
@@ -85,14 +99,18 @@ export function InquiryForm({ ref }: { ref?: Ref<InquiryFormHandle> }) {
     });
     if (!payloadResult.success) {
       setErrors({
-        details:
-          "Your message and starting point together exceed 4,000 characters. Please shorten your message or clear the starting point.",
+        details: combinedMessageError,
       });
+      setReservedErrors((current) => ({
+        ...current,
+        details: combinedMessageError,
+      }));
       (form.elements.namedItem("details") as HTMLElement | null)?.focus();
       return;
     }
     submitting.current = true;
     setErrors({});
+    setReservedErrors({});
     setStatus("sending");
     setMessage("");
     try {
@@ -113,29 +131,80 @@ export function InquiryForm({ ref }: { ref?: Ref<InquiryFormHandle> }) {
       setStatus("success");
       setStartingPoint(null);
       setTypeOverride(null);
+      setDetailsDraft("");
       form.reset();
     } catch (error) {
       setStatus("error");
       setMessage(
-        error instanceof Error && error.name !== "TimeoutError"
+        error instanceof Error &&
+          !["TimeoutError", "AbortError", "TypeError"].includes(error.name)
           ? error.message
-          : "The connection took too long. Please try again.",
+          : "We couldn’t confirm receipt. Please try again.",
       );
     } finally {
       submitting.current = false;
     }
   }
 
-  const fieldProps = (name: string) => ({
+  function correctFieldOnBlur(
+    event: FocusEvent<
+      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+    >,
+  ) {
+    const field = event.currentTarget;
+    const name = field.name as keyof Inquiry;
+    // Only revisit a field already flagged by a submission attempt.
+    if (!errors[name]) return;
+    const value =
+      name === "consent" ? (field as HTMLInputElement).checked : field.value;
+    const result = inquirySchema.shape[name].safeParse(value);
+    const overCombinedLimit =
+      name === "details" &&
+      result.success &&
+      typeof result.data === "string" &&
+      detailsWithStartingPoint(result.data, startingPoint).trim().length > 4000;
+    const nextError = !result.success
+      ? result.error.issues[0]?.message
+      : overCombinedLimit
+        ? combinedMessageError
+        : undefined;
+    if (nextError)
+      setReservedErrors((current) => ({ ...current, [name]: nextError }));
+    setErrors((current) => {
+      if (!current[name]) return current;
+      const next = { ...current };
+      if (nextError) next[name] = nextError;
+      else delete next[name];
+      return next;
+    });
+  }
+
+  const fieldProps = (name: keyof Inquiry) => ({
     id: `${formId}-${name}`,
     name,
     "aria-invalid": errors[name] ? (true as const) : undefined,
-    "aria-describedby": errors[name] ? `${formId}-${name}-error` : undefined,
+    "aria-describedby":
+      [
+        ...(name === "details"
+          ? [`${formId}-details-hint`, `${formId}-details-capacity`]
+          : []),
+        ...(errors[name] ? [`${formId}-${name}-error`] : []),
+      ].join(" ") || undefined,
+    onBlur: correctFieldOnBlur,
   });
   const errorFor = (name: string) =>
-    errors[name] && (
-      <span className="field-error" id={`${formId}-${name}-error`}>
-        {errors[name]}
+    (errors[name] || reservedErrors[name]) && (
+      <span className="field-error-slot">
+        <span className="field-error-sizer" aria-hidden="true">
+          {name === "details" ? combinedMessageError : reservedErrors[name]}
+        </span>
+        <span
+          className={`field-error${errors[name] ? "" : " field-error-reserved"}`}
+          id={errors[name] ? `${formId}-${name}-error` : undefined}
+          aria-hidden={!errors[name] || undefined}
+        >
+          {errors[name] || reservedErrors[name]}
+        </span>
       </span>
     );
 
@@ -186,6 +255,51 @@ export function InquiryForm({ ref }: { ref?: Ref<InquiryFormHandle> }) {
               </p>
             </li>
           </ol>
+        </div>
+        <div className="inquiry-readiness">
+          <h3>A little clarity.</h3>
+          <details>
+            <summary>
+              Do I need a finished brief?
+              <span className="inquiry-question-mark" aria-hidden="true" />
+            </summary>
+            <p>
+              A few sentences are a useful start. Tell us your goal, who you
+              want to reach, and any timing you have in mind. If the budget is
+              still open, choose “Not sure yet.”
+            </p>
+          </details>
+          <details>
+            <summary>
+              Can I combine services?
+              <span className="inquiry-question-mark" aria-hidden="true" />
+            </summary>
+            <p>
+              Choose the closest fit and describe the combination in your
+              message. A selected project, service, design direction, or
+              workflow is an optional starting point; you can clear it without
+              losing your message.
+            </p>
+          </details>
+          <details>
+            <summary>
+              How are my details used?
+              <span className="inquiry-question-mark" aria-hidden="true" />
+            </summary>
+            <p>
+              We use the details you share to review and respond to your
+              inquiry. You are not added to a mailing list. Read the{" "}
+              <a
+                href="/privacy"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="privacy notice (opens in a new tab)"
+              >
+                privacy notice
+              </a>{" "}
+              for the full details.
+            </p>
+          </details>
         </div>
       </div>
       <div className="contact-form-wrap">
@@ -249,12 +363,34 @@ export function InquiryForm({ ref }: { ref?: Ref<InquiryFormHandle> }) {
                       aria-label="Clear starting point"
                       onClick={() => {
                         setStartingPoint(null);
+                        const result =
+                          inquirySchema.shape.details.safeParse(detailsDraft);
+                        const nextError = result.success
+                          ? undefined
+                          : result.error.issues[0]?.message;
+                        if (errors.details && nextError)
+                          setReservedErrors((current) => ({
+                            ...current,
+                            details: nextError,
+                          }));
+                        setErrors((current) => {
+                          if (!current.details) return current;
+                          const next = { ...current };
+                          if (result.success) delete next.details;
+                          else next.details = nextError ?? current.details;
+                          return next;
+                        });
                         typeRef.current?.focus();
                       }}
                     >
                       Clear <X size={14} aria-hidden="true" />
                     </button>
                   </div>
+                  {startingPoint.kind === "project" && (
+                    <p className="eyebrow inquiry-point-kind">
+                      Project reference
+                    </p>
+                  )}
                   <p className="inquiry-starting-point-label">
                     {startingPoint.label}
                   </p>
@@ -345,14 +481,35 @@ export function InquiryForm({ ref }: { ref?: Ref<InquiryFormHandle> }) {
                 <label htmlFor={`${formId}-details`}>
                   A little about your idea *
                 </label>
+                <p className="inquiry-field-hint" id={`${formId}-details-hint`}>
+                  Share your goal, your audience, and any timing you have in
+                  mind. Please write at least 20 characters.
+                </p>
                 <textarea
                   {...fieldProps("details")}
+                  onInput={(event) =>
+                    setDetailsDraft(event.currentTarget.value)
+                  }
                   rows={4}
                   required
                   minLength={20}
                   maxLength={4000}
                   placeholder="The vision, the challenge, the possibilities…"
                 />
+                <p
+                  className="inquiry-message-capacity"
+                  id={`${formId}-details-capacity`}
+                  data-over-limit={composedLength > 4000 || undefined}
+                >
+                  <span>
+                    {composedLength.toLocaleString("en-US")} / 4,000 characters
+                  </span>
+                  <span>
+                    {startingPoint
+                      ? "Includes your selected starting point."
+                      : "For your message."}
+                  </span>
+                </p>
                 {errorFor("details")}
               </div>
               <div className="honeypot" aria-hidden="true">
@@ -372,7 +529,15 @@ export function InquiryForm({ ref }: { ref?: Ref<InquiryFormHandle> }) {
                   I agree that my details may be used to respond to this
                   inquiry, as described in the{" "}
                   <span className="consent-privacy">
-                    <a href="/privacy">privacy notice</a>.{"\u00a0"}*
+                    <a
+                      href="/privacy"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label="privacy notice (opens in a new tab)"
+                    >
+                      privacy notice
+                    </a>
+                    .{"\u00a0"}*
                   </span>
                 </label>
               </div>

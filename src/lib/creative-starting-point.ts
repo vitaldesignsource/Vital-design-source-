@@ -1,4 +1,4 @@
-import { projectTypes, type services } from "./content";
+import { projectTypes, type Project, type services } from "./content";
 import type { DesignDirection } from "./design-directions";
 import type { WorkflowExample } from "./workflow-examples";
 
@@ -6,7 +6,7 @@ export type ProjectType = (typeof projectTypes)[number];
 export type Service = (typeof services)[number];
 
 export interface CreativeStartingPoint {
-  readonly kind: "direction" | "service" | "workflow";
+  readonly kind: "direction" | "service" | "workflow" | "project";
   readonly id: string;
   readonly label: string;
   readonly summary: string;
@@ -62,6 +62,19 @@ export function startingPointFromWorkflow(
   };
 }
 
+export function startingPointFromProject(
+  project: Project,
+): CreativeStartingPoint {
+  return {
+    kind: "project",
+    id: project.id,
+    label: project.name,
+    summary: project.description,
+    focus: [project.category],
+    projectType: "Website & development",
+  };
+}
+
 export function detailsWithStartingPoint(
   details: string,
   point: CreativeStartingPoint | null,
@@ -71,6 +84,7 @@ export function detailsWithStartingPoint(
     direction: "Design direction",
     service: "Service",
     workflow: "Workflow example",
+    project: "Project reference",
   } as const;
   return [
     details,

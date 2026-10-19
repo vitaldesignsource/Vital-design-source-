@@ -239,6 +239,20 @@ test.describe("atmosphere", () => {
   test("freezes and resumes real hero animation while retaining manual motion intent", async ({
     page,
   }) => {
+    // Measure the SVG animation independently of software-GPU initialization.
+    // The crest suite covers the optional WebGL renderer and its motion controls.
+    await page.addInitScript(() => {
+      const original = HTMLCanvasElement.prototype.getContext;
+      HTMLCanvasElement.prototype.getContext = function (
+        this: HTMLCanvasElement,
+        type: string,
+        ...args: unknown[]
+      ) {
+        if (type.startsWith("webgl") || type === "experimental-webgl")
+          return null;
+        return Reflect.apply(original, this, [type, ...args]);
+      } as typeof original;
+    });
     await page.emulateMedia({ reducedMotion: "no-preference" });
     const errors: string[] = [];
     page.on("pageerror", (error) => errors.push(error.message));

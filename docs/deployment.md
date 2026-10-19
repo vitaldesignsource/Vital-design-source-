@@ -138,6 +138,15 @@ Use `docker exec vital-design-source npm run inquiries` to review records. Keep 
 
 Every accepted inquiry is saved with a generated UUID before the client receives success. Website messages say “received”; they do not claim email delivery. Storage failures return an error and preserve browser input. A browser timeout after the server commits can produce a duplicate on retry; compare timestamps and email addresses when reviewing records.
 
+Project studies can link into the form using `/?reference=<known-project-id>#contact`.
+The homepage accepts exactly one ID from the checked-in catalog and then removes
+the reference parameter. Unknown or duplicate references are ignored and removed;
+other query parameters and the fragment are preserved. The optional reference is
+disclosed, removable, and included in the existing message field. No personal
+draft is stored in URLs, local storage, or session storage. Message guidance and
+the character counter use the same trimmed, composed 4,000-character limit as the
+existing API; references do not satisfy the visitor's own message minimum.
+
 The application enforces exact-origin checks, JSON content type, a 16 KiB request cap, strict field validation, consent, honeypot filtering, and persistent rate limits of 60 attempts per hour per network address and five per normalized email address. Keys use HMAC; the database does not store raw IP addresses. Configure host edge limits as appropriate for traffic. This single-instance rate limiter is not a distributed bot-defense service.
 
 Security headers include a same-origin CSP without `unsafe-inline` or `unsafe-eval`, JSON-LD hashes, HSTS in production, framing restrictions, MIME sniffing protection, restrictive permissions, and a referrer policy. Preserve these at the reverse proxy. Inquiry responses are not cacheable. The application does not log inquiry content or SMTP errors that might contain it; review the host's own log and backup policies separately.

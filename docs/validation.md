@@ -1,5 +1,47 @@
 # Validation record
 
+## Visitor journey refinement — October 19, 2026
+
+Portfolio cards now lead to their project studies, with separate external website
+and quick-preview actions. All six services show a useful scope before opening
+and concrete offering details afterward. A study can become a removable project
+reference in the inquiry form. The URL accepts only one known public project ID,
+consumes it after hydration, and stores no personal draft data in the browser.
+
+The inquiry form adds guidance, three native disclosure questions, an exact
+composed-message counter, and blur correction for fields already flagged by a
+submission attempt. Error slots retain their height so correcting a field cannot
+move a checkbox or submit button during a pointer click. Privacy opens separately
+to preserve the draft. The API schema, server queue, official crest, film, project
+destinations, and deployment configuration are unchanged.
+
+- Strict TypeScript, full ESLint, all **100 unit/API/configuration/reference
+  tests**, the production build, formatting, and whitespace checks passed.
+- The full desktop/mobile browser run collected 88 cases: 66 passed, 19 were
+  intentional duplicate-context skips, and three caught error-layout click races.
+  After the stable error-slot fix, all 14 relevant follow-up cases passed,
+  including those three failures. Together the regression and follow-up runs
+  cover all **69 applicable browser cases**, with 19 intentional skips.
+- New journeys verify project discovery, removable references, unknown/duplicate
+  query rejection, preserved unrelated query values, exact composed counts,
+  field correction, separate privacy navigation, six visible service scopes,
+  disclosures, and 320px accessibility. Home/privacy automated WCAG checks also
+  passed on desktop and mobile. No live inquiry was submitted for this release.
+- A previous-release CI trace showed optional software-GPU crest startup delaying
+  the SVG animation-clock test. That single test now blocks WebGL using the
+  existing fallback shim while preserving 2D contexts and every motion assertion.
+  Dedicated crest tests retain real WebGL, context-loss, and sheen coverage. No
+  product motion logic or global timeout changed.
+- The clean production deployment verifier passed production-only installation,
+  synchronous managed loading, standalone startup, automatic build, protected
+  inquiry storage, restart persistence, and operator access.
+- Visual review at 1440, 800, 390, and 320px found no horizontal overflow in
+  gallery/list views, services, or contact, and no browser errors. Desktop/mobile
+  previews are retained as `docs/previews/visitor-*.webp`.
+- The published commit runs the complete regression suite and clean deployment
+  check in GitHub Actions. Actual Gmail delivery remains unverified pending the
+  private Hostinger sender configuration described below.
+
 ## Inquiry notification destination — October 19, 2026
 
 Set the default server-side inquiry notification recipient to

@@ -166,4 +166,4 @@ export const services = [
       "Motion & visual exploration",
     ],
   },
-];
+] as const;

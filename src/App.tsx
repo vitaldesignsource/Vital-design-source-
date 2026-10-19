@@ -1,5 +1,5 @@
 import { ArrowDownRight, ArrowUpRight } from "lucide-react";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import { Footer } from "./components/Footer";
 import { Header } from "./components/Header";
 import { Hero } from "./components/Hero";
@@ -14,6 +14,7 @@ import { ScrollChoreography } from "./components/ScrollChoreography";
 import { ProjectPage } from "./components/ProjectPage";
 import { AIWorkflow } from "./components/AIWorkflow";
 import { getProjectFromPath } from "./lib/project-routes";
+import { getProjectReference } from "./lib/project-reference";
 import {
   BackgroundAtmosphere,
   useBackgroundMotion,
@@ -22,6 +23,7 @@ import {
   startingPointFromDirection,
   startingPointFromService,
   startingPointFromWorkflow,
+  startingPointFromProject,
 } from "./lib/creative-starting-point";
 
 function Privacy() {
@@ -101,6 +103,25 @@ export function App({ path = "/" }: { path?: string }) {
   const inquiryRef = useRef<InquiryFormHandle>(null);
   const project = getProjectFromPath(path);
   const backgroundMotion = useBackgroundMotion(path === "/");
+  useEffect(() => {
+    if (path !== "/") return;
+    const parameters = new URLSearchParams(window.location.search);
+    if (!parameters.has("reference")) return;
+    const reference = getProjectReference(window.location.search);
+    if (reference)
+      inquiryRef.current?.chooseStartingPoint(
+        startingPointFromProject(reference),
+      );
+    // Consume this public selection once, including unsupported/duplicate IDs.
+    // Reloading after clearing a starting point should not restore it.
+    parameters.delete("reference");
+    const query = parameters.toString();
+    window.history.replaceState(
+      window.history.state,
+      "",
+      `${window.location.pathname}${query ? `?${query}` : ""}${window.location.hash}`,
+    );
+  }, [path]);
   return (
     <div id="top">
       {path === "/" && (

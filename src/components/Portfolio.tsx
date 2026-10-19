@@ -1,10 +1,17 @@
 import { useState } from "react";
-import { ArrowRight, ArrowUpRight, LayoutGrid, Rows3 } from "lucide-react";
+import {
+  ArrowRight,
+  ArrowUpRight,
+  LayoutGrid,
+  Monitor,
+  Rows3,
+} from "lucide-react";
 import { projects } from "../lib/content";
 import { projectStudies } from "../lib/project-studies";
 import { projectPath } from "../lib/project-routes";
 import { ProjectShowcase } from "./ProjectShowcase";
 import { SectionContours } from "./SectionContours";
+import "../styles/portfolio-discovery.css";
 
 const filters = [
   "All projects",
@@ -93,10 +100,8 @@ export function Portfolio() {
             data-preview-kind={projectStudies[project.id].previewKind}
           >
             <a
-              href={project.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label={`Visit ${project.name} (opens in a new tab)`}
+              href={projectPath(project)}
+              aria-label={`View ${project.name} project study`}
             >
               <div className="project-visual">
                 <div className="project-image-shell">
@@ -107,7 +112,7 @@ export function Portfolio() {
                       <i />
                     </span>
                     <span>{new URL(project.url).hostname}</span>
-                    <ArrowUpRight size={12} />
+                    <Monitor size={12} />
                   </div>
                   <picture>
                     <source
@@ -133,7 +138,7 @@ export function Portfolio() {
                   </span>
                 )}
                 <span className="project-hover eyebrow">
-                  View website <ArrowUpRight size={17} aria-hidden="true" />
+                  View project study <ArrowRight size={17} aria-hidden="true" />
                 </span>
               </div>
               <div className="project-info">
@@ -146,7 +151,7 @@ export function Portfolio() {
                 <div className="project-title-row">
                   <h3>{project.name}</h3>
                   <span className="project-open" aria-hidden="true">
-                    <ArrowUpRight size={25} />
+                    <ArrowRight size={25} />
                   </span>
                 </div>
                 <p className="project-description">{project.description}</p>
@@ -158,6 +163,15 @@ export function Portfolio() {
               </div>
             </a>
             <div className="project-study-actions">
+              <a
+                className="project-external-link"
+                href={project.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={`Visit ${project.name} (opens in a new tab)`}
+              >
+                Visit website <ArrowUpRight size={15} aria-hidden="true" />
+              </a>
               <button
                 className="project-study-trigger"
                 type="button"
@@ -170,21 +184,25 @@ export function Portfolio() {
               >
                 A closer look <ArrowRight size={17} aria-hidden="true" />
               </button>
-              <a
-                className="project-page-link"
-                href={projectPath(project)}
-                aria-label={`Read ${project.name} project study`}
-              >
-                View project study <ArrowUpRight size={15} aria-hidden="true" />
-              </a>
             </div>
           </article>
         ))}
       </div>
-      <p className="work-footnote eyebrow">
-        Each project is its own world. Explore the live sites.
-        <ArrowUpRight size={14} aria-hidden="true" />
-      </p>
+      <div className="work-discovery-footer">
+        <div className="work-discovery-copy">
+          <p className="eyebrow">Your next step</p>
+          <h3>From inspiration to possibility.</h3>
+          <p>Explore what we do, or tell us what you have in mind.</p>
+        </div>
+        <div className="work-discovery-links">
+          <a className="text-link" href="#services">
+            Explore capabilities <ArrowRight size={17} aria-hidden="true" />
+          </a>
+          <a className="button button-primary" href="#contact">
+            Start a project <ArrowUpRight size={17} aria-hidden="true" />
+          </a>
+        </div>
+      </div>
       {showcaseProject && (
         <ProjectShowcase
           initialProjectId={showcaseProject}

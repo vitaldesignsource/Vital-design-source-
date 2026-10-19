@@ -1,0 +1,135 @@
+@layer components {
+  .field-error-slot {
+    display: grid;
+  }
+
+  .field-error-slot > span {
+    grid-area: 1 / 1;
+  }
+
+  .field-error-sizer {
+    margin-top: 8px;
+    font-size: 12px;
+  }
+
+  .field-error-sizer,
+  .field-error.field-error-reserved {
+    visibility: hidden;
+    pointer-events: none;
+  }
+
+  .inquiry-point-kind {
+    margin-bottom: 8px;
+    color: var(--accent);
+    font-size: 9px;
+    line-height: 1.8;
+    letter-spacing: 0.06em;
+  }
+
+  .inquiry-readiness {
+    max-width: 340px;
+    margin-top: 34px;
+  }
+
+  .inquiry-readiness h3 {
+    margin-bottom: 10px;
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: -0.02em;
+  }
+
+  .inquiry-readiness details {
+    border-bottom: 1px solid var(--line-strong);
+  }
+
+  .inquiry-readiness summary {
+    display: flex;
+    min-height: 48px;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    padding: 12px 0;
+    color: var(--ink);
+    font-size: 12px;
+    line-height: 1.6;
+    list-style: none;
+    cursor: pointer;
+  }
+
+  .inquiry-readiness summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .inquiry-question-mark {
+    flex: 0 0 auto;
+    color: var(--accent);
+    font-family: var(--mono);
+    font-size: 17px;
+    line-height: 1;
+  }
+
+  .inquiry-question-mark::before {
+    content: "+";
+  }
+
+  .inquiry-readiness details[open] .inquiry-question-mark::before {
+    content: "−";
+  }
+
+  .inquiry-readiness summary:focus-visible {
+    outline: 2px solid var(--accent-bright);
+    outline-offset: 4px;
+    border-radius: 3px;
+  }
+
+  .inquiry-readiness details p {
+    padding: 0 16px 17px 0;
+    color: var(--muted);
+    font-size: 12px;
+    line-height: 1.8;
+  }
+
+  .inquiry-readiness details a {
+    color: var(--ink);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .inquiry-field-hint {
+    margin: -2px 0 12px;
+    color: var(--muted);
+    font-size: 11px;
+    line-height: 1.7;
+  }
+
+  .inquiry-message-capacity {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 4px 15px;
+    margin-top: 10px;
+    color: var(--muted);
+    font-size: 10px;
+    line-height: 1.65;
+  }
+
+  .inquiry-message-capacity > span:first-child {
+    flex: 0 0 auto;
+    font-family: var(--mono);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .inquiry-message-capacity[data-over-limit] > span:first-child {
+    color: #ffb6ad;
+  }
+}
+
+@layer responsive {
+  @media (max-width: 600px) {
+    .inquiry-readiness {
+      max-width: none;
+      margin-top: 28px;
+    }
+  }
+}

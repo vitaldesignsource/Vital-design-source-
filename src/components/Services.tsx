@@ -2,7 +2,9 @@ import { ArrowUpRight, Minus, Plus } from "lucide-react";
 import { useState } from "react";
 import { services } from "../lib/content";
 import type { Service } from "../lib/creative-starting-point";
+import { serviceScopes } from "../lib/service-scopes";
 import { SectionContours } from "./SectionContours";
+import "../styles/service-scopes.css";
 
 export function Services({
   onSelectService,
@@ -46,13 +48,25 @@ export function Services({
               <h3>
                 <button
                   type="button"
+                  aria-label={`0${index + 1} ${service.title}`}
+                  aria-describedby={`service-scope-${index}`}
                   aria-expanded={active === index}
                   aria-controls={`service-panel-${index}`}
                   id={`service-button-${index}`}
                   onClick={() => setActive(active === index ? null : index)}
                 >
-                  <span className="service-index eyebrow">0{index + 1}</span>
-                  <span className="service-title">{service.title}</span>
+                  <span className="service-index eyebrow" aria-hidden="true">
+                    0{index + 1}
+                  </span>
+                  <span className="service-label">
+                    <span className="service-title">{service.title}</span>
+                    <span
+                      className="service-scope"
+                      id={`service-scope-${index}`}
+                    >
+                      {serviceScopes[service.title].summary}
+                    </span>
+                  </span>
                   {active === index ? (
                     <Minus className="service-toggle" aria-hidden="true" />
                   ) : (
@@ -69,21 +83,40 @@ export function Services({
               >
                 <p className="service-short">{service.short}</p>
                 <p>{service.description}</p>
+                <div className="service-starting-point">
+                  <h4 className="eyebrow">A useful starting point</h4>
+                  <p>{serviceScopes[service.title].startingPoint}</p>
+                </div>
+                <h4 className="eyebrow service-shape-heading">
+                  What we shape together
+                </h4>
                 <ul className="service-details">
-                  {service.details.map((detail) => (
-                    <li className="eyebrow" key={detail}>
-                      {detail}
+                  {service.details.map((detail, detailIndex) => (
+                    <li key={detail}>
+                      <span className="eyebrow">{detail}</span>
+                      <p>{serviceScopes[service.title].details[detailIndex]}</p>
                     </li>
                   ))}
                 </ul>
-                <a
-                  className="text-link service-inquiry-link"
-                  href="#contact"
-                  onClick={() => onSelectService?.(service)}
-                >
-                  Discuss this service
-                  <ArrowUpRight size={17} aria-hidden="true" />
-                </a>
+                <div className="service-actions">
+                  <a
+                    className="text-link service-inquiry-link"
+                    href="#contact"
+                    onClick={() => onSelectService?.(service)}
+                  >
+                    Discuss this service
+                    <ArrowUpRight size={17} aria-hidden="true" />
+                  </a>
+                  {serviceScopes[service.title].example && (
+                    <a
+                      className="text-link service-example-link"
+                      href={serviceScopes[service.title].example?.href}
+                    >
+                      {serviceScopes[service.title].example?.label}
+                      <ArrowUpRight size={15} aria-hidden="true" />
+                    </a>
+                  )}
+                </div>
               </div>
             </article>
           ))}

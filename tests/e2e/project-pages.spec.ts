@@ -376,7 +376,7 @@ test("discovers project stories from cards and dialogs and navigates the catalog
   await page.goto("/#work");
   await page
     .getByRole("link", {
-      name: "Read Aetherica Podcast project study",
+      name: "View Aetherica Podcast project study",
       exact: true,
     })
     .click();
