@@ -41,16 +41,16 @@
   }
   [data-reveal-state] {
     --reveal-delay: 0ms;
-    transition:
-      opacity 650ms ease var(--reveal-delay),
-      translate 800ms cubic-bezier(0.16, 1, 0.3, 1) var(--reveal-delay);
+    opacity: 1;
+    transition: translate 800ms cubic-bezier(0.16, 1, 0.3, 1)
+      var(--reveal-delay);
   }
   [data-reveal-state="pending"] {
-    opacity: 0;
     translate: 0 22px;
   }
-  [data-reveal-style="fade"] {
+  [data-reveal-style="static"] {
     translate: none;
+    transition: none;
   }
   [data-reveal-state="visible"] {
     opacity: 1;

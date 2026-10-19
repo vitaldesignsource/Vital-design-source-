@@ -104,8 +104,71 @@ test.describe("atmosphere", () => {
       expect(definitions.ids).toContain(reference.slice(1));
     }
 
+    const opacityProbe = await page.evaluateHandle(() => {
+      const failures = new Set<string>();
+      const observed = new Set<string>();
+      let frames = 0;
+      let frame = 0;
+      const sample = () => {
+        for (const element of document.querySelectorAll<HTMLElement>(
+          "[data-reveal-state]",
+        )) {
+          const state = element.dataset.revealState;
+          const style = getComputedStyle(element);
+          for (const kind of ["project", "service"])
+            if (element.classList.contains(kind))
+              observed.add(`${kind}:${state}`);
+          if (style.opacity !== "1")
+            failures.add(
+              `${element.className}:${state}:opacity=${style.opacity}`,
+            );
+          if (
+            element.dataset.revealStyle === "static" &&
+            style.translate !== "none" &&
+            style.translate.split(" ").some((value) => parseFloat(value) !== 0)
+          )
+            failures.add(
+              `${element.className}:${state}:translate=${style.translate}`,
+            );
+        }
+      };
+      const tick = () => {
+        frames++;
+        sample();
+        frame = requestAnimationFrame(tick);
+      };
+      sample();
+      frame = requestAnimationFrame(tick);
+      return {
+        finish: () => {
+          cancelAnimationFrame(frame);
+          sample();
+          return {
+            failures: [...failures],
+            observed: [...observed],
+            frames,
+          };
+        },
+      };
+    });
+    const project = page.locator(".project").first();
     const service = page.locator(".service").first();
+    await expect(project).toHaveAttribute("data-reveal-state", "pending");
+    await expect(project).toHaveAttribute("data-reveal-style", "static");
     await expect(service).toHaveAttribute("data-reveal-state", "pending");
+    await expect(service).toHaveAttribute("data-reveal-style", "static");
+    const workHeading = page.locator("#work .section-heading");
+    await workHeading.scrollIntoViewIfNeeded();
+    await expect(workHeading).toHaveAttribute("data-reveal-state", "visible");
+    await expect
+      .poll(() =>
+        workHeading.evaluate((element) => element.getAnimations().length),
+      )
+      .toBe(0);
+    await project.scrollIntoViewIfNeeded();
+    await expect(project).toHaveAttribute("data-reveal-state", "visible");
+    await expect(project).toHaveCSS("opacity", "1");
+
     await service.scrollIntoViewIfNeeded();
     await expect(service).toHaveAttribute("data-reveal-state", "visible");
     await expect(service).toHaveCSS("opacity", "1");
@@ -130,6 +193,7 @@ test.describe("atmosphere", () => {
     ).toEqual({ state: "visible", opacity: "1", animations: 0 });
     const form = page.locator(".contact-form-wrap");
     await expect(form).toHaveAttribute("data-reveal-state", "pending");
+    await expect(form).toHaveAttribute("data-reveal-style", "static");
     await page
       .getByLabel("Your name *")
       .evaluate((element: HTMLInputElement) =>
@@ -158,6 +222,18 @@ test.describe("atmosphere", () => {
     await page.locator(".hero").scrollIntoViewIfNeeded();
     await banner.scrollIntoViewIfNeeded();
     await expect(banner).toHaveAttribute("data-motion", "complete");
+    const opacity = await opacityProbe.evaluate((probe) => probe.finish());
+    await opacityProbe.dispose();
+    expect(opacity.failures).toEqual([]);
+    expect(opacity.observed).toEqual(
+      expect.arrayContaining([
+        "project:pending",
+        "project:visible",
+        "service:pending",
+        "service:visible",
+      ]),
+    );
+    expect(opacity.frames).toBeGreaterThan(1);
   });
 
   test("freezes and resumes real hero animation while retaining manual motion intent", async ({

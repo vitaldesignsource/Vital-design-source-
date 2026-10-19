@@ -67,11 +67,11 @@ export function ScrollChoreography() {
         element.dataset.revealState = "pending";
         element.dataset.revealOrder = String(index % 3);
         // Focus can arrive between pointer down and up. Interactive targets
-        // fade in without moving their hit area during that gesture.
+        // stay fully readable and still throughout that gesture.
         if (
           element.querySelector("a,button,input,select,textarea,[tabindex]")
         ) {
-          element.dataset.revealStyle = "fade";
+          element.dataset.revealStyle = "static";
         }
         tracked.add(element);
         observer?.observe(element);

@@ -23,8 +23,21 @@ export function CrestSculpture({ active }: { active: boolean }) {
       navigator as Navigator & { connection?: { saveData?: boolean } }
     ).connection;
     if (connection?.saveData || !("IntersectionObserver" in window)) return;
+    const initialTarget = document.querySelector(":target");
+    let awaitingAnchor = Boolean(
+      initialTarget &&
+      !element.closest(".hero")?.contains(initialTarget) &&
+      !initialTarget.contains(element),
+    );
     const enhance = async () => {
-      if (cancelled || loading || scene.current || !visible || document.hidden)
+      if (
+        cancelled ||
+        loading ||
+        scene.current ||
+        awaitingAnchor ||
+        !visible ||
+        document.hidden
+      )
         return;
       loading = true;
       try {
@@ -52,11 +65,20 @@ export function CrestSculpture({ active }: { active: boolean }) {
     const observer = new IntersectionObserver(
       ([entry]) => {
         visible = entry.isIntersecting;
+        if (!visible) awaitingAnchor = false;
         if (visible) void enhance();
       },
       { threshold: 0.01 },
     );
     observer.observe(element);
+    // Smooth initial fragment navigation can briefly expose the hero en route.
+    const onScrollEnd = () => {
+      if (!awaitingAnchor) return;
+      awaitingAnchor = false;
+      void enhance();
+    };
+    // Also release the initial anchor guard if a visitor cancels that scroll.
+    document.addEventListener("scrollend", onScrollEnd);
     const onVisibility = () => {
       if (!document.hidden) void enhance();
     };
@@ -64,6 +86,7 @@ export function CrestSculpture({ active }: { active: boolean }) {
     return () => {
       cancelled = true;
       observer.disconnect();
+      document.removeEventListener("scrollend", onScrollEnd);
       document.removeEventListener("visibilitychange", onVisibility);
       scene.current?.dispose();
       scene.current = null;

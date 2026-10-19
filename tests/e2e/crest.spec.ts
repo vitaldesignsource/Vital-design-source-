@@ -119,14 +119,14 @@ test("respects reduced motion and supports optional 3D rendering and context los
   }
 });
 
-test("defers optional crest rendering on a service visit until the crest is visible", async ({
+test("defers optional crest rendering during initial fragment navigation", async ({
   page,
 }, testInfo) => {
   test.skip(
     testInfo.project.name !== "desktop",
     "The optional module-loading boundary only needs one browser journey.",
   );
-  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.emulateMedia({ reducedMotion: "no-preference" });
   const sceneRequests: string[] = [];
   const errors: string[] = [];
   page.on("pageerror", (error) => errors.push(error.message));
@@ -134,6 +134,17 @@ test("defers optional crest rendering on a service visit until the crest is visi
     sceneRequests.push(route.request().url());
     return route.continue();
   });
+  const crest = page.locator(".crest-sculpture");
+  await page.setViewportSize({ width: 1440, height: 1200 });
+  await page.goto("/#brand-film");
+  await expect(page.locator("#brand-film")).toBeInViewport();
+  await expect(crest).not.toBeInViewport();
+  await page.evaluate(() => new Promise((resolve) => setTimeout(resolve, 250)));
+  await expect(crest).toHaveAttribute("data-renderer", "vector");
+  await expect(crest.locator("canvas")).toHaveCount(0);
+  expect(sceneRequests).toEqual([]);
+
+  await page.setViewportSize({ width: 1440, height: 1000 });
   await page.goto("/#services");
   const seo = page.getByRole("button", { name: "04 SEO", exact: true });
   await seo.click();
@@ -143,7 +154,6 @@ test("defers optional crest rendering on a service visit until the crest is visi
   ).toBeVisible();
   // Observe the hydrated page through its first intersection deliveries.
   await page.evaluate(() => new Promise((resolve) => setTimeout(resolve, 250)));
-  const crest = page.locator(".crest-sculpture");
   await expect(crest).not.toBeInViewport();
   await expect(crest).toHaveAttribute("data-renderer", "vector");
   await expect(crest.locator("canvas")).toHaveCount(0);
@@ -166,7 +176,7 @@ test("defers optional crest rendering on a service visit until the crest is visi
   await expect.poll(() => sceneRequests.length).toBeGreaterThan(0);
   if (available) {
     await expect(crest).toHaveAttribute("data-renderer", "webgl");
-    await expect(crest).toHaveAttribute("data-motion", "paused");
+    await expect(crest).toHaveAttribute("data-motion", "running");
     await expect(crest.locator("canvas")).toHaveCount(1);
   } else {
     await expect(crest).toHaveAttribute("data-renderer", "vector");
