@@ -13,7 +13,7 @@ Use **Node.js Web App**, import `vitaldesignsource/Vital-design-source-` from Gi
 | Package manager | npm       |
 | Entry file      | server.js |
 
-Connect **vitaldesignsource.com** to this Node app and deploy. There are **no required environment variables**. Remove manual environment rows from earlier setup attempts, especially `SITE_URL=https://vita.pigeonshield.net`, `DATABASE_PATH=./data/inquiries.sqlite`, and an empty `PORT`. Hostinger supplies its own port; the application defaults to production mode and the official HTTPS domain.
+Connect **vitaldesignsource.com** to this Node app and deploy. The website and private inquiry storage need no environment variables; email delivery needs the sending settings below. Remove obsolete preview/storage overrides from earlier setup attempts, especially `SITE_URL=https://vita.pigeonshield.net`, `DATABASE_PATH=./data/inquiries.sqlite`, and an empty `PORT`. Preserve valid SMTP settings. Hostinger supplies its own port; the application defaults to production mode and the official HTTPS domain.
 
 The source includes a stable `server.js` entry. Hostinger's Express preset runs the package build, and the entry also builds missing artifacts before starting. It serves the compiled website and inquiry API together. Build tools are production dependencies, so installing with development dependencies omitted is supported. See [Hostinger's Express documentation](https://docs.hostinger.com/node.js/overview-1/express).
 
@@ -33,7 +33,7 @@ Submit a test inquiry, then review it in an authorized server terminal:
 npm run inquiries
 ```
 
-Inquiries are saved privately even when email notifications are off. No email delivery is claimed until SMTP is configured. The default production database is `~/.local/share/vital-design-source/inquiries.sqlite`, outside the application release directory. The app creates its private directory and generates a persistent random rate-limit key automatically.
+Inquiries are saved privately even when email notifications are off. The default notification recipient is **Vitaldesignsource@gmail.com**; email delivery requires a configured sending account. The default production database is `~/.local/share/vital-design-source/inquiries.sqlite`, outside the application release directory. The app creates its private directory and generates a persistent random rate-limit key automatically.
 
 Hostinger manages deployment directories such as `public_html` and `hbuilds`. The home-directory default avoids those release directories, but persistence depends on the hosting account. Verify the test inquiry survives one redeployment, and back up private storage. If Hostinger provides a different persistent location, set the optional `DATABASE_PATH` override to that private absolute path.
 
@@ -69,7 +69,7 @@ The app ignores spoofed forwarding headers by default. No manual rate-limit secr
 
 ### Email notifications
 
-To receive inquiry emails, configure all of the following using your mail provider's real settings:
+All project, service, design-direction, and workflow inquiries use the same secure form and notification queue. Notifications default to **Vitaldesignsource@gmail.com**. In the Hostinger app's protected environment settings, configure the following using a real sending account:
 
 ```dotenv
 SMTP_HOST=smtp.your-provider.example
@@ -77,10 +77,13 @@ SMTP_PORT=465
 SMTP_USER=your-provider-user
 SMTP_PASS=your-provider-secret
 INQUIRY_FROM=Studio <verified-sender@your-domain.example>
-INQUIRY_TO=your-real-studio-inbox@your-domain.example
 ```
 
-These are illustrative values. Keep credentials in the host's protected environment settings, never in Git. Port 465 uses TLS; other ports require STARTTLS. TLS verification remains enabled. The sender and recipient come only from server configuration; the validated visitor email is used as Reply-To. Messages contain plain text.
+These sender settings are illustrative; the destination is already configured in the source. Keep credentials in the host's protected environment settings, never in Git or browser code. Port 465 uses TLS; other ports require STARTTLS. TLS verification remains enabled. Use a sender verified by that provider, rather than a visitor's address. The validated visitor email is used as Reply-To, so replies go directly to the person who submitted the form. Messages contain all submitted fields and any selected creative/workflow context in plain text.
+
+You do not need an `INQUIRY_TO` environment setting for the requested Gmail inbox. If an older deployment has this setting pointing elsewhere, remove it or set it to `Vitaldesignsource@gmail.com`. A nonblank explicit value deliberately overrides the default. Blank values use the default. A missing sending account, whitespace-only settings, or an invalid SMTP port leave email disabled while retaining private inquiry storage.
+
+Save the sending settings, redeploy, and submit one clearly labeled test inquiry. Verify the reference and message arrive at the Gmail inbox (including its spam folder), then reply to confirm Reply-To uses the test submitter. Do not treat a successful deployment or saved form response as proof of email delivery.
 
 Saved inquiries remain queued until SMTP delivery succeeds, with retries at startup and every minute. An SMTP outage does not discard saved inquiries. Delivery is at least once: a process failure after sending but before recording success can cause a repeat notification with the same reference UUID. Configure SPF/DKIM/DMARC with your provider and verify a test email reaches the real inbox.
 

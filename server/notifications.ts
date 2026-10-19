@@ -1,26 +1,31 @@
 import nodemailer from "nodemailer";
 import type { Store } from "./store";
 
+export const DEFAULT_INQUIRY_RECIPIENT = "Vitaldesignsource@gmail.com";
+
 export function createNotifier(
   store: Store,
   env: NodeJS.ProcessEnv = process.env,
 ) {
-  const required = [
-    "SMTP_HOST",
-    "SMTP_USER",
-    "SMTP_PASS",
-    "INQUIRY_FROM",
-    "INQUIRY_TO",
-  ] as const;
-  const configured = required.every((key) => Boolean(env[key]));
+  const host = env.SMTP_HOST?.trim();
+  const user = env.SMTP_USER?.trim();
+  // Preserve the provider's password exactly, including intentional spaces.
+  const password = env.SMTP_PASS;
+  const from = env.INQUIRY_FROM?.trim();
+  const to = env.INQUIRY_TO?.trim() || DEFAULT_INQUIRY_RECIPIENT;
+  const port = Number(env.SMTP_PORT?.trim() || 465);
+  const configured =
+    Boolean(host && user && password?.trim() && from) &&
+    Number.isInteger(port) &&
+    port >= 1 &&
+    port <= 65535;
   if (!configured) return { configured: false, flush: async () => {} };
-  const port = Number(env.SMTP_PORT || 465);
   const transport = nodemailer.createTransport({
-    host: env.SMTP_HOST,
+    host,
     port,
     secure: port === 465,
     requireTLS: port !== 465,
-    auth: { user: env.SMTP_USER, pass: env.SMTP_PASS },
+    auth: { user, pass: password },
     connectionTimeout: 10000,
     greetingTimeout: 10000,
     socketTimeout: 15000,
@@ -36,8 +41,8 @@ export function createNotifier(
       try {
         for (const inquiry of store.pending()) {
           await transport.sendMail({
-            from: env.INQUIRY_FROM,
-            to: env.INQUIRY_TO,
+            from,
+            to,
             replyTo: inquiry.email,
             subject: "New Vital Design Source project inquiry",
             messageId: `<${inquiry.id}@vital-inquiries.local>`,

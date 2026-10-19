@@ -1,5 +1,28 @@
 # Validation record
 
+## Inquiry notification destination — October 19, 2026
+
+Set the default server-side inquiry notification recipient to
+`Vitaldesignsource@gmail.com`. All existing inquiry paths use the same form and
+durable queue. Blank recipient settings use this default; a deliberate nonblank
+deployment override remains supported. SMTP sending still requires a verified
+sender and private provider credentials. Configuration labels are trimmed,
+password bytes are preserved, and missing settings or an invalid port leave the
+website working with saved inquiries queued.
+
+- All 92 unit/API/route/notification tests passed. The 33 new notification cases
+  cover destination routing, all submitted fields and selected workflow context,
+  Reply-To, TLS, successful marking, provider failure, retry with the same
+  reference, concurrent flush protection, and private error logging. Nodemailer
+  was mocked; these tests did not send email.
+- Strict TypeScript, full ESLint, production build, formatting, and whitespace
+  checks passed. The clean production deployment verifier passed managed and
+  standalone startup, default-domain rendering, private inquiry persistence,
+  restart, and operator access. No frontend or visual assets changed.
+- Hostinger inspection reached its login page, so live SMTP settings and Gmail
+  receipt could not be verified. Do not report email forwarding as active until
+  the sending account is configured and an actual test message is received.
+
 ## Project studies and workflow demonstration — October 19, 2026
 
 Added eight dedicated `/work/<project-id>` pages with editorial previews,

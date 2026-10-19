@@ -25,9 +25,11 @@ Import this repository as a **Node.js Web App** with these settings:
 | Package manager | npm       |
 | Entry file      | server.js |
 
-Connect **vitaldesignsource.com** and deploy. No environment variables or email account are required. The app builds automatically when needed, uses the official domain, generates its private security key, and saves inquiries outside the deployment directory.
+Connect **vitaldesignsource.com** and deploy. The website and private inquiry storage work without environment variables. The app builds automatically when needed, uses the official domain, generates its private security key, and saves inquiries outside the deployment directory.
 
-If you entered settings during an earlier setup attempt, remove those manual environment rows, especially the preview `SITE_URL` and relative `DATABASE_PATH`. Hostinger supplies the port automatically.
+All inquiry paths share the same form and email queue. The default notification destination is **Vitaldesignsource@gmail.com**. Actual email delivery requires a verified sending account configured through the host's protected SMTP settings; an address alone cannot send mail. Saved inquiries remain queued and retry after sending is configured. See [email setup](docs/deployment.md#email-notifications).
+
+If you entered settings during an earlier setup attempt, remove obsolete preview `SITE_URL` and relative `DATABASE_PATH` overrides. Keep any valid email settings. Hostinger supplies the port automatically.
 
 See [deployment instructions](docs/deployment.md) for domain switching, inquiry access, optional email notifications, backups, and other hosts. The inquiry API requires a Node host; a PHP/HTML file deployment or GitHub Pages cannot run it.
 
@@ -113,6 +115,6 @@ npm run inquiries -- --delete <inquiry-uuid>
 
 The first command displays the newest 50 submissions. Treat its output as private. Production storage defaults to `~/.local/share/vital-design-source/inquiries.sqlite`; the CLI uses the same path as the server. To view local development records, prefix the command with `NODE_ENV=development`.
 
-There is no public administration endpoint. Optional SMTP notifications retry from the saved queue; without SMTP, review inquiries through this command. Verify that your host preserves the private storage directory across redeployments.
+There is no public administration endpoint. SMTP notifications to **Vitaldesignsource@gmail.com** retry from the saved queue once the sending account is configured; without SMTP, review inquiries through this command. Verify that your host preserves the private storage directory across redeployments.
 
 All original brand artwork and site assets remain proprietary to their respective owners. Third-party code and fonts retain their licenses; see [notices](docs/third-party-notices.md).
