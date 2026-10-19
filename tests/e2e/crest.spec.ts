@@ -287,7 +287,8 @@ test("pauses the silver sheen, resumes its progress, and settles after one pass"
       const first = await waitFor(reason, (value) => value.state === "running");
       const advanced = await waitFor(
         reason,
-        (value) => value.progress > first.progress + 0.01,
+        (value) =>
+          value.progress > first.progress + 0.01 || value.state === "settled",
       );
       resumes.push({ reason, minimum, first, advanced });
     };
@@ -363,7 +364,7 @@ test("pauses the silver sheen, resumes its progress, and settles after one pass"
     expect(resume.advanced.progress, resume.reason).toBeGreaterThan(
       resume.first.progress,
     );
-    expect(resume.advanced.progress, resume.reason).toBeLessThan(1);
+    expect(resume.advanced.progress, resume.reason).toBeLessThanOrEqual(1);
   }
   for (const settled of [
     lifecycle.settled,

@@ -165,7 +165,7 @@ test("explores curated art directions, controls motion, and reaches contact", as
 });
 
 test("has accessible service disclosure panels", async ({ page }) => {
-  await page.goto("/");
+  await page.goto("/#services");
   const seo = page.getByRole("button", { name: "04 SEO" });
   await seo.click();
   await expect(seo).toHaveAttribute("aria-expanded", "true");
