@@ -2,8 +2,16 @@ import { useEffect, useState } from "react";
 import { ArrowDown, ArrowUpRight, Pause, Play } from "lucide-react";
 import { CrestSculpture } from "./CrestSculpture";
 import { AuroraBackdrop } from "./AuroraBackdrop";
+import {
+  BackgroundMotionControl,
+  type BackgroundMotionState,
+} from "./BackgroundAtmosphere";
 
-export function Hero() {
+export function Hero({
+  backgroundMotion,
+}: {
+  backgroundMotion?: BackgroundMotionState;
+}) {
   const [motion, setMotion] = useState(false);
   useEffect(() => {
     const preference = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -81,6 +89,11 @@ export function Hero() {
             )}
             <span>{motion ? "Pause motion" : "Play motion"}</span>
           </button>
+          {backgroundMotion && (
+            <div className="hero-background-control">
+              <BackgroundMotionControl motion={backgroundMotion} />
+            </div>
+          )}
         </div>
       </div>
     </section>

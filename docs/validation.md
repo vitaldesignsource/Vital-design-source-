@@ -1,5 +1,29 @@
 # Validation record
 
+## Ambient background — October 19, 2026
+
+Added a homepage-wide decorative layer behind transparent dark sections: two
+soft celadon/blue gradient fields and faint SVG contours, moving through
+32/43/54-second alternating CSS transform cycles. No canvas, animated filters,
+media requests, or JavaScript animation loop are added. Controls in the hero and
+footer share one background-motion preference; the existing hero, Lab, and film
+controls retain their own behavior.
+
+- Strict TypeScript, ESLint, all 40 API/configuration tests, production build,
+  formatting, and whitespace checks passed.
+- Two focused browser journeys passed, including real animation-clock progress,
+  pause/resume continuity, synchronized controls, keyboard activation, hidden-tab
+  suspension, retained manual pause across preference changes, 320/390px motion
+  and data-saving preferences, static no-JavaScript artwork, minimum control hit
+  areas, no horizontal overflow, and a footer WCAG audit with no violations. The
+  full regression suite and clean production check remain part of CI.
+- Clean production deployment verification passed, including managed startup,
+  default-domain metadata, protected inquiry persistence, and restart behavior.
+- Visual review at 1440, 800, 390, and 320px found no page overflow or browser
+  errors. The background stays faint behind readable foreground content, paper
+  panels remain opaque, and controls stay in normal document flow. Retained
+  desktop/mobile previews are `docs/previews/background-*.webp`.
+
 ## Studio detail release — October 19, 2026
 
 Added three distinct AI Lab compositions, the four-phase studio process console,

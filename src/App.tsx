@@ -12,6 +12,10 @@ import { BrandFilm } from "./components/BrandFilm";
 import { SignalBanner } from "./components/SignalBanner";
 import { ScrollChoreography } from "./components/ScrollChoreography";
 import {
+  BackgroundAtmosphere,
+  useBackgroundMotion,
+} from "./components/BackgroundAtmosphere";
+import {
   startingPointFromDirection,
   startingPointFromService,
 } from "./lib/creative-starting-point";
@@ -91,8 +95,12 @@ function NotFound() {
 
 export function App({ path = "/" }: { path?: string }) {
   const inquiryRef = useRef<InquiryFormHandle>(null);
+  const backgroundMotion = useBackgroundMotion(path === "/");
   return (
     <div id="top">
+      {path === "/" && (
+        <BackgroundAtmosphere running={backgroundMotion.running} />
+      )}
       <a className="skip-link" href="#main">
         Skip to content
       </a>
@@ -100,7 +108,7 @@ export function App({ path = "/" }: { path?: string }) {
       {path === "/" ? (
         <main id="main">
           <ScrollChoreography />
-          <Hero />
+          <Hero backgroundMotion={backgroundMotion} />
           <div className="discipline-bar">
             <div className="page-width eyebrow">
               <span>
@@ -137,7 +145,7 @@ export function App({ path = "/" }: { path?: string }) {
       ) : (
         <NotFound />
       )}
-      <Footer />
+      <Footer backgroundMotion={path === "/" ? backgroundMotion : undefined} />
     </div>
   );
 }

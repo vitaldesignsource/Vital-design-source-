@@ -1,0 +1,162 @@
+@layer components {
+  #top {
+    position: relative;
+    isolation: isolate;
+  }
+  .site-atmosphere {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    overflow: hidden;
+    pointer-events: none;
+    contain: paint;
+  }
+  .site-atmosphere-glow {
+    position: absolute;
+    width: min(110vw, 1100px);
+    height: min(110vh, 1000px);
+    border-radius: 50%;
+    animation-play-state: paused;
+  }
+  .site-atmosphere-glow-one {
+    top: -25%;
+    left: -25%;
+    background: radial-gradient(
+      ellipse,
+      #3d80652e,
+      #234b3512 38%,
+      transparent 70%
+    );
+    animation: ambient-celadon-drift 32s ease-in-out infinite alternate paused;
+  }
+  .site-atmosphere-glow-two {
+    right: -23%;
+    bottom: -25%;
+    background: radial-gradient(
+      ellipse,
+      #446f8a24,
+      #20433d0c 40%,
+      transparent 70%
+    );
+    animation: ambient-blue-drift 43s ease-in-out infinite alternate paused;
+  }
+  .site-atmosphere-contours {
+    position: absolute;
+    width: 130%;
+    height: 130%;
+    max-width: none;
+    left: -15%;
+    top: -15%;
+    stroke: var(--accent);
+    stroke-width: 0.8;
+    opacity: 0.045;
+    animation: ambient-contour-drift 54s ease-in-out infinite alternate paused;
+  }
+  .site-atmosphere[data-motion="running"] > * {
+    animation-play-state: running;
+  }
+  .background-motion-control {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    min-height: 44px;
+    padding: 8px 12px;
+    border: 1px solid var(--line-strong);
+    border-radius: 30px;
+    background: var(--deep);
+    color: var(--muted);
+    font-family: var(--mono);
+    font-size: 9px;
+    line-height: 1.6;
+    letter-spacing: 0.015em;
+    white-space: nowrap;
+  }
+  button.background-motion-control:hover {
+    color: var(--ink);
+    border-color: var(--control-line);
+  }
+  .background-motion-static {
+    border-color: transparent;
+    background: transparent;
+  }
+  .hero-background-control {
+    flex-shrink: 0;
+  }
+  .footer-bottom > .background-motion-control {
+    padding-inline: 0;
+    background: transparent;
+    border-color: transparent;
+  }
+  .footer-bottom > button.background-motion-control:hover {
+    text-decoration: underline;
+    text-underline-offset: 5px;
+  }
+  @keyframes ambient-celadon-drift {
+    from {
+      transform: translate3d(-3%, -4%, 0) scale(0.96);
+    }
+    to {
+      transform: translate3d(20%, 21%, 0) scale(1.12);
+    }
+  }
+  @keyframes ambient-blue-drift {
+    from {
+      transform: translate3d(7%, 8%, 0) scale(1.06);
+    }
+    to {
+      transform: translate3d(-18%, -17%, 0) scale(0.94);
+    }
+  }
+  @keyframes ambient-contour-drift {
+    from {
+      transform: translate3d(-2%, 0, 0) rotate(-5deg);
+    }
+    to {
+      transform: translate3d(3%, -3%, 0) rotate(4deg);
+    }
+  }
+}
+@layer responsive {
+  @media (max-width: 1100px) {
+    .hero-bottom {
+      flex-wrap: wrap;
+    }
+    .hero-background-control {
+      margin-left: auto;
+    }
+  }
+  @media (max-width: 799px) {
+    .hero-background-control {
+      flex-basis: 100%;
+      border-top: 1px solid var(--line);
+      text-align: center;
+      padding-top: 6px;
+    }
+    .hero-background-control > .background-motion-control {
+      background: transparent;
+      border-color: transparent;
+      font-size: 8px;
+    }
+    .site-atmosphere-glow {
+      width: 125vw;
+      height: 95vh;
+    }
+    .site-atmosphere-contours {
+      opacity: 0.035;
+    }
+    .footer-bottom > .background-motion-control {
+      margin-top: 12px;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .site-atmosphere > * {
+      animation-play-state: paused !important;
+    }
+  }
+  @media (forced-colors: active) {
+    .site-atmosphere {
+      display: none;
+    }
+  }
+}

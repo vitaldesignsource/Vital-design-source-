@@ -9,6 +9,7 @@
 @import "./styles/atmosphere.css";
 @import "./styles/studio-process.css";
 @import "./styles/inquiry-context.css";
+@import "./styles/background-atmosphere.css";
 
 @layer reset {
   *,

@@ -1,6 +1,14 @@
 import { ArrowUpRight } from "lucide-react";
+import {
+  BackgroundMotionControl,
+  type BackgroundMotionState,
+} from "./BackgroundAtmosphere";
 
-export function Footer() {
+export function Footer({
+  backgroundMotion,
+}: {
+  backgroundMotion?: BackgroundMotionState;
+}) {
   return (
     <footer className="footer page-width">
       <div className="footer-top">
@@ -41,6 +49,9 @@ export function Footer() {
           <a href="/#contact">Contact</a>
           <a href="/privacy">Privacy</a>
         </nav>
+        {backgroundMotion && (
+          <BackgroundMotionControl motion={backgroundMotion} />
+        )}
         <span>Design with a pulse.</span>
       </div>
     </footer>
